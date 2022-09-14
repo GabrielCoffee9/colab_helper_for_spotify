@@ -1,58 +1,59 @@
-import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
+import 'package:colab_helper_for_spotify/models/primary models/user_playlist_model.dart';
 import 'package:retry/retry.dart';
-import 'package:colab_helper_for_spotify/models/primary models/user_profile_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../features/auth/auth_controller.dart';
 
-enum UserState { idle, success, error, loading }
+enum PlaylistState { idle, success, error, loading }
 
-class UserController extends ChangeNotifier {
-  var state = UserState.idle;
+class PlaylistController extends ChangeNotifier {
+  var state = PlaylistState.idle;
 
-  UserProfileModel userProfile = UserProfileModel();
+  UserPlaylistModel userPlaylists = UserPlaylistModel();
   Dio dio = Dio();
   var storage = const FlutterSecureStorage();
 
-  UserController() {
+  PlaylistController() {
     dio.options.baseUrl = 'https://api.spotify.com/v1';
   }
 
-  getCurrentUserProfile() async {
+  getPlaylistsCurrentUser() async {
     final response = await retry(() async {
-      state = UserState.loading;
+      state = PlaylistState.loading;
       notifyListeners();
 
       var accessToken = await storage.read(key: 'accessToken');
 
       return await dio
           .get(
-            '/me',
+            '/me/playlists',
+            queryParameters: {
+              'limit': 3,
+            },
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             }, contentType: Headers.jsonContentType),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 6));
     }, retryIf: (e) async {
       if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
         await AuthController().getToken();
         return true;
       }
 
-      state = UserState.error;
+      state = PlaylistState.error;
       notifyListeners();
       return false;
     });
 
-    if (state != UserState.error) {
-      userProfile = UserProfileModel.fromJson(response.data);
+    if (state != PlaylistState.error) {
+      userPlaylists = UserPlaylistModel.fromJson(response.data);
 
-      state = UserState.success;
+      state = PlaylistState.success;
       notifyListeners();
-      await PlaylistController().getPlaylistsCurrentUser();
     }
   }
 }

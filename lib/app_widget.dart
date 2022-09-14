@@ -1,11 +1,19 @@
+<<<<<<< Updated upstream
 import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:colab_helper_for_spotify/features/home/home_page.dart';
+=======
+import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
+>>>>>>> Stashed changes
 import 'package:colab_helper_for_spotify/shared/controllers/user_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
-import 'package:colab_helper_for_spotify/features/auth/auth_page.dart';
 import 'package:colab_helper_for_spotify/shared/static/text_theme.g.dart';
+
+import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
+import 'package:colab_helper_for_spotify/features/home/app_screens.dart';
+import 'package:colab_helper_for_spotify/features/auth/auth_page.dart';
+
 import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 
 class ColabApp extends StatelessWidget {
   const ColabApp({super.key});
@@ -16,6 +24,7 @@ class ColabApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: ((context) => AuthController())),
         ChangeNotifierProvider(create: ((context) => UserController())),
+        ChangeNotifierProvider(create: ((context) => PlaylistController()))
       ],
       child: MaterialApp(
         title: 'Colab Helper For Spotify',
@@ -31,7 +40,11 @@ class ColabApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthPage(),
+<<<<<<< Updated upstream
           '/home': (context) => const HomePage()
+=======
+          '/app': (context) => const AppScreens(),
+>>>>>>> Stashed changes
         },
       ),
     );
