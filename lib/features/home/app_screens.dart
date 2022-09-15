@@ -50,7 +50,7 @@ class _AppScreensState extends State<AppScreens> {
           NavigationDestination(
               label: 'Add', icon: Icon(Icons.add_circle_outline)),
           NavigationDestination(
-              icon: Icon(Icons.contacts_outlined), label: 'Social')
+              icon: Icon(Icons.contacts_outlined), label: 'Social'),
         ],
       ),
       body: PageTransitionSwitcher(

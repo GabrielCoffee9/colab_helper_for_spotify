@@ -66,7 +66,7 @@ class _AuthPageState extends State<AuthPage> {
           userController.state == UserState.success) {
         userController.state = UserState.idle;
         buttonState = ButtonState.init;
-        Navigator.popAndPushNamed(context, '/home');
+        Navigator.popAndPushNamed(context, '/app');
       }
     });
   }
