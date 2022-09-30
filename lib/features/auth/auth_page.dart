@@ -1,4 +1,5 @@
 import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
+// import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
 import 'package:colab_helper_for_spotify/shared/controllers/user_controller.dart';
 import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
@@ -75,11 +76,9 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     final controller = context.watch<AuthController>();
 
-    final userController = context.watch<UserController>();
     var brightness = MediaQuery.of(context).platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
 
-    final isDone = buttonState == ButtonState.init;
+    bool isDarkMode = brightness == Brightness.dark;
     final buttonType = buttonState == ButtonState.init;
     return Scaffold(
       body: Center(
@@ -90,7 +89,7 @@ class _AuthPageState extends State<AuthPage> {
               children: <Widget>[
                 AppLogo(iconSize: 150, darkTheme: isDarkMode),
                 const Text(
-                  'Colab Helper For ',
+                  'Colab Helper For',
                   style: TextStyle(fontSize: 36),
                 ),
                 Image.asset("lib/assets/Spotify_Logo_RGB_Green.png"),
@@ -115,7 +114,7 @@ class _AuthPageState extends State<AuthPage> {
                           isDarkMode
                               ? darkColorScheme.primary
                               : lightColorScheme.primary,
-                          isDone),
+                          buttonType),
                 )
               ],
             ),

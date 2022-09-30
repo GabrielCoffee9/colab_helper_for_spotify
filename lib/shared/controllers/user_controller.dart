@@ -1,11 +1,9 @@
-import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
+import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:retry/retry.dart';
 import 'package:colab_helper_for_spotify/models/primary models/user_profile_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import '../../features/auth/auth_controller.dart';
 
 enum UserState { idle, success, error, loading }
 
@@ -52,7 +50,6 @@ class UserController extends ChangeNotifier {
 
       state = UserState.success;
       notifyListeners();
-      await PlaylistController().getPlaylistsCurrentUser();
     }
   }
 }

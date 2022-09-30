@@ -33,15 +33,28 @@ class AuthController extends ChangeNotifier {
 
   verifySync() async {
     String? accessTokenValue = await storage.read(key: 'accessToken');
+    String? accessTokenDate = await storage.read(key: 'accessTokenDate');
 
-    var tokenCheck = accessTokenValue != null ? true : false;
+    bool validToken = isValidToken(accessTokenValue, accessTokenDate);
 
-    if (!tokenCheck) {
+    if (!validToken) {
       await getToken();
     }
     state = AuthState.success;
     notifyListeners();
     state = AuthState.idle;
+  }
+
+  bool isValidToken(String? tokenValue, String? tokenDate) {
+    if (tokenValue != null && tokenDate != null) {
+      final actualDateTime = DateTime.now().millisecondsSinceEpoch;
+
+      final timeDiff = (actualDateTime - int.parse(tokenDate));
+
+      return timeDiff > 3600 ? false : true;
+    }
+
+    return false;
   }
 
   getToken() async {
@@ -52,7 +65,12 @@ class AuthController extends ChangeNotifier {
           clientId: _appClientId, redirectUrl: _appRedirectURI, scope: _scope);
 
       await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'accessTokenDate');
+
       await storage.write(key: 'accessToken', value: accessToken);
+      await storage.write(
+          key: 'accessTokenDate',
+          value: DateTime.now().millisecondsSinceEpoch.toString());
     } on Exception {
       state = AuthState.error;
       notifyListeners();

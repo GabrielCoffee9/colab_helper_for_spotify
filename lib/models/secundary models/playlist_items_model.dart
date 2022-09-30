@@ -3,7 +3,7 @@ import 'package:colab_helper_for_spotify/models/secundary models/images_model.da
 import 'package:colab_helper_for_spotify/models/secundary models/owner_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary models/tracks_model.dart';
 
-class PlaylistItems {
+class PlaylistItemsModel {
   bool? collaborative;
   String? description;
   ExternalUrlsModel? externalUrls;
@@ -19,7 +19,7 @@ class PlaylistItems {
   String? type;
   String? uri;
 
-  PlaylistItems(
+  PlaylistItemsModel(
       {this.collaborative,
       this.description,
       this.externalUrls,
@@ -35,7 +35,7 @@ class PlaylistItems {
       this.type,
       this.uri});
 
-  PlaylistItems.fromJson(Map<String, dynamic> json) {
+  PlaylistItemsModel.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'];
     description = json['description'];
     externalUrls = json['external_urls'] != null

@@ -1,15 +1,70 @@
 import 'package:flutter/material.dart';
 
-class ColabPlaylistCard extends StatefulWidget {
-  const ColabPlaylistCard({super.key});
+class ColabPlaylistCard extends StatelessWidget {
+  const ColabPlaylistCard(
+      {super.key, required this.playlistName, required this.urlImage});
 
-  @override
-  State<ColabPlaylistCard> createState() => _ColabPlaylistCardState();
-}
+  final String playlistName;
+  final String urlImage;
 
-class _ColabPlaylistCardState extends State<ColabPlaylistCard> {
   @override
   Widget build(BuildContext context) {
-    return const Card();
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: 175,
+      child: Card(
+        margin: const EdgeInsets.all(4),
+        surfaceTintColor: colors.surface,
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            Image.network(
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  heightFactor: 30,
+                  child: LinearProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              urlImage,
+              scale: 4.5,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 14, top: 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    playlistName,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.circle,
+                        size: 8,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        'Playlist',
+                        style: Theme.of(context).textTheme.overline,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,4 +1,6 @@
+import 'package:colab_helper_for_spotify/features/home/widgets/colab_playlist_card.dart';
 import 'package:colab_helper_for_spotify/features/home/widgets/home_interactive_button.dart';
+import 'package:colab_helper_for_spotify/models/primary%20models/user_playlist_model.dart';
 import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
 import 'package:colab_helper_for_spotify/shared/controllers/user_controller.dart';
 
@@ -16,9 +18,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final controller = context.read<UserController>();
   late final playlistController = context.read<PlaylistController>();
+
+  late Future<UserPlaylistModel> colabPlaylists;
+
   @override
   void initState() {
     super.initState();
+
+    colabPlaylists = playlistController.getCurrentUserPlaylists();
   }
 
   @override
@@ -76,24 +83,59 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Colab Playlists',
+                        'Your Playlists',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.navigate_next_outlined))
+                      Row(
+                        children: [
+                          Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: TextButton.icon(
+                              onPressed: () {},
+                              label: const Text('View all'),
+                              icon: const Icon(Icons.navigate_before_outlined),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
+            SizedBox(
+              height: 200,
+              child: FutureBuilder(
+                future: colabPlaylists,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 4,
+                      cacheExtent: 4,
+                      itemBuilder: (context, index) {
+                        return ColabPlaylistCard(
+                          playlistName:
+                              '${playlistController.userPlaylists.items![index].name}',
+                          urlImage:
+                              '${playlistController.userPlaylists.items![index].images!.first.url}',
+                        );
+                      },
+                    );
+                  } else {
+                    return const Material();
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),
