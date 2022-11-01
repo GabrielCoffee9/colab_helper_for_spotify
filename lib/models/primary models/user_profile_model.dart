@@ -4,21 +4,21 @@ import 'package:colab_helper_for_spotify/models/secundary models/followers_model
 import 'package:colab_helper_for_spotify/models/secundary models/images_model.dart';
 import 'package:flutter/material.dart';
 
-class UserProfileModel extends ChangeNotifier {
+class UserProfile extends ChangeNotifier {
   String? country;
   String? displayName;
   String? email;
-  ExplicitContentModel? explicitContent;
-  ExternalUrlsModel? externalUrls;
-  FollowersModel? followers;
+  ExplicitContent? explicitContent;
+  ExternalUrls? externalUrls;
+  Followers? followers;
   String? href;
   String? id;
-  List<ImagesModel>? images;
+  List<Images>? images;
   String? product;
   String? type;
   String? uri;
 
-  UserProfileModel(
+  UserProfile(
       {this.country,
       this.displayName,
       this.email,
@@ -32,25 +32,25 @@ class UserProfileModel extends ChangeNotifier {
       this.type,
       this.uri});
 
-  UserProfileModel.fromJson(Map<String, dynamic> json) {
+  UserProfile.fromJson(Map<String, dynamic> json) {
     country = json['country'];
     displayName = json['display_name'];
     email = json['email'];
     explicitContent = json['explicit_content'] != null
-        ? ExplicitContentModel.fromJson(json['explicit_content'])
+        ? ExplicitContent.fromJson(json['explicit_content'])
         : null;
     externalUrls = json['external_urls'] != null
-        ? ExternalUrlsModel.fromJson(json['external_urls'])
+        ? ExternalUrls.fromJson(json['external_urls'])
         : null;
     followers = json['followers'] != null
-        ? FollowersModel.fromJson(json['followers'])
+        ? Followers.fromJson(json['followers'])
         : null;
     href = json['href'];
     id = json['id'];
     if (json['images'] != null) {
-      images = <ImagesModel>[];
+      images = <Images>[];
       json['images'].forEach((v) {
-        images!.add(ImagesModel.fromJson(v));
+        images!.add(Images.fromJson(v));
       });
     }
     product = json['product'];

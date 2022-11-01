@@ -1,11 +1,11 @@
-class ImagesModel {
+class Images {
   String? url;
   int? height;
   int? width;
 
-  ImagesModel({this.url, this.height, this.width});
+  Images({this.url, this.height, this.width});
 
-  ImagesModel.fromJson(Map<String, dynamic> json) {
+  Images.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     height = json['height'];
     width = json['width'];
@@ -13,9 +13,9 @@ class ImagesModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['url'] = url;
-    data['height'] = height;
-    data['width'] = width;
+    data['url'] = url ?? '';
+    data['height'] = height ?? '';
+    data['width'] = width ?? '';
     return data;
   }
 }

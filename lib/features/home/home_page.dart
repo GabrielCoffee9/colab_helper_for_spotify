@@ -19,13 +19,13 @@ class _HomePageState extends State<HomePage> {
   late final controller = context.read<UserController>();
   late final playlistController = context.read<PlaylistController>();
 
-  late Future<UserPlaylistModel> colabPlaylists;
+  late Future<UserPlaylists> userPlaylists;
 
   @override
   void initState() {
     super.initState();
 
-    colabPlaylists = playlistController.getCurrentUserPlaylists();
+    userPlaylists = playlistController.getCurrentUserPlaylists();
   }
 
   @override
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 200,
               child: FutureBuilder(
-                future: colabPlaylists,
+                future: userPlaylists,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -123,10 +123,13 @@ class _HomePageState extends State<HomePage> {
                       cacheExtent: 4,
                       itemBuilder: (context, index) {
                         return ColabPlaylistCard(
-                          playlistName:
-                              '${playlistController.userPlaylists.items![index].name}',
+                          onTap: () {
+                            playlistController.getPlaylistItems(
+                                snapshot.data!.items![index], 0);
+                          },
+                          playlistName: '${snapshot.data!.items![index].name}',
                           urlImage:
-                              '${playlistController.userPlaylists.items![index].images!.first.url}',
+                              '${snapshot.data!.items![index].images!.first.url}',
                         );
                       },
                     );

@@ -10,7 +10,7 @@ enum UserState { idle, success, error, loading }
 class UserController extends ChangeNotifier {
   var state = UserState.idle;
 
-  UserProfileModel userProfile = UserProfileModel();
+  UserProfile userProfile = UserProfile();
   Dio dio = Dio();
   var storage = const FlutterSecureStorage();
 
@@ -46,7 +46,7 @@ class UserController extends ChangeNotifier {
     });
 
     if (state != UserState.error) {
-      userProfile = UserProfileModel.fromJson(response.data);
+      userProfile = UserProfile.fromJson(response.data);
 
       state = UserState.success;
       notifyListeners();

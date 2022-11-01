@@ -1,10 +1,10 @@
-class ExplicitContentModel {
+class ExplicitContent {
   bool? filterEnabled;
   bool? filterLocked;
 
-  ExplicitContentModel({this.filterEnabled, this.filterLocked});
+  ExplicitContent({this.filterEnabled, this.filterLocked});
 
-  ExplicitContentModel.fromJson(Map<String, dynamic> json) {
+  ExplicitContent.fromJson(Map<String, dynamic> json) {
     filterEnabled = json['filter_enabled'];
     filterLocked = json['filter_locked'];
   }

@@ -1,15 +1,15 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_items_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/track_items_model.dart';
 
-class UserColabPlaylist {
+class TrackList {
   String? href;
-  List<PlaylistItems>? items;
+  List<TrackItems>? items;
   int? limit;
   String? next;
   int? offset;
   String? previous;
   int? total;
 
-  UserColabPlaylist(
+  TrackList(
       {this.href,
       this.items,
       this.limit,
@@ -18,14 +18,12 @@ class UserColabPlaylist {
       this.previous,
       this.total});
 
-  UserColabPlaylist.fromJson(Map<String, dynamic> json) {
+  TrackList.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      items = <PlaylistItems>[];
+      items = <TrackItems>[];
       json['items'].forEach((v) {
-        if (v['collaborative'] == true) {
-          items!.add(PlaylistItems.fromJson(v));
-        }
+        items!.add(TrackItems.fromJson(v));
       });
     }
     limit = json['limit'];
@@ -38,6 +36,9 @@ class UserColabPlaylist {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['href'] = href;
+    if (items != null) {
+      data['items'] = items!.map((v) => v.toJson()).toList();
+    }
     data['limit'] = limit;
     data['next'] = next;
     data['offset'] = offset;

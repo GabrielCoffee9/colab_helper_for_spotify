@@ -47,7 +47,7 @@ class _AuthPageState extends State<AuthPage> {
       if (userController.state == UserState.error) {
         WidgetsBinding.instance.addPostFrameCallback(
             (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: const Duration(seconds: 30),
+                  duration: const Duration(seconds: 10),
                   content: const Text(
                       'Error! Check your connection and try again later.'),
                   action: SnackBarAction(
@@ -92,9 +92,12 @@ class _AuthPageState extends State<AuthPage> {
                   'Colab Helper For',
                   style: TextStyle(fontSize: 36),
                 ),
+                const SizedBox(
+                  height: 40,
+                ),
                 Image.asset("lib/assets/Spotify_Logo_RGB_Green.png"),
                 const SizedBox(
-                  height: 110,
+                  height: 120,
                 ),
                 SizedBox(
                   height: 60,

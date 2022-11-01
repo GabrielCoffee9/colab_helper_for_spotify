@@ -31,8 +31,11 @@ class _AppScreensState extends State<AppScreens> {
               pageIndex = 0;
             });
           },
-          child: AppLogo(
-              iconSize: 32, darkTheme: colors.brightness == Brightness.dark),
+          child: Hero(
+            tag: 'AppLogo',
+            child: AppLogo(
+                iconSize: 32, darkTheme: colors.brightness == Brightness.dark),
+          ),
         ),
       ),
       bottomNavigationBar: NavigationBar(

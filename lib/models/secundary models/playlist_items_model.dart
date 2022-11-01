@@ -1,25 +1,25 @@
 import 'package:colab_helper_for_spotify/models/secundary models/external_urls_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary models/images_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary models/owner_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/tracks_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
 
-class PlaylistItemsModel {
+class PlaylistItems {
   bool? collaborative;
   String? description;
-  ExternalUrlsModel? externalUrls;
+  ExternalUrls? externalUrls;
   String? href;
   String? id;
-  List<ImagesModel>? images;
+  List<Images>? images;
   String? name;
-  OwnerModel? owner;
+  Owner? owner;
   String? primaryColor;
   bool? public;
   String? snapshotId;
-  TracksModel? tracks;
+  Track? tracks;
   String? type;
   String? uri;
 
-  PlaylistItemsModel(
+  PlaylistItems(
       {this.collaborative,
       this.description,
       this.externalUrls,
@@ -35,27 +35,26 @@ class PlaylistItemsModel {
       this.type,
       this.uri});
 
-  PlaylistItemsModel.fromJson(Map<String, dynamic> json) {
+  PlaylistItems.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'];
     description = json['description'];
     externalUrls = json['external_urls'] != null
-        ? ExternalUrlsModel.fromJson(json['external_urls'])
+        ? ExternalUrls.fromJson(json['external_urls'])
         : null;
     href = json['href'];
     id = json['id'];
     if (json['images'] != null) {
-      images = <ImagesModel>[];
+      images = <Images>[];
       json['images'].forEach((v) {
-        images!.add(ImagesModel.fromJson(v));
+        images!.add(Images.fromJson(v));
       });
     }
     name = json['name'];
-    owner = json['owner'] != null ? OwnerModel.fromJson(json['owner']) : null;
-    primaryColor = json['primary_color'];
+    owner = json['owner'] != null ? Owner.fromJson(json['owner']) : null;
+    primaryColor = json['primary_color'] ?? '';
     public = json['public'];
     snapshotId = json['snapshot_id'];
-    tracks =
-        json['tracks'] != null ? TracksModel.fromJson(json['tracks']) : null;
+    tracks = json['tracks'] != null ? Track.fromJson(json['tracks']) : null;
     type = json['type'];
     uri = json['uri'];
   }

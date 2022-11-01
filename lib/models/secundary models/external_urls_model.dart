@@ -1,9 +1,9 @@
-class ExternalUrlsModel {
+class ExternalUrls {
   String? spotify;
 
-  ExternalUrlsModel({this.spotify});
+  ExternalUrls({this.spotify});
 
-  ExternalUrlsModel.fromJson(Map<String, dynamic> json) {
+  ExternalUrls.fromJson(Map<String, dynamic> json) {
     spotify = json['spotify'];
   }
 

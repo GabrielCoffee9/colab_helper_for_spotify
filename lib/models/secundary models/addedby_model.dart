@@ -1,23 +1,15 @@
 import 'package:colab_helper_for_spotify/models/secundary%20models/external_urls_model.dart';
 
-class Owner {
-  String? displayName;
+class AddedBy {
   ExternalUrls? externalUrls;
   String? href;
   String? id;
   String? type;
   String? uri;
 
-  Owner(
-      {this.displayName,
-      this.externalUrls,
-      this.href,
-      this.id,
-      this.type,
-      this.uri});
+  AddedBy({this.externalUrls, this.href, this.id, this.type, this.uri});
 
-  Owner.fromJson(Map<String, dynamic> json) {
-    displayName = json['display_name'];
+  AddedBy.fromJson(Map<String, dynamic> json) {
     externalUrls = json['external_urls'] != null
         ? ExternalUrls.fromJson(json['external_urls'])
         : null;
@@ -29,7 +21,6 @@ class Owner {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['display_name'] = displayName;
     if (externalUrls != null) {
       data['external_urls'] = externalUrls!.toJson();
     }
