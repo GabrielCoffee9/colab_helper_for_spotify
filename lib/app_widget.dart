@@ -1,13 +1,7 @@
-import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/controllers/user_controller.dart';
 import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
 import 'package:colab_helper_for_spotify/shared/static/text_theme.g.dart';
-
-import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:colab_helper_for_spotify/features/home/app_screens.dart';
 import 'package:colab_helper_for_spotify/features/auth/auth_page.dart';
-
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class ColabApp extends StatelessWidget {
@@ -15,29 +9,23 @@ class ColabApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: ((context) => AuthController())),
-        ChangeNotifierProvider(create: ((context) => UserController())),
-        ChangeNotifierProvider(create: ((context) => PlaylistController())),
-      ],
-      child: MaterialApp(
-        title: 'Colab Helper For Spotify',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: lightColorScheme,
-          textTheme: rubikTextTheme,
-        ),
-        darkTheme: ThemeData(
-            useMaterial3: true,
-            colorScheme: darkColorScheme,
-            textTheme: rubikTextTheme),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const AuthPage(),
-          '/app': (context) => const AppScreens(),
-        },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Colab Helper For Spotify',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: lightColorScheme,
+        textTheme: rubikTextTheme,
       ),
+      darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: darkColorScheme,
+          textTheme: rubikTextTheme),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AuthPage(),
+        '/app': (context) => const AppScreens(),
+      },
     );
   }
 }

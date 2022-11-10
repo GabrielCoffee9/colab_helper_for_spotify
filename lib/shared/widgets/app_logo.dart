@@ -1,40 +1,35 @@
 import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
 import 'package:flutter/material.dart';
 
-class AppLogo extends StatefulWidget {
+class AppLogo extends StatelessWidget {
   const AppLogo({super.key, required this.iconSize, required this.darkTheme});
 
   final bool darkTheme;
   final double iconSize;
 
   @override
-  State<AppLogo> createState() => _AppLogoState();
-}
-
-class _AppLogoState extends State<AppLogo> {
-  @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(children: [
         SizedBox(
-          height: widget.iconSize,
-          width: widget.iconSize,
+          height: iconSize,
+          width: iconSize,
           child: Center(
             child: Container(
               decoration: BoxDecoration(
-                color: widget.darkTheme
+                color: darkTheme
                     ? darkColorScheme.primary
                     : lightColorScheme.primary,
-                borderRadius: const BorderRadius.all(Radius.circular(18)),
+                borderRadius: BorderRadius.all(Radius.circular(iconSize / 10)),
               ),
             ),
           ),
         ),
         Icon(
           Icons.play_arrow_outlined,
-          size: widget.iconSize,
-          color: widget.darkTheme
+          size: iconSize,
+          color: darkTheme
               ? darkColorScheme.onPrimary
               : lightColorScheme.onPrimary,
         ),

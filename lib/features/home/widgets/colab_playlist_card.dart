@@ -21,28 +21,26 @@ class ColabPlaylistCard extends StatelessWidget {
         onTap: onTap,
         child: Card(
           margin: const EdgeInsets.all(4),
+          color: colors.secondaryContainer,
           surfaceTintColor: colors.surface,
           child: Column(
             children: [
               const SizedBox(height: 8),
-              Hero(
-                tag: 'PlaylistImage',
-                child: Image.network(
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      heightFactor: 30,
-                      child: LinearProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                  urlImage,
-                  scale: 4.5,
-                ),
+              Image.network(
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    heightFactor: 30,
+                    child: LinearProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                urlImage,
+                scale: 4.5,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 14, top: 2),

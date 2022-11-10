@@ -5,6 +5,11 @@ import 'package:colab_helper_for_spotify/models/secundary models/images_model.da
 import 'package:flutter/material.dart';
 
 class UserProfile extends ChangeNotifier {
+  static final UserProfile _instance = UserProfile._();
+  static UserProfile get instance => _instance;
+
+  UserProfile._();
+
   String? country;
   String? displayName;
   String? email;
@@ -32,7 +37,7 @@ class UserProfile extends ChangeNotifier {
       this.type,
       this.uri});
 
-  UserProfile.fromJson(Map<String, dynamic> json) {
+  fromJson(Map<String, dynamic> json) {
     country = json['country'];
     displayName = json['display_name'];
     email = json['email'];

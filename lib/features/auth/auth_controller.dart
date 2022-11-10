@@ -1,48 +1,43 @@
-import 'package:flutter/cupertino.dart';
+import 'package:colab_helper_for_spotify/features/auth/auth_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
 
 enum AuthState { idle, success, error, loading }
 
 class AuthController extends ChangeNotifier {
-  var state = AuthState.idle;
-
-  final String _appClientId = "5627bf76539f4ea5aaa3118e7116760f";
-  final String _appRedirectURI = "http://localhost:8888/callback";
-
-  final String _scope = 'ugc-image-upload,'
-      'user-modify-playback-state,'
-      'user-read-playback-state,'
-      'user-read-currently-playing,'
-      'user-follow-modify,'
-      'user-follow-read,'
-      'user-read-recently-played,'
-      'user-read-playback-position,'
-      'user-top-read,'
-      'playlist-read-collaborative,'
-      'playlist-modify-public,'
-      'playlist-read-private,'
-      'playlist-modify-private,'
-      'app-remote-control,'
-      'user-read-email,'
-      'user-read-private,'
-      'user-library-modify,'
-      'user-library-read';
+  var state = ValueNotifier(AuthState.idle);
 
   var storage = const FlutterSecureStorage();
 
-  verifySync() async {
+  Future<bool> verifySync() async {
     String? accessTokenValue = await storage.read(key: 'accessToken');
     String? accessTokenDate = await storage.read(key: 'accessTokenDate');
 
     bool validToken = isValidToken(accessTokenValue, accessTokenDate);
 
     if (!validToken) {
-      await getToken();
+      await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'accessTokenDate');
+
+      state.value = AuthState.loading;
+
+      var newToken = await AuthService().getToken();
+
+      if (newToken.isEmpty) {
+        state.value = AuthState.error;
+        state.value = AuthState.idle;
+        return false;
+      }
+
+      await storage.write(key: 'accessToken', value: newToken);
+      await storage.write(
+          key: 'accessTokenDate',
+          value: DateTime.now().millisecondsSinceEpoch.toString());
     }
-    state = AuthState.success;
-    notifyListeners();
-    state = AuthState.idle;
+
+    state.value = AuthState.success;
+    state.value = AuthState.idle;
+    return true;
   }
 
   bool isValidToken(String? tokenValue, String? tokenDate) {
@@ -55,25 +50,5 @@ class AuthController extends ChangeNotifier {
     }
 
     return false;
-  }
-
-  getToken() async {
-    state = AuthState.loading;
-    notifyListeners();
-    try {
-      var accessToken = await SpotifySdk.getAccessToken(
-          clientId: _appClientId, redirectUrl: _appRedirectURI, scope: _scope);
-
-      await storage.delete(key: 'accessToken');
-      await storage.delete(key: 'accessTokenDate');
-
-      await storage.write(key: 'accessToken', value: accessToken);
-      await storage.write(
-          key: 'accessTokenDate',
-          value: DateTime.now().millisecondsSinceEpoch.toString());
-    } on Exception {
-      state = AuthState.error;
-      notifyListeners();
-    }
   }
 }

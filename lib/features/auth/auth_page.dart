@@ -1,85 +1,70 @@
 import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
-// import 'package:colab_helper_for_spotify/shared/controllers/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/controllers/user_controller.dart';
+import 'package:colab_helper_for_spotify/shared/modules/user/user_controller.dart';
 import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
+import 'package:colab_helper_for_spotify/shared/widgets/circular_progress.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-enum ButtonState { init, loading, done }
+enum ButtonState { idle, loading, done }
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+  AuthPage({super.key});
+
+  final AuthController authController = AuthController();
+  final UserController userController = UserController();
 
   @override
   State<AuthPage> createState() => _AuthPageState();
 }
 
 class _AuthPageState extends State<AuthPage> {
-  ButtonState buttonState = ButtonState.init;
+  ButtonState buttonState = ButtonState.idle;
 
-  late final AuthController controller;
-  late final UserController userController;
   @override
   void initState() {
     super.initState();
 
-    controller = context.read<AuthController>();
-    userController = context.read<UserController>();
-    controller.addListener(() {
-      if (controller.state == AuthState.error) {
-        controller.state = AuthState.idle;
-        buttonState = ButtonState.init;
+    widget.authController.state.addListener(() {
+      if (widget.authController.state.value == AuthState.loading) {
+        buttonState = ButtonState.loading;
+        setState(() {});
+      }
 
-        WidgetsBinding.instance.addPostFrameCallback((_) =>
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 30),
-              content: const Text('Error at Authentication, try again later.'),
-              action: SnackBarAction(
-                label: 'Ok',
-                onPressed: () {},
-              ),
-            )));
+      if (widget.authController.state.value == AuthState.error) {
+        buttonState = ButtonState.idle;
+        setState(() {
+          buildSnackBar(context);
+        });
       }
     });
 
-    userController.addListener(() {
-      if (userController.state == UserState.error) {
-        WidgetsBinding.instance.addPostFrameCallback(
-            (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: const Duration(seconds: 10),
-                  content: const Text(
-                      'Error! Check your connection and try again later.'),
-                  action: SnackBarAction(
-                    label: 'Ok',
-                    onPressed: () {},
-                  ),
-                )));
+    widget.userController.state.addListener(() {
+      if (widget.userController.state.value == UserState.error) {
+        setState(() {
+          buttonState = ButtonState.idle;
+          buildSnackBar(context);
+        });
       }
 
-      if (userController.state == UserState.loading) {
-        buttonState = ButtonState.loading;
-      } else {
-        buttonState = ButtonState.init;
-      }
+      if (widget.authController.state.value == AuthState.idle &&
+          widget.userController.state.value == UserState.success) {
+        widget.userController.state.value = UserState.idle;
 
-      if (controller.state == AuthState.idle &&
-          userController.state == UserState.success) {
-        userController.state = UserState.idle;
-        buttonState = ButtonState.init;
-        Navigator.popAndPushNamed(context, '/app');
+        setState(() {
+          buttonState = ButtonState.done;
+        });
+
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => Navigator.popAndPushNamed(context, '/app'));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<AuthController>();
-
     var brightness = MediaQuery.of(context).platformBrightness;
-
     bool isDarkMode = brightness == Brightness.dark;
-    final buttonType = buttonState == ButtonState.init;
+
     return Scaffold(
       body: Center(
         child: SafeArea(
@@ -102,22 +87,24 @@ class _AuthPageState extends State<AuthPage> {
                 SizedBox(
                   height: 60,
                   width: 300,
-                  child: buttonType
+                  child: buttonState == ButtonState.idle
                       ? ElevatedButton(
                           onPressed: () async {
-                            await controller.verifySync();
-                            await userController.getCurrentUserProfile();
+                            if (await widget.authController.verifySync()) {
+                              await widget.userController.getUserProfile();
+                            }
                           },
                           child: const Text('Sync account'),
                         )
-                      : buidCircularProgress(
-                          isDarkMode
+                      : CircularProgress(
+                          backgroundColor: isDarkMode
                               ? darkColorScheme.onPrimary
                               : lightColorScheme.onPrimary,
-                          isDarkMode
+                          circularColor: isDarkMode
                               ? darkColorScheme.primary
                               : lightColorScheme.primary,
-                          buttonType),
+                          isDone: buttonState == ButtonState.done,
+                        ),
                 )
               ],
             ),
@@ -128,19 +115,15 @@ class _AuthPageState extends State<AuthPage> {
   }
 }
 
-Widget buidCircularProgress(Color backgroundColor, circularColor, bool isDone) {
-  return Container(
-    decoration: BoxDecoration(shape: BoxShape.circle, color: backgroundColor),
-    child: Center(
-      child: isDone
-          ? Icon(
-              Icons.done,
-              size: 52,
-              color: circularColor,
-            )
-          : CircularProgressIndicator(
-              color: circularColor,
+void buildSnackBar(BuildContext context) {
+  return WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 5),
+            content:
+                const Text('Error! Check your connection and try again later.'),
+            action: SnackBarAction(
+              label: 'Ok',
+              onPressed: () {},
             ),
-    ),
-  );
+          )));
 }

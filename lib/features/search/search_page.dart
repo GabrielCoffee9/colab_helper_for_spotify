@@ -20,24 +20,25 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              TextField(
-                focusNode: searchFocusNode,
-                controller: searchController,
-                decoration: InputDecoration(
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none),
-                    hintText: 'Search anything you want',
-                    prefixIcon: const Icon(Icons.search_outlined)),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        title: const Text('Search Page'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              focusNode: searchFocusNode,
+              controller: searchController,
+              decoration: InputDecoration(
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none),
+                  hintText: 'Search anything you want',
+                  prefixIcon: const Icon(Icons.search_outlined)),
+            ),
+          ],
         ),
       ),
     );
