@@ -149,7 +149,8 @@ class _HomePageState extends State<HomePage> {
                                 //     .then((value) => songs = value);
 
                                 playlistController.setSelectedPlaylistId(
-                                    snapshot.data!.items![index].id ?? '-1');
+                                    snapshot.data!.playlists![index].id ??
+                                        '-1');
 
                                 // if (!context.mounted) return;
                                 // Navigator.of(context).push(MaterialPageRoute(
@@ -157,9 +158,9 @@ class _HomePageState extends State<HomePage> {
                                 // PlaylistPage(songs: songs)));
                               },
                               playlistName:
-                                  '${snapshot.data!.items![index].name}',
+                                  '${snapshot.data!.playlists![index].name}',
                               urlImage:
-                                  '${snapshot.data!.items![index].images!.first.url}',
+                                  '${snapshot.data!.playlists![index].images!.first.url}',
                             );
                           },
                         );
