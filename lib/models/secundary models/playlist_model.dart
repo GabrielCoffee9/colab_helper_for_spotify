@@ -3,7 +3,7 @@ import 'package:colab_helper_for_spotify/models/secundary models/images_model.da
 import 'package:colab_helper_for_spotify/models/secundary models/owner_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
 
-class PlaylistItems {
+class Playlist {
   bool? collaborative;
   String? description;
   ExternalUrls? externalUrls;
@@ -15,11 +15,11 @@ class PlaylistItems {
   String? primaryColor;
   bool? public;
   String? snapshotId;
-  Track? tracks;
+  List<Track>? tracks;
   String? type;
   String? uri;
 
-  PlaylistItems(
+  Playlist(
       {this.collaborative,
       this.description,
       this.externalUrls,
@@ -35,7 +35,7 @@ class PlaylistItems {
       this.type,
       this.uri});
 
-  PlaylistItems.fromJson(Map<String, dynamic> json) {
+  Playlist.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'];
     description = json['description'];
     externalUrls = json['external_urls'] != null
@@ -54,7 +54,19 @@ class PlaylistItems {
     primaryColor = json['primary_color'] ?? '';
     public = json['public'];
     snapshotId = json['snapshot_id'];
-    tracks = json['tracks'] != null ? Track.fromJson(json['tracks']) : null;
+
+    if (json['items'] != null) {
+      tracks = <Track>[];
+      json['items'].forEach((v) {
+        tracks!.add(Track.fromJson(v['track']));
+      });
+    }
+
+    if (json['tracks'] != null) {
+      tracks = <Track>[];
+      tracks!.add(Track.fromJson(json['tracks']));
+    }
+
     type = json['type'];
     uri = json['uri'];
   }
@@ -77,9 +89,11 @@ class PlaylistItems {
     data['primary_color'] = primaryColor;
     data['public'] = public;
     data['snapshot_id'] = snapshotId;
+
     if (tracks != null) {
-      data['tracks'] = tracks!.toJson();
+      data['tracks'] = tracks!.map((v) => v.toJson()).toList();
     }
+
     data['type'] = type;
     data['uri'] = uri;
     return data;

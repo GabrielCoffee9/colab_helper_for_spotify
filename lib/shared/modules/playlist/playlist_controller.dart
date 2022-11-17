@@ -1,5 +1,6 @@
 // import 'package:colab_helper_for_spotify/models/primary%20models/user_colab_playlist_model.dart';
 import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -23,5 +24,12 @@ class PlaylistController extends ChangeNotifier {
 
   Future<UserPlaylists> getCurrentUserPlaylists() async {
     return await PlaylistService().getCurrentUserPlaylists();
+  }
+
+  Future<Playlist> getPlaylistById(String playlistid, int offset) async {
+    if (playlistid == '-1') {
+      playlistid = selectedPlaylistid;
+    }
+    return await PlaylistService().getPlaylistItems(playlistid, offset);
   }
 }

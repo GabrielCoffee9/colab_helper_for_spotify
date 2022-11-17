@@ -1,6 +1,6 @@
 import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_items_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:retry/retry.dart';
@@ -41,9 +41,9 @@ class PlaylistService {
     return userPlaylists;
   }
 
-  Future<PlaylistItems> getPlaylistItems(String playlistid, int offset) async {
+  Future<Playlist> getPlaylistItems(String playlistid, int offset) async {
     if (playlistid == '-1') {
-      return PlaylistItems();
+      return Playlist();
     }
 
     final response = await retry(() async {
@@ -70,9 +70,9 @@ class PlaylistService {
       return false;
     });
 
-    PlaylistItems songs = PlaylistItems.fromJson(response.data);
+    Playlist playlist = Playlist.fromJson(response.data);
 
-    return songs;
+    return playlist;
   }
 
   // Future<UserColabPlaylist> getCurrentUserColabPlaylists(String userid) async {

@@ -1,8 +1,8 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_items_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
 
 class UserPlaylists {
   String? href;
-  List<PlaylistItems>? items;
+  List<Playlist>? playlists;
   int? limit;
   String? next;
   int? offset;
@@ -11,7 +11,7 @@ class UserPlaylists {
 
   UserPlaylists(
       {this.href,
-      this.items,
+      this.playlists,
       this.limit,
       this.next,
       this.offset,
@@ -22,9 +22,9 @@ class UserPlaylists {
     href = json['href'];
 
     if (json['items'] != null) {
-      items = <PlaylistItems>[];
+      playlists = <Playlist>[];
       json['items'].forEach((v) {
-        items!.add(PlaylistItems.fromJson(v));
+        playlists!.add(Playlist.fromJson(v));
       });
     }
     limit = json['limit'];

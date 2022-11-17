@@ -1,8 +1,8 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_items_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
 
 class UserColabPlaylist {
   String? href;
-  List<PlaylistItems>? items;
+  List<Playlist>? items;
   int? limit;
   String? next;
   int? offset;
@@ -21,10 +21,10 @@ class UserColabPlaylist {
   UserColabPlaylist.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      items = <PlaylistItems>[];
+      items = <Playlist>[];
       json['items'].forEach((v) {
         if (v['collaborative'] == true) {
-          items!.add(PlaylistItems.fromJson(v));
+          items!.add(Playlist.fromJson(v));
         }
       });
     }
