@@ -9,6 +9,11 @@ class UserPlaylists {
   String? previous;
   int? total;
 
+  static final UserPlaylists _instance = UserPlaylists._();
+  static UserPlaylists get instance => _instance;
+
+  UserPlaylists._();
+
   UserPlaylists(
       {this.href,
       this.playlists,
@@ -18,7 +23,7 @@ class UserPlaylists {
       this.previous,
       this.total});
 
-  UserPlaylists.fromJson(Map<String, dynamic> json) {
+  fromJson(Map<String, dynamic> json) {
     href = json['href'];
 
     if (json['items'] != null) {

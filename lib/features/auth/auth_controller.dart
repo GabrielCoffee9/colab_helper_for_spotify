@@ -37,6 +37,7 @@ class AuthController extends ChangeNotifier {
 
     state.value = AuthState.success;
     state.value = AuthState.idle;
+
     return true;
   }
 

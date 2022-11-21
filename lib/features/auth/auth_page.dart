@@ -28,6 +28,7 @@ class _AuthPageState extends State<AuthPage> {
       if (widget.authController.state.value == AuthState.loading) {
         buttonState = ButtonState.loading;
         setState(() {});
+        return;
       }
 
       if (widget.authController.state.value == AuthState.error) {
@@ -35,6 +36,7 @@ class _AuthPageState extends State<AuthPage> {
         setState(() {
           buildSnackBar(context);
         });
+        return;
       }
     });
 
@@ -44,6 +46,7 @@ class _AuthPageState extends State<AuthPage> {
           buttonState = ButtonState.idle;
           buildSnackBar(context);
         });
+        return;
       }
 
       if (widget.authController.state.value == AuthState.idle &&
@@ -56,6 +59,13 @@ class _AuthPageState extends State<AuthPage> {
 
         Future.delayed(const Duration(seconds: 1))
             .then((value) => Navigator.popAndPushNamed(context, '/app'));
+        return;
+      }
+    });
+
+    widget.authController.verifySync().then((value) async {
+      if (value) {
+        await widget.userController.getUserProfile();
       }
     });
   }

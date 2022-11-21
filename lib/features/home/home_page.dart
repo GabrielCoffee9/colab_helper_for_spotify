@@ -1,5 +1,6 @@
 import 'package:colab_helper_for_spotify/features/home/widgets/colab_playlist_card.dart';
 import 'package:colab_helper_for_spotify/features/home/widgets/home_interactive_button.dart';
+import 'package:colab_helper_for_spotify/features/playlist/playlist_page.dart';
 import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
 import 'package:colab_helper_for_spotify/models/primary%20models/user_profile_model.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
@@ -141,21 +142,14 @@ class _HomePageState extends State<HomePage> {
                           itemBuilder: (context, index) {
                             return ColabPlaylistCard(
                               onTap: () async {
-                                // PlaylistItems songs = PlaylistItems();
-                                // await playlistController
-                                //     .getPlaylistItems(
-                                //         snapshot.data!.items![index].id ?? '-1',
-                                //         0)
-                                //     .then((value) => songs = value);
-
-                                playlistController.setSelectedPlaylistId(
-                                    snapshot.data!.playlists![index].id ??
-                                        '-1');
-
-                                // if (!context.mounted) return;
-                                // Navigator.of(context).push(MaterialPageRoute(
-                                //     builder: (context) =>
-                                // PlaylistPage(songs: songs)));
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => PlaylistPage(
+                                      playlist:
+                                          snapshot.data!.playlists![index],
+                                    ),
+                                  ),
+                                );
                               },
                               playlistName:
                                   '${snapshot.data!.playlists![index].name}',

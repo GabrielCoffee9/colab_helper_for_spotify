@@ -12,6 +12,8 @@ class PlaylistService {
     dio.options.baseUrl = 'https://api.spotify.com/v1';
   }
 
+  UserPlaylists userPlaylists = UserPlaylists.instance;
+
   Future<UserPlaylists> getCurrentUserPlaylists() async {
     final response = await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
@@ -20,7 +22,7 @@ class PlaylistService {
           .get(
             '/me/playlists',
             queryParameters: {
-              'limit': 50,
+              'limit': 4,
             },
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
@@ -36,7 +38,11 @@ class PlaylistService {
       return false;
     });
 
-    UserPlaylists userPlaylists = UserPlaylists.fromJson(response.data);
+    userPlaylists.fromJson(response.data);
+
+    for (var playlist in userPlaylists.playlists ?? <Playlist>[]) {
+      await getPlaylistTracks(playlist, 0);
+    }
 
     return userPlaylists;
   }
@@ -73,6 +79,68 @@ class PlaylistService {
     Playlist playlist = Playlist.fromJson(response.data);
 
     return playlist;
+  }
+
+  getPlaylistTracks(Playlist playlistTracks, int offset) async {
+    final response = await retry(() async {
+      var accessToken = await storage.read(key: 'accessToken');
+
+      return await dio
+          .get(
+            '/playlists/${playlistTracks.id}/tracks',
+            queryParameters: {
+              'limit': 50,
+              'offset': offset,
+            },
+            options: Options(headers: {
+              'Authorization': 'Bearer $accessToken',
+              'Content-Type': 'application/json',
+            }, contentType: Headers.jsonContentType),
+          )
+          .timeout(const Duration(seconds: 5));
+    }, retryIf: (e) async {
+      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+        return await AuthController().verifySync();
+      }
+
+      return false;
+    });
+
+    playlistTracks.fromInstance(response.data);
+  }
+
+  playSong(String contextUri) async {
+    await retry(() async {
+      var accessToken = await storage.read(key: 'accessToken');
+
+      return await dio
+          .put(
+            '/me/player/play',
+            data: <String, dynamic>{
+              // 'context_uri': contextUri,
+              'uris': [contextUri],
+              'position_ms': 0,
+            },
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken',
+                'Content-Type': 'application/json',
+              },
+              contentType: Headers.jsonContentType,
+            ),
+          )
+          .timeout(const Duration(seconds: 5));
+    }, retryIf: (e) async {
+      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+        return await AuthController().verifySync();
+      }
+
+      return false;
+    });
+
+    // Playlist playlist = Playlist.fromJson(response.data);
+
+    // return playlist;
   }
 
   // Future<UserColabPlaylist> getCurrentUserColabPlaylists(String userid) async {

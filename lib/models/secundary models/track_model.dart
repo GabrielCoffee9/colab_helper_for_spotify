@@ -1,7 +1,8 @@
+import 'package:colab_helper_for_spotify/models/secundary%20models/album_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/artist_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/external_ids_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/external_urls_model.dart';
-import 'package:spotify_sdk/models/album.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/images_model.dart';
 
 class Track {
   Album? album;
@@ -23,6 +24,7 @@ class Track {
   int? trackNumber;
   String? type;
   String? uri;
+  List<Images>? images;
 
   Track(
       {this.album,
@@ -43,7 +45,8 @@ class Track {
       this.track,
       this.trackNumber,
       this.type,
-      this.uri});
+      this.uri,
+      this.images});
 
   Track.fromJson(Map<String, dynamic> json) {
     album = json['album'] != null ? Album.fromJson(json['album']) : null;
@@ -67,13 +70,13 @@ class Track {
     href = json['href'];
     id = json['id'];
     isLocal = json['is_local'];
-    name = json['name'];
+    name = json['name'] ?? name;
     popularity = json['popularity'];
-    previewUrl = json['preview_url'];
+    previewUrl = json['preview_url'] ?? previewUrl;
     track = json['track'];
     trackNumber = json['track_number'];
-    type = json['type'];
-    uri = json['uri'];
+    type = json['type'] ?? type;
+    uri = json['uri'] ?? uri;
   }
 
   Map<String, dynamic> toJson() {
