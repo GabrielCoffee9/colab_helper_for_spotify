@@ -1,4 +1,6 @@
+import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ColabPlaylistCard extends StatelessWidget {
   const ColabPlaylistCard({
@@ -9,7 +11,7 @@ class ColabPlaylistCard extends StatelessWidget {
   });
 
   final String playlistName;
-  final String urlImage;
+  final String? urlImage;
   final VoidCallback onTap;
 
   @override
@@ -26,21 +28,19 @@ class ColabPlaylistCard extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 8),
-              Image.network(
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    heightFactor: 30,
-                    child: LinearProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-                urlImage,
-                scale: 4.5,
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 4.8,
+                width: MediaQuery.of(context).size.width / 2.8,
+                child: urlImage != null
+                    ? FadeInImage.memoryNetwork(
+                        fit: BoxFit.fill,
+                        placeholder: kTransparentImage,
+                        image: urlImage ?? '',
+                      )
+                    : EmptyPlaylistCover(
+                        width: MediaQuery.of(context).size.width / 2.2,
+                        size: 80,
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 14, top: 2),
@@ -54,17 +54,10 @@ class ColabPlaylistCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.circle,
-                          size: 8,
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          'Playlist',
-                          style: Theme.of(context).textTheme.overline,
-                        ),
+                        const Icon(Icons.circle, size: 8),
+                        const SizedBox(width: 4),
+                        Text('Playlist',
+                            style: Theme.of(context).textTheme.overline),
                       ],
                     ),
                   ],

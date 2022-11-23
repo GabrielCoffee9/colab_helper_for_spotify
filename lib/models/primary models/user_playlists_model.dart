@@ -2,7 +2,7 @@ import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_mode
 
 class UserPlaylists {
   String? href;
-  List<Playlist>? playlists;
+  List<Playlist>? playlists = <Playlist>[];
   int? limit;
   String? next;
   int? offset;
@@ -27,7 +27,7 @@ class UserPlaylists {
     href = json['href'];
 
     if (json['items'] != null) {
-      playlists = <Playlist>[];
+      // playlists = <Playlist>[];
       json['items'].forEach((v) {
         playlists!.add(Playlist.fromJson(v));
       });

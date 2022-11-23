@@ -12,9 +12,8 @@ class PlaylistService {
     dio.options.baseUrl = 'https://api.spotify.com/v1';
   }
 
-  UserPlaylists userPlaylists = UserPlaylists.instance;
-
-  Future<UserPlaylists> getCurrentUserPlaylists() async {
+  Future<UserPlaylists> getCurrentUserPlaylists(
+      UserPlaylists userPlaylists, int limit, offset) async {
     final response = await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
 
@@ -22,7 +21,8 @@ class PlaylistService {
           .get(
             '/me/playlists',
             queryParameters: {
-              'limit': 4,
+              'limit': limit,
+              'offset': offset,
             },
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
@@ -40,9 +40,9 @@ class PlaylistService {
 
     userPlaylists.fromJson(response.data);
 
-    for (var playlist in userPlaylists.playlists ?? <Playlist>[]) {
-      await getPlaylistTracks(playlist, 0);
-    }
+    // for (var playlist in userPlaylists.playlists ?? <Playlist>[]) {
+    //   await getPlaylistTracks(playlist, 0);
+    // }
 
     return userPlaylists;
   }
@@ -81,7 +81,8 @@ class PlaylistService {
     return playlist;
   }
 
-  getPlaylistTracks(Playlist playlistTracks, int offset) async {
+  Future<Playlist> getPlaylistTracks(
+      Playlist playlistTracks, int offset) async {
     final response = await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
 
@@ -105,11 +106,14 @@ class PlaylistService {
 
       return false;
     });
-
     playlistTracks.fromInstance(response.data);
+    return playlistTracks;
   }
 
-  playSong(String contextUri) async {
+  playSong(String? contextUri) async {
+    if (contextUri == null) {
+      return;
+    }
     await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
 

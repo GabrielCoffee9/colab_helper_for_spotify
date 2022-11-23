@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:colab_helper_for_spotify/features/home/home_page.dart';
-import 'package:colab_helper_for_spotify/features/search/search_page.dart';
 import 'package:flutter/material.dart';
 
 class AppScreens extends StatefulWidget {
@@ -14,17 +13,16 @@ class _AppScreensState extends State<AppScreens> {
   int pageIndex = 0;
   List<Widget> pageList = <Widget>[
     const HomePage(),
-    const SearchPage(),
     Scaffold(
         appBar: AppBar(
           title: const Text('Add Page'),
         ),
-        body: const SizedBox(child: Text('Page 3'))),
+        body: const SizedBox(child: Text('Page 2'))),
     Scaffold(
         appBar: AppBar(
           title: const Text('Social Page'),
         ),
-        body: const SizedBox(child: Text('Page 4'))),
+        body: const SizedBox(child: Text('Page 3'))),
   ];
   @override
   Widget build(BuildContext context) {
@@ -39,8 +37,6 @@ class _AppScreensState extends State<AppScreens> {
         },
         destinations: const [
           NavigationDestination(label: 'Home', icon: Icon(Icons.home_outlined)),
-          NavigationDestination(
-              label: 'Search', icon: Icon(Icons.search_outlined)),
           NavigationDestination(
               label: 'Add', icon: Icon(Icons.add_circle_outline)),
           NavigationDestination(

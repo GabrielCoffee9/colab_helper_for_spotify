@@ -18,22 +18,24 @@ class Playlist {
   List<Track>? tracks;
   String? type;
   String? uri;
+  bool haveImage = false;
 
-  Playlist(
-      {this.collaborative,
-      this.description,
-      this.externalUrls,
-      this.href,
-      this.id,
-      this.images,
-      this.name,
-      this.owner,
-      this.primaryColor,
-      this.public,
-      this.snapshotId,
-      this.tracks,
-      this.type,
-      this.uri});
+  Playlist({
+    this.collaborative,
+    this.description,
+    this.externalUrls,
+    this.href,
+    this.id,
+    this.images,
+    this.name,
+    this.owner,
+    this.primaryColor,
+    this.public,
+    this.snapshotId,
+    this.tracks,
+    this.type,
+    this.uri,
+  });
 
   Playlist.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'] ?? collaborative;
@@ -49,8 +51,11 @@ class Playlist {
         images!.add(Images.fromJson(v));
       });
     }
-    // log(name ?? '');
-    // log(json['name']);
+
+    if (images != null && images!.isNotEmpty) {
+      haveImage = true;
+    }
+
     name = json['name'] ?? name;
     owner = json['owner'] != null ? Owner.fromJson(json['owner']) : null;
     primaryColor = json['primary_color'] ?? '';
@@ -87,6 +92,11 @@ class Playlist {
         images!.add(Images.fromJson(v));
       });
     }
+
+    if (images != null && images!.isNotEmpty) {
+      haveImage = true;
+    }
+
     name = json['name'] ?? name;
     owner = json['owner'] != null ? Owner.fromJson(json['owner']) : null;
     primaryColor = json['primary_color'] ?? '';
