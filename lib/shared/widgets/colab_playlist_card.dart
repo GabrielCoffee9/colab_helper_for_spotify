@@ -29,16 +29,17 @@ class ColabPlaylistCard extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
               SizedBox(
-                height: MediaQuery.of(context).size.height / 4.8,
-                width: MediaQuery.of(context).size.width / 2.8,
+                height: 142,
+                width: 142,
                 child: urlImage != null
                     ? FadeInImage.memoryNetwork(
                         fit: BoxFit.fill,
                         placeholder: kTransparentImage,
                         image: urlImage ?? '',
                       )
-                    : EmptyPlaylistCover(
-                        width: MediaQuery.of(context).size.width / 2.2,
+                    : const EmptyPlaylistCover(
+                        height: 142,
+                        width: 142,
                         size: 80,
                       ),
               ),

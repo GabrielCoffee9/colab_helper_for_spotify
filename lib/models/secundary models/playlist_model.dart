@@ -15,27 +15,27 @@ class Playlist {
   String? primaryColor;
   bool? public;
   String? snapshotId;
-  List<Track>? tracks;
+  List<Track>? tracks = <Track>[];
+  bool hasMoreToLoad = true;
   String? type;
   String? uri;
   bool haveImage = false;
 
-  Playlist({
-    this.collaborative,
-    this.description,
-    this.externalUrls,
-    this.href,
-    this.id,
-    this.images,
-    this.name,
-    this.owner,
-    this.primaryColor,
-    this.public,
-    this.snapshotId,
-    this.tracks,
-    this.type,
-    this.uri,
-  });
+  Playlist(
+      {this.collaborative,
+      this.description,
+      this.externalUrls,
+      this.href,
+      this.id,
+      this.images,
+      this.name,
+      this.owner,
+      this.primaryColor,
+      this.public,
+      this.snapshotId,
+      this.tracks,
+      this.type,
+      this.uri});
 
   Playlist.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'] ?? collaborative;
@@ -57,7 +57,9 @@ class Playlist {
     }
 
     name = json['name'] ?? name;
-    owner = json['owner'] != null ? Owner.fromJson(json['owner']) : null;
+
+    owner = json['owner'] != null ? Owner.fromJson(json['owner']) : owner;
+
     primaryColor = json['primary_color'] ?? '';
     public = json['public'];
     snapshotId = json['snapshot_id'];
@@ -74,11 +76,16 @@ class Playlist {
       tracks!.add(Track.fromJson(json['tracks']));
     }
 
+    if (json['next'] == null) {
+      hasMoreToLoad = false;
+    }
+
     type = json['type'] ?? type;
     uri = json['uri'] ?? uri;
   }
 
   fromInstance(Map<String, dynamic> json) {
+    hasMoreToLoad = true;
     collaborative = json['collaborative'] ?? collaborative;
     description = json['description'] ?? description;
     externalUrls = json['external_urls'] != null
@@ -98,21 +105,25 @@ class Playlist {
     }
 
     name = json['name'] ?? name;
-    owner = json['owner'] != null ? Owner.fromJson(json['owner']) : null;
+    owner = json['owner'] != null ? Owner.fromJson(json['owner']) : owner;
     primaryColor = json['primary_color'] ?? '';
     public = json['public'];
     snapshotId = json['snapshot_id'];
 
     if (json['items'] != null) {
-      tracks = <Track>[];
+      // tracks = <Track>[];
       json['items'].forEach((v) {
         tracks!.add(Track.fromJson(v['track']));
       });
     }
 
     if (json['tracks'] != null) {
-      tracks = <Track>[];
+      // tracks = <Track>[];
       tracks!.add(Track.fromJson(json['tracks']));
+    }
+
+    if (json['next'] == null) {
+      hasMoreToLoad = false;
     }
 
     type = json['type'] ?? type;

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
@@ -83,22 +85,21 @@ class PlaylistService {
 
   Future<Playlist> getPlaylistTracks(
       Playlist playlistTracks, int offset) async {
+    log(offset.toString());
     final response = await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
 
-      return await dio
-          .get(
-            '/playlists/${playlistTracks.id}/tracks',
-            queryParameters: {
-              'limit': 50,
-              'offset': offset,
-            },
-            options: Options(headers: {
-              'Authorization': 'Bearer $accessToken',
-              'Content-Type': 'application/json',
-            }, contentType: Headers.jsonContentType),
-          )
-          .timeout(const Duration(seconds: 5));
+      return await dio.get(
+        '/playlists/${playlistTracks.id}/tracks',
+        queryParameters: {
+          'limit': 50,
+          'offset': offset,
+        },
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }, contentType: Headers.jsonContentType),
+      );
     }, retryIf: (e) async {
       if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();

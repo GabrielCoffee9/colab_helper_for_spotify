@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     playlistController.clearPlaylistsMemory();
     setState(() {
       userPlaylists =
-          playlistController.getCurrentUserPlaylists(limit: 4, offset: 0);
+          playlistController.getCurrentUserPlaylists(limit: 5, offset: 0);
     });
 
     return userPlaylists;
@@ -168,8 +168,9 @@ class _HomePageState extends State<HomePage> {
                           return ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
-                            itemCount: snapshot.data!.playlists?.length ?? 0,
-                            cacheExtent: 4,
+                            itemCount:
+                                snapshot.data!.playlists!.isNotEmpty ? 5 : 0,
+                            cacheExtent: 5,
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
                                 onTap: () async {
