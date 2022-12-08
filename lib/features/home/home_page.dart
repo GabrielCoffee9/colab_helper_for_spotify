@@ -22,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   late Future<UserPlaylists> userPlaylists;
 
   Future<void> refreshHome() {
-    playlistController.clearPlaylistsMemory();
     setState(() {
       userPlaylists =
           playlistController.getCurrentUserPlaylists(limit: 5, offset: 0);
@@ -37,16 +36,20 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     UserProfile userProfile = UserProfile.instance;
     final ColorScheme colors = Theme.of(context).colorScheme;
     return Scaffold(
+      key: _key,
+      drawer: const Drawer(),
       backgroundColor: colors.background,
       body: RefreshIndicator(
         onRefresh: () => refreshHome(),
         child: CustomScrollView(
-          physics: const ScrollPhysics(
+          physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
           slivers: <Widget>[
@@ -54,7 +57,7 @@ class _HomePageState extends State<HomePage> {
               leadingWidth: 50,
               leading: IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () {},
+                onPressed: () => _key.currentState!.openDrawer(),
               ),
               actions: [
                 IconButton(
@@ -141,9 +144,7 @@ class _HomePageState extends State<HomePage> {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              AllPlaylistsPage(
-                                            userPlaylists: userPlaylists,
-                                          ),
+                                              const AllPlaylistsPage(),
                                         ),
                                       );
                                     },

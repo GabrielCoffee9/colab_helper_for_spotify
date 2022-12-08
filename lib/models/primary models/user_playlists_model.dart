@@ -25,7 +25,6 @@ class UserPlaylists {
 
   fromJson(Map<String, dynamic> json) {
     href = json['href'];
-
     if (json['items'] != null) {
       // playlists = <Playlist>[];
       json['items'].forEach((v) {

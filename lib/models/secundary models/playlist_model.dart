@@ -2,6 +2,7 @@ import 'package:colab_helper_for_spotify/models/secundary models/external_urls_m
 import 'package:colab_helper_for_spotify/models/secundary models/images_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary models/owner_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 
 class Playlist {
   bool? collaborative;
@@ -39,7 +40,11 @@ class Playlist {
 
   Playlist.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'] ?? collaborative;
-    description = json['description'] ?? description;
+
+    description = json['description'] != null
+        ? HtmlUnescape().convert(json['description'])
+        : description;
+
     externalUrls = json['external_urls'] != null
         ? ExternalUrls.fromJson(json['external_urls'])
         : null;

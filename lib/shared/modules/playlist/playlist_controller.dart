@@ -31,12 +31,14 @@ class PlaylistController extends ChangeNotifier {
 
   Future<UserPlaylists> getCurrentUserPlaylists(
       {required int limit, required int offset}) async {
+    state.value = PlaylistState.loading;
     if (offset == 0) {
       clearPlaylistsMemory();
     }
 
     return await PlaylistService()
-        .getCurrentUserPlaylists(_userPlaylists, limit, offset);
+        .getCurrentUserPlaylists(_userPlaylists, limit, offset)
+        .whenComplete(() => state.value = PlaylistState.idle);
   }
 
   Future<Playlist> getPlaylistTracks(

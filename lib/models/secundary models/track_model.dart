@@ -25,6 +25,7 @@ class Track {
   String? type;
   String? uri;
   List<Images>? images;
+  String? allArtists;
 
   Track(
       {this.album,
@@ -46,15 +47,18 @@ class Track {
       this.trackNumber,
       this.type,
       this.uri,
-      this.images});
+      this.images,
+      this.allArtists});
 
   Track.fromJson(Map<String, dynamic> json) {
     album = json['album'] != null ? Album.fromJson(json['album']) : null;
     if (json['artists'] != null) {
       artists = <Artist>[];
       json['artists'].forEach((v) {
+        allArtists = '${allArtists ?? ''}${v['name']}, ';
         artists!.add(Artist.fromJson(v));
       });
+      allArtists = allArtists!.substring(0, allArtists!.lastIndexOf(','));
     }
     // availableMarkets = json['available_markets'].cast<String>();
     discNumber = json['disc_number'];

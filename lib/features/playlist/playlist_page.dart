@@ -1,7 +1,8 @@
 import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
+import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_service.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
+import 'package:colab_helper_for_spotify/shared/widgets/song_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -24,6 +25,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   int? selectedIndex;
 
+  Future<void> refreshPage() {
+    setState(() {
+      playlist = playlistController.getPlaylistTracks(widget.playlist, 0);
+    });
+    return playlist!;
+  }
+
   @override
   void initState() {
     _scrollController.addListener(() {
@@ -33,8 +41,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       }
     });
 
-    playlist ??= playlistController.getPlaylistTracks(widget.playlist, 0);
-
+    refreshPage();
     super.initState();
   }
 
@@ -47,83 +54,179 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
-    final Size screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scrollController,
-        slivers: [
-          FutureBuilder(
-            future: playlist,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return SliverAppBar(
-                  pinned: true,
-                  expandedHeight: 220,
-                  flexibleSpace: FlexibleSpaceBar(
-                    title: Text(
-                      snapshot.data!.name ?? 'Unnamed Playlist',
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: colors.onSurface,
+
+    return FutureBuilder(
+      future: playlist,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            (snapshot.data?.tracks?.isEmpty ?? true)) {
+          return Scaffold(
+            backgroundColor: colors.background,
+            body: RefreshIndicator(
+                onRefresh: () => refreshPage(),
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
+                  controller: _scrollController,
+                  slivers: [
+                    SliverAppBar(
+                      pinned: true,
+                      expandedHeight: 220,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: Text(
+                          snapshot.data?.name ?? 'Unnamed playlist',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        background: Padding(
+                          padding: const EdgeInsets.only(top: 50.0),
+                          child: Column(
+                            children: [
+                              snapshot.data!.haveImage
+                                  ? FadeInImage.memoryNetwork(
+                                      width: 170,
+                                      height: 120,
+                                      placeholder: kTransparentImage,
+                                      image: snapshot.data!.images!.first.url ??
+                                          '',
+                                    )
+                                  : Container(
+                                      height: 170,
+                                      width: 170,
+                                      color: Colors.grey[800],
+                                      child: const Icon(
+                                        Icons.music_note_outlined,
+                                        color: Colors.white,
+                                        size: 80,
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    background: Padding(
-                      padding: const EdgeInsets.only(top: 50.0),
-                      child: Column(
-                        children: [
-                          snapshot.data!.haveImage
-                              ? FadeInImage.memoryNetwork(
-                                  width: 170,
-                                  height: 120,
-                                  placeholder: kTransparentImage,
-                                  image: snapshot.data!.images!.first.url ?? '',
-                                )
-                              : Container(
-                                  height: 170,
-                                  width: 170,
-                                  color: Colors.grey[800],
-                                  child: const Icon(
-                                    Icons.music_note_outlined,
-                                    color: Colors.white,
-                                    size: 80,
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Empty Playlist !!! ',
+                              style: TextStyle(
+                                  fontSize: 22, color: colors.primary),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+          );
+        }
+
+        if (snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: colors.background,
+            body: RefreshIndicator(
+              onRefresh: () => refreshPage(),
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                controller: _scrollController,
+                slivers: [
+                  SliverAppBar(
+                    actions: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.edit),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.search),
+                      )
+                    ],
+                    pinned: true,
+                    expandedHeight: 220,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: GestureDetector(
+                        onDoubleTap: () {
+                          _scrollController.animateTo(
+                              _scrollController.position.minScrollExtent,
+                              duration: const Duration(milliseconds: 800),
+                              curve: Curves.fastOutSlowIn);
+                        },
+                        child: Text(
+                          snapshot.data!.name ?? 'Unnamed Playlist',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ),
+                      background: Padding(
+                        padding: const EdgeInsets.only(top: 50.0),
+                        child: Column(
+                          children: [
+                            snapshot.data!.haveImage
+                                ? FadeInImage.memoryNetwork(
+                                    width: 170,
+                                    height: 120,
+                                    placeholder: kTransparentImage,
+                                    image:
+                                        snapshot.data!.images!.first.url ?? '',
+                                  )
+                                : Container(
+                                    height: 170,
+                                    width: 170,
+                                    color: Colors.grey[800],
+                                    child: const Icon(
+                                      Icons.music_note_outlined,
+                                      color: Colors.white,
+                                      size: 80,
+                                    ),
                                   ),
-                                ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                );
-              }
-              return const SliverAppBar(
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(''),
-                ),
-              );
-            },
-          ),
-          FutureBuilder(
-            future: playlist,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    childCount: snapshot.data!.tracks!.length,
-                    (context, index) {
-                      // if (index == snapshot.data!.tracks!.length + 1 &&
-                      //     snapshot.data!.hasMoreToLoad &&
-                      //     playlistController.state.value !=
-                      //         PlaylistState.loading) {
-                      //   if (playlistController.state.value ==
-                      //       PlaylistState.loading) {
-                      //     return const LinearProgressIndicator();
-                      //   }
-                      //   return const Center(
-                      //       child: Text('No more songs to load'));
-                      // }
-
+                  SliverToBoxAdapter(
+                    child: SizedBox.square(
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(top: 8, left: 12, right: 12),
+                        child: Wrap(
+                          children: [
+                            Text(
+                              snapshot.data?.description ?? '',
+                              style: TextStyle(color: colors.onSurfaceVariant),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverReorderableList(
+                    onReorder: (oldIndex, newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final Track item =
+                            snapshot.data!.tracks!.removeAt(oldIndex);
+                        snapshot.data!.tracks!.insert(newIndex, item);
+                      });
+                    },
+                    itemCount: snapshot.data!.tracks!.length,
+                    itemBuilder: (context, index) {
                       if (index + 1 == snapshot.data!.tracks!.length) {
                         if (snapshot.data!.hasMoreToLoad &&
                             playlistController.state.value !=
@@ -133,76 +236,71 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         }
                       }
 
-                      return ListTile(
-                        selected: index == selectedIndex,
-                        selectedColor: colors.primary,
-                        contentPadding: const EdgeInsets.all(8),
-                        title: snapshot.data!.tracks![index].name?.isNotEmpty ??
-                                false
-                            ? Text(
-                                snapshot.data!.tracks![index].name ?? 'Error')
-                            : const Text(
-                                'Unavailable song',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                        subtitle: snapshot.data!.tracks![index].artists!.first
-                                    .name?.isNotEmpty ??
-                                false
-                            ? Text(snapshot
-                                    .data!.tracks![index].artists!.first.name ??
-                                'artist')
-                            : const Text('Unknown artist'),
-                        leading: snapshot.data!.tracks![index].album!.images
-                                    ?.isNotEmpty ??
-                                false
-                            ? FadeInImage.memoryNetwork(
-                                placeholder: kTransparentImage,
-                                image: snapshot.data!.tracks![index].album!
-                                        .images!.first.url ??
-                                    '')
-                            : EmptyPlaylistCover(
-                                size: 30,
-                                height: screenSize.height / 8,
-                                width: screenSize.width / 7,
-                              ),
-                        trailing: index == selectedIndex
-                            ? const Icon(
-                                Icons.pause_circle,
-                                size: 40,
-                              )
-                            : const Icon(
-                                Icons.play_arrow_rounded,
-                                size: 40,
-                              ),
-                        onTap: () async {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                          await PlaylistService().playSong(
-                              snapshot.data!.tracks![index].uri ??
-                                  widget.playlist.tracks![index].uri);
-                        },
+                      if (index + 1 == snapshot.data!.tracks!.length &&
+                          playlistController.state.value ==
+                              PlaylistState.loading) {
+                        return Column(
+                          key: Key('$index'),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            LinearProgressIndicator(),
+                            Text('Loading')
+                          ],
+                        );
+                      }
+
+                      return Padding(
+                        key: Key('$index'),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        child: Container(
+                          key: Key('$index'),
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: colors.outline, width: 0.5))),
+                          child: ReorderableDragStartListener(
+                            index: index,
+                            child: SongTile(
+                              key: Key('$index'),
+                              songName: snapshot.data!.tracks![index].name,
+                              artist: snapshot.data!.tracks![index].allArtists,
+                              imageUrl: snapshot.data!.tracks![index].album!
+                                      .images!.isNotEmpty
+                                  ? snapshot.data!.tracks![index].album!.images!
+                                      .first.url
+                                  : '',
+                              playingNow: index == selectedIndex,
+                              onTap: () async {
+                                setState(() {
+                                  selectedIndex = index;
+                                });
+                                await PlaylistService().playSong(
+                                    snapshot.data!.tracks![index].uri ??
+                                        widget.playlist.tracks![index].uri);
+                              },
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),
-                );
-              }
-              return SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: Column(
-                    children: const [
-                      LinearProgressIndicator(),
-                      Text('Loading'),
-                    ],
-                  ),
-                ),
-              );
-            },
-          )
-        ],
-      ),
+                ],
+              ),
+            ),
+          );
+        }
+        return Scaffold(
+          backgroundColor: colors.background,
+          appBar: AppBar(
+            title: const Text('Loading..'),
+          ),
+          body: Column(
+            children: const [
+              LinearProgressIndicator(),
+            ],
+          ),
+        );
+      },
     );
   }
 }
