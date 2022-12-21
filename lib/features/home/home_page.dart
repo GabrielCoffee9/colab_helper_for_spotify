@@ -1,3 +1,4 @@
+import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
 import 'package:colab_helper_for_spotify/features/playlist/all_playlists_page.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/colab_playlist_card.dart';
 import 'package:colab_helper_for_spotify/features/home/widgets/home_interactive_button.dart';
@@ -6,6 +7,7 @@ import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_
 import 'package:colab_helper_for_spotify/models/primary%20models/user_profile_model.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
+import 'package:colab_helper_for_spotify/shared/widgets/music_visualizer.dart';
 
 import 'package:colab_helper_for_spotify/shared/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   PlaylistController playlistController = PlaylistController();
+  PlayerController playerController = PlayerController.instance;
   late Future<UserPlaylists> userPlaylists;
 
   Future<void> refreshHome() {
@@ -67,11 +70,30 @@ class _HomePageState extends State<HomePage> {
               ],
               expandedHeight: 80,
               flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: AppLogo(
-                    iconSize: 36,
-                    darkTheme: colors.brightness == Brightness.dark),
-              ),
+                  centerTitle: true,
+                  title: StreamBuilder(
+                    stream: playerController.playerState,
+                    builder: (context, snapshot) {
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 1400),
+                        switchInCurve: Curves.bounceIn,
+                        switchOutCurve: Curves.bounceOut,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: snapshot.data?.isPaused ?? true
+                              ? GestureDetector(
+                                  onTap: (() => playerController
+                                      .showPlayerDialog(context)),
+                                  child: AppLogo(
+                                      iconSize: 36,
+                                      darkTheme:
+                                          colors.brightness == Brightness.dark),
+                                )
+                              : const MusicVisualizer(),
+                        ),
+                      );
+                    },
+                  )),
             ),
             SliverToBoxAdapter(
               child: Column(

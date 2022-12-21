@@ -25,18 +25,26 @@ class AuthService {
 
   Future<String> getToken() async {
     try {
-      String token = '';
+      String token;
+
       token = await SpotifySdk.getAccessToken(
-          clientId: _appClientId, redirectUrl: _appRedirectURI, scope: _scope);
+        clientId: _appClientId,
+        redirectUrl: _appRedirectURI,
+        scope: _scope,
+      );
 
-      await SpotifySdk.connectToSpotifyRemote(
-          clientId: _appClientId, redirectUrl: _appRedirectURI);
-
-      // await SpotifySdk.play(spotifyUri: '7mykoq6R3BArsSpNDjFQTm');
+      await connectSpotifyRemote(token);
 
       return token;
     } on Exception {
       return '';
     }
+  }
+
+  connectSpotifyRemote(String? token) async {
+    await SpotifySdk.connectToSpotifyRemote(
+        clientId: _appClientId,
+        redirectUrl: _appRedirectURI,
+        accessToken: token);
   }
 }

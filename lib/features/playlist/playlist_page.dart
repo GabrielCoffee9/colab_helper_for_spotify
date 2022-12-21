@@ -1,7 +1,7 @@
+import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
 import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
 import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_service.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/song_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -20,8 +20,11 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
   PlaylistController playlistController = PlaylistController();
-  Future<Playlist>? playlist;
+  PlayerController playerController = PlayerController.instance;
   final ScrollController _scrollController = ScrollController();
+
+  Future<Playlist>? playlist;
+  ValueNotifier teste = ValueNotifier(false);
 
   int? selectedIndex;
 
@@ -144,7 +147,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   SliverAppBar(
                     actions: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: colors.surface,
+                                title: const Text('Edit playlist details'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Cancel')),
+                                  TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Save'))
+                                ],
+                              );
+                            },
+                          );
+                        },
                         icon: const Icon(Icons.edit),
                       ),
                       IconButton(
@@ -258,7 +279,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               border: Border(
                                   bottom: BorderSide(
                                       color: colors.outline, width: 0.5))),
-                          child: ReorderableDragStartListener(
+                          child: ReorderableDelayedDragStartListener(
+                            enabled: false,
                             index: index,
                             child: SongTile(
                               key: Key('$index'),
@@ -271,12 +293,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   : '',
                               playingNow: index == selectedIndex,
                               onTap: () async {
+                                int updatedindex;
+                                if (playlistController.state.value ==
+                                    PlaylistState.loading) {
+                                  updatedindex = index - 1;
+                                } else {
+                                  updatedindex = index;
+                                }
+
                                 setState(() {
-                                  selectedIndex = index;
+                                  selectedIndex = updatedindex;
                                 });
-                                await PlaylistService().playSong(
-                                    snapshot.data!.tracks![index].uri ??
-                                        widget.playlist.tracks![index].uri);
+                                await playerController.playIndexPlaylist(
+                                    updatedindex, snapshot.data!.uri);
                               },
                             ),
                           ),

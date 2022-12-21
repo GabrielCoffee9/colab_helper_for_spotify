@@ -47,6 +47,7 @@ dependencies:
   animations: ^2.0.4
   badges: ^2.0.3
   html_unescape: ^2.0.0
+  audio_video_progress_bar: ^0.11.0
 
 
 dev_dependencies:
@@ -74,6 +75,7 @@ flutter:
 
   assets:
     - lib/assets/Spotify_Logo_RGB_Green.png
+    - lib/assets/Spotify_Icon_RGB_Green.png
     - lib/assets/splashImage.png
     - lib/assets/splashImageDark.png
 
