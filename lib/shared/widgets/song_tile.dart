@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class SongTile extends StatelessWidget {
   const SongTile({
@@ -44,17 +44,23 @@ class SongTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               )
             : const Text('Unknown artist'),
-        leading: imageUrl?.isNotEmpty ?? false
-            ? FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                placeholderCacheHeight: 200,
-                placeholderCacheWidth: 200,
-                image: imageUrl!)
-            : EmptyPlaylistCover(
-                size: 30,
-                height: screenSize.height / 8,
-                width: screenSize.width / 7,
-              ),
+        leading: SizedBox(
+          width: 56,
+          height: 56,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl!,
+            memCacheWidth: 147,
+            memCacheHeight: 147,
+            maxWidthDiskCache: 147,
+            maxHeightDiskCache: 147,
+            placeholder: (context, url) => Container(color: Colors.transparent),
+            errorWidget: (context, url, error) => EmptyPlaylistCover(
+              size: 30,
+              height: screenSize.height / 8,
+              width: screenSize.width / 7,
+            ),
+          ),
+        ),
         trailing: playingNow
             ? const Icon(
                 Icons.pause_circle,

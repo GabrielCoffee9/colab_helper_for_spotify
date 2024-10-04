@@ -48,6 +48,7 @@ dependencies:
   badges: ^3.1.2
   html_unescape: ^2.0.0
   audio_video_progress_bar: ^2.0.3
+  cached_network_image: ^3.4.1
 
 
 dev_dependencies:

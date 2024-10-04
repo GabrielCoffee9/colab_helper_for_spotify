@@ -14,16 +14,23 @@ class AllPlaylistsPage extends StatefulWidget {
 }
 
 class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
-  Future<UserPlaylists>? userPlaylists;
+  UserPlaylists userPlaylists = UserPlaylists();
   final ScrollController _scrollController = ScrollController();
   PlaylistController playlistController = PlaylistController();
 
-  Future<void> refreshPage() {
-    setState(() {
-      userPlaylists =
-          playlistController.getCurrentUserPlaylists(limit: 25, offset: 0);
+  bool userPlaylistsLoading = true;
+
+  Future<void> refreshPage() async {
+    playlistController
+        .getCurrentUserPlaylists(limit: 25, offset: 0)
+        .then((value) {
+      userPlaylists = value;
+      userPlaylistsLoading = false;
+      if (mounted) {
+        setState(() {});
+      }
     });
-    return userPlaylists!;
+    return;
   }
 
   void alternateMethod() {
@@ -67,26 +74,38 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         onRefresh: () => refreshPage(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: FutureBuilder(
-            future: userPlaylists,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return GridView.builder(
+          child: userPlaylistsLoading
+              ? Center(
+                  child: Column(
+                    children: const [
+                      LinearProgressIndicator(),
+                      Text('Loading'),
+                    ],
+                  ),
+                )
+              : GridView.builder(
                   controller: _scrollController,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                   ),
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
-                  itemCount: snapshot.data!.playlists?.length ?? 0,
+                  itemCount: userPlaylists.playlists?.length ?? 0,
                   itemBuilder: (context, index) {
-                    if (index + 1 == (snapshot.data!.playlists?.length ?? 0) &&
-                        ((snapshot.data!.total ?? 0) > (index + 1)) &&
+                    if (index + 1 == (userPlaylists.playlists?.length ?? 0) &&
+                        ((userPlaylists.total ?? 0) > (index + 1)) &&
                         playlistController.state.value !=
                             PlaylistState.loading) {
-                      userPlaylists =
-                          playlistController.getCurrentUserPlaylists(
-                              limit: 25, offset: index + 1);
+                      playlistController
+                          .getCurrentUserPlaylists(limit: 25, offset: index + 1)
+                          .then(
+                        (value) {
+                          userPlaylists = value;
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                      );
                     }
 
                     if (playlistController.state.value ==
@@ -106,7 +125,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PlaylistPage(
-                                playlist: snapshot.data!.playlists![index],
+                                playlist: userPlaylists.playlists![index],
                               ),
                             ),
                           );
@@ -114,18 +133,18 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                         child: Column(
                           children: [
                             SizedBox(
-                              child: snapshot.data!.playlists![index].images!
-                                      .isNotEmpty
+                              child: userPlaylists.playlists![index].images
+                                          ?.isNotEmpty ??
+                                      false
                                   ? SizedBox(
                                       height: 150,
                                       width: 170,
                                       child: FadeInImage.memoryNetwork(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                4,
+                                        imageCacheWidth: 446,
+                                        imageCacheHeight: 393,
                                         fit: BoxFit.fill,
                                         placeholder: kTransparentImage,
-                                        image: snapshot.data!.playlists![index]
+                                        image: userPlaylists.playlists![index]
                                                 .images!.first.url ??
                                             '',
                                       ),
@@ -148,8 +167,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          snapshot.data!.playlists![index]
-                                                  .name ??
+                                          userPlaylists
+                                                  .playlists![index].name ??
                                               'Unnamed Playlist',
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
@@ -158,7 +177,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                     ],
                                   ),
                                   Text(
-                                    snapshot.data!.playlists![index].owner
+                                    userPlaylists.playlists![index].owner
                                             ?.displayName ??
                                         'Unknown',
                                     style: const TextStyle(color: Colors.grey),
@@ -172,18 +191,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                       ),
                     );
                   },
-                );
-              }
-              return Center(
-                child: Column(
-                  children: const [
-                    LinearProgressIndicator(),
-                    Text('Loading'),
-                  ],
                 ),
-              );
-            },
-          ),
         ),
       ),
     );

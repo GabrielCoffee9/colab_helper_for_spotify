@@ -36,6 +36,8 @@ class ColabPlaylistCard extends StatelessWidget {
                         fit: BoxFit.fill,
                         placeholder: kTransparentImage,
                         image: urlImage ?? '',
+                        imageCacheHeight: 372,
+                        imageCacheWidth: 372,
                       )
                     : const EmptyPlaylistCover(
                         height: 142,
@@ -58,7 +60,8 @@ class ColabPlaylistCard extends StatelessWidget {
                         const Icon(Icons.circle, size: 8),
                         const SizedBox(width: 4),
                         Text('Playlist',
-                            style: TextStyle(decoration: TextDecoration.lineThrough)),
+                            style: TextStyle(
+                                decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                   ],

@@ -90,7 +90,8 @@ class _AuthPageState extends State<AuthPage> {
                 const SizedBox(
                   height: 40,
                 ),
-                Image.asset("lib/assets/Spotify_Logo_RGB_Green.png"),
+                Image.asset("lib/assets/Spotify_Logo_RGB_Green.png",
+                    cacheWidth: 1038, cacheHeight: 311),
                 const SizedBox(
                   height: 120,
                 ),

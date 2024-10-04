@@ -209,7 +209,8 @@ class _HomePageState extends State<HomePage> {
                                 playlistName:
                                     '${snapshot.data!.playlists![index].name}',
                                 urlImage: snapshot.data!.playlists![index]
-                                        .images!.isNotEmpty
+                                            .images?.isNotEmpty ??
+                                        false
                                     ? snapshot.data!.playlists![index].images!
                                         .first.url
                                     : null,
