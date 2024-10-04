@@ -1,6 +1,6 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/addedby_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/video_thumbnail_model.dart';
+import 'addedby_model.dart';
+import 'track_model.dart';
+import 'video_thumbnail_model.dart';
 
 class TrackItems {
   String? addedAt;

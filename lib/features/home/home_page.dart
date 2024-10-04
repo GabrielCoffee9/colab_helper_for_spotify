@@ -1,15 +1,15 @@
-import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
-import 'package:colab_helper_for_spotify/features/playlist/all_playlists_page.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/colab_playlist_card.dart';
-import 'package:colab_helper_for_spotify/features/home/widgets/home_interactive_button.dart';
-import 'package:colab_helper_for_spotify/features/playlist/playlist_page.dart';
-import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
-import 'package:colab_helper_for_spotify/models/primary%20models/user_profile_model.dart';
-import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/music_visualizer.dart';
+import '../../models/primary models/user_playlists_model.dart';
+import '../../models/primary models/user_profile_model.dart';
+import '../../shared/widgets/app_logo.dart';
+import '../../shared/widgets/colab_playlist_card.dart';
+import '../../shared/widgets/music_visualizer.dart';
+import '../../shared/widgets/profile_picture.dart';
+import '../player/player_controller.dart';
+import '../playlist/all_playlists_page.dart';
+import '../playlist/playlist_controller.dart';
+import '../playlist/playlist_page.dart';
+import 'widgets/home_interactive_button.dart';
 
-import 'package:colab_helper_for_spotify/shared/widgets/profile_picture.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,16 +21,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   PlaylistController playlistController = PlaylistController();
+
   PlayerController playerController = PlayerController.instance;
-  late Future<UserPlaylists> userPlaylists;
 
-  Future<void> refreshHome() {
-    setState(() {
-      userPlaylists =
-          playlistController.getCurrentUserPlaylists(limit: 5, offset: 0);
-    });
+  UserPlaylists userPlaylists = UserPlaylists();
 
-    return userPlaylists;
+  bool userPlaylistsLoading = true;
+
+  Future<void> refreshHome() async {
+    playlistController.getCurrentUserPlaylists(limit: 5, offset: 0).then(
+      (value) {
+        userPlaylists = value;
+        userPlaylistsLoading = false;
+        if (mounted) {
+          setState(() {});
+        }
+      },
+    );
+
+    return;
   }
 
   @override
@@ -95,104 +104,108 @@ class _HomePageState extends State<HomePage> {
                     },
                   )),
             ),
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Container(
-                    color: colors.surface,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+            userPlaylistsLoading
+                ? SliverToBoxAdapter(
+                    child: Material(),
+                  )
+                : SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: colors.surface,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    ProfilePicture(
+                                        imageUrl:
+                                            userProfile.images?.first.url),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(userProfile.displayName!),
+                                        Text(
+                                          '${userProfile.product}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    HomeInteractiveButton(
+                                        notificationCounter: 0,
+                                        onPressed: () {},
+                                        colors: colors,
+                                        iconButton:
+                                            Icons.notifications_none_outlined),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    HomeInteractiveButton(
+                                        notificationCounter: 0,
+                                        onPressed: () {},
+                                        colors: colors,
+                                        iconButton: Icons.message_outlined),
+                                    const SizedBox(width: 2),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 12, 0),
+                          child: Column(
                             children: [
-                              ProfilePicture(
-                                  imageUrl: userProfile.images?.first.url),
-                              const SizedBox(width: 8),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(userProfile.displayName!),
                                   Text(
-                                    '${userProfile.product}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                    'Your Playlists',
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: TextButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const AllPlaylistsPage(),
+                                              ),
+                                            );
+                                          },
+                                          label: const Text('View all'),
+                                          icon: const Icon(
+                                              Icons.navigate_before_outlined),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              HomeInteractiveButton(
-                                  notificationCounter: 0,
-                                  onPressed: () {},
-                                  colors: colors,
-                                  iconButton:
-                                      Icons.notifications_none_outlined),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              HomeInteractiveButton(
-                                  notificationCounter: 0,
-                                  onPressed: () {},
-                                  colors: colors,
-                                  iconButton: Icons.message_outlined),
-                              const SizedBox(width: 2),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 12, 4, 0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Your Playlists',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            Row(
-                              children: [
-                                Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: TextButton.icon(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const AllPlaylistsPage(),
-                                        ),
-                                      );
-                                    },
-                                    label: const Text('View all'),
-                                    icon: const Icon(
-                                        Icons.navigate_before_outlined),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 200,
-                    child: FutureBuilder(
-                      future: userPlaylists,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return ListView.builder(
+                        SizedBox(
+                          height: 200,
+                          child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount:
-                                snapshot.data!.playlists!.isNotEmpty ? 5 : 0,
+                                userPlaylists.playlists!.isNotEmpty ? 5 : 0,
                             cacheExtent: 5,
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
@@ -201,30 +214,26 @@ class _HomePageState extends State<HomePage> {
                                     MaterialPageRoute(
                                       builder: (context) => PlaylistPage(
                                         playlist:
-                                            snapshot.data!.playlists![index],
+                                            userPlaylists.playlists![index],
                                       ),
                                     ),
                                   );
                                 },
                                 playlistName:
-                                    '${snapshot.data!.playlists![index].name}',
-                                urlImage: snapshot.data!.playlists![index]
-                                            .images?.isNotEmpty ??
+                                    '${userPlaylists.playlists![index].name}',
+                                urlImage: userPlaylists.playlists![index].images
+                                            ?.isNotEmpty ??
                                         false
-                                    ? snapshot.data!.playlists![index].images!
-                                        .first.url
+                                    ? userPlaylists
+                                        .playlists![index].images!.first.url
                                     : null,
                               );
                             },
-                          );
-                        }
-                        return const Material();
-                      },
+                          ),
+                        ),
+                      ],
                     ),
                   )
-                ],
-              ),
-            ),
           ],
         ),
       ),

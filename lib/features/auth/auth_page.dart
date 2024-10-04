@@ -1,8 +1,9 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
-import 'package:colab_helper_for_spotify/shared/modules/user/user_controller.dart';
-import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/circular_progress.dart';
+import '../../shared/modules/user/user_controller.dart';
+import '../../shared/static/color_schemes.g.dart';
+import '../../shared/widgets/app_logo.dart';
+import '../../shared/widgets/circular_progress.dart';
+import 'auth_controller.dart';
+
 import 'package:flutter/material.dart';
 
 enum ButtonState { idle, loading, done }

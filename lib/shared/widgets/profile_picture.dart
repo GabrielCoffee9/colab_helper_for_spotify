@@ -8,7 +8,7 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInImage.memoryNetwork(
-        height: 48,
+        height: 60,
         fit: BoxFit.scaleDown,
         placeholder: kTransparentImage,
         image: imageUrl ?? '');

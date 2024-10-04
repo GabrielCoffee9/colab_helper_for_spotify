@@ -1,5 +1,6 @@
+import 'home_page.dart';
+
 import 'package:animations/animations.dart';
-import 'package:colab_helper_for_spotify/features/home/home_page.dart';
 import 'package:flutter/material.dart';
 
 class AppScreens extends StatefulWidget {

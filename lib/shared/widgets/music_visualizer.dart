@@ -1,5 +1,6 @@
-import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/unit_audio_wave.dart';
+import '../../features/player/player_controller.dart';
+import 'unit_audio_wave.dart';
+
 import 'package:flutter/material.dart';
 
 class MusicVisualizer extends StatelessWidget {

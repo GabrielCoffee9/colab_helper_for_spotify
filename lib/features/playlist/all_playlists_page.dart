@@ -1,8 +1,9 @@
-import 'package:colab_helper_for_spotify/features/playlist/playlist_page.dart';
-import 'package:colab_helper_for_spotify/features/playlist/widgets/search_playlists.dart';
-import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
-import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
+import '../../models/primary models/user_playlists_model.dart';
+import '../../shared/widgets/empty_playlist_cover.dart';
+import 'playlist_controller.dart';
+import 'playlist_page.dart';
+import 'widgets/search_playlists.dart';
+
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -33,12 +34,6 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
     return;
   }
 
-  void alternateMethod() {
-    setState(() {
-      testing.value = !testing.value;
-    });
-  }
-
   @override
   void initState() {
     _scrollController.addListener(() {
@@ -51,8 +46,6 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
     refreshPage();
     super.initState();
   }
-
-  ValueNotifier<bool> testing = ValueNotifier<bool>(true);
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +114,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
 
                     return SizedBox(
                       child: GestureDetector(
-                        onTap: () async {
+                        onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PlaylistPage(

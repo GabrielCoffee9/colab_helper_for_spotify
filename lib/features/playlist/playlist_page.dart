@@ -1,9 +1,10 @@
+import '../../models/secundary models/playlist_model.dart';
+import '../../models/secundary models/track_model.dart';
+import '../../shared/widgets/song_tile.dart';
+import '../player/player_controller.dart';
+import 'playlist_controller.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
-import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_controller.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/song_tile.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistPage extends StatefulWidget {
@@ -75,7 +76,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 curve: Curves.fastOutSlowIn);
           },
           child: Text(
-            playlist.name ?? 'Unnamed Playlist',
+            playlistLoading ? '' : playlist.name ?? 'Unnamed Playlist',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 22,
@@ -205,9 +206,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               PlaylistState.loading) {
                         playlistController
                             .getPlaylistTracks(playlist, index + 1)
-                            .then((value) => setState(() {
-                                  playlist = value;
-                                }));
+                            .then((value) {
+                          if (mounted) {
+                            setState(() {
+                              playlist = value;
+                            });
+                          }
+                        });
                       }
 
                       return Padding(
@@ -216,16 +221,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         child: Container(
                           key: Key('$index'),
                           decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: colors.outline, width: 0.5))),
+                            border: Border(
+                              bottom:
+                                  BorderSide(color: colors.outline, width: 0.5),
+                            ),
+                          ),
                           child: ReorderableDelayedDragStartListener(
                             enabled: false,
                             index: index,
                             child: SongTile(
                               key: Key('$index'),
                               songName: playlist.tracks![index].name,
-                              artist: playlist.tracks![index].allArtists,
+                              artist: playlist.tracks?[index].allArtists,
                               imageUrl: playlist
                                       .tracks![index].album!.images!.isNotEmpty
                                   ? playlist

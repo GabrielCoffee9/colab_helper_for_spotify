@@ -1,5 +1,6 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_service.dart';
-import 'package:colab_helper_for_spotify/models/primary%20models/user_profile_model.dart';
+import '../../../features/auth/auth_service.dart';
+import '../../../models/primary models/user_profile_model.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:retry/retry.dart';

@@ -1,4 +1,5 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_service.dart';
+import 'auth_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';

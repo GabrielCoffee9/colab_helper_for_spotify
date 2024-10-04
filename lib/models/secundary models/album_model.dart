@@ -1,6 +1,6 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/artist_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/external_urls_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/images_model.dart';
+import 'artist_model.dart';
+import 'external_urls_model.dart';
+import 'images_model.dart';
 
 class Album {
   String? albumType;

@@ -1,7 +1,8 @@
-import 'package:colab_helper_for_spotify/models/secundary models/external_urls_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/images_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/owner_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/track_model.dart';
+import 'external_urls_model.dart';
+import 'images_model.dart';
+import 'owner_model.dart';
+import 'track_model.dart';
+
 import 'package:html_unescape/html_unescape_small.dart';
 
 class Playlist {

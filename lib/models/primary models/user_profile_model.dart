@@ -1,7 +1,8 @@
-import 'package:colab_helper_for_spotify/models/secundary models/explicit_content_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/external_urls_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/followers_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary models/images_model.dart';
+import '../secundary models/explicit_content_model.dart';
+import '../secundary models/external_urls_model.dart';
+import '../secundary models/followers_model.dart';
+import '../secundary models/images_model.dart';
+
 import 'package:flutter/material.dart';
 
 class UserProfile extends ChangeNotifier {
