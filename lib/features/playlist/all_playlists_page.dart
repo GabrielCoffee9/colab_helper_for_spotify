@@ -51,7 +51,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
   Widget build(BuildContext context) {
     var colors = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -74,7 +74,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                 return GridView.builder(
                   controller: _scrollController,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
+                    crossAxisCount: 2,
+                  ),
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
                   itemCount: snapshot.data!.playlists?.length ?? 0,

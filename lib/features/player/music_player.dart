@@ -45,7 +45,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
     return Dialog(
       insetPadding: EdgeInsets.zero,
       child: Scaffold(
-        backgroundColor: colors.background,
+        backgroundColor: colors.surface,
         appBar: AppBar(
           title: Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -173,7 +173,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                                   child: TextButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStatePropertyAll(
+                                            WidgetStatePropertyAll(
                                                 colors.primaryContainer)),
                                     onPressed: () async =>
                                         playerController.resume(),
@@ -189,7 +189,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                                   child: TextButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            MaterialStatePropertyAll(
+                                            WidgetStatePropertyAll(
                                                 colors.primaryContainer)),
                                     onPressed: () async =>
                                         playerController.pause(),

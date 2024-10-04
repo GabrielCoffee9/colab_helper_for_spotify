@@ -64,7 +64,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         if (snapshot.connectionState == ConnectionState.done &&
             (snapshot.data?.tracks?.isEmpty ?? true)) {
           return Scaffold(
-            backgroundColor: colors.background,
+            backgroundColor: colors.surface,
             body: RefreshIndicator(
                 onRefresh: () => refreshPage(),
                 child: CustomScrollView(
@@ -135,7 +135,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
         if (snapshot.hasData) {
           return Scaffold(
-            backgroundColor: colors.background,
+            backgroundColor: colors.surface,
             body: RefreshIndicator(
               onRefresh: () => refreshPage(),
               child: CustomScrollView(
@@ -319,7 +319,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           );
         }
         return Scaffold(
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
           appBar: AppBar(
             title: const Text('Loading..'),
           ),

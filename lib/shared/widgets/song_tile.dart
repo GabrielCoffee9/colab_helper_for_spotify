@@ -22,7 +22,7 @@ class SongTile extends StatelessWidget {
     final ColorScheme colors = Theme.of(context).colorScheme;
     final Size screenSize = MediaQuery.of(context).size;
     return Material(
-      color: colors.background,
+      color: colors.surface,
       child: ListTile(
         key: key,
         selected: playingNow,
@@ -46,7 +46,10 @@ class SongTile extends StatelessWidget {
             : const Text('Unknown artist'),
         leading: imageUrl?.isNotEmpty ?? false
             ? FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage, image: imageUrl ?? '')
+                placeholder: kTransparentImage,
+                placeholderCacheHeight: 200,
+                placeholderCacheWidth: 200,
+                image: imageUrl!)
             : EmptyPlaylistCover(
                 size: 30,
                 height: screenSize.height / 8,

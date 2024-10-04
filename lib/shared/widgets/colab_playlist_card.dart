@@ -58,7 +58,7 @@ class ColabPlaylistCard extends StatelessWidget {
                         const Icon(Icons.circle, size: 8),
                         const SizedBox(width: 4),
                         Text('Playlist',
-                            style: Theme.of(context).textTheme.overline),
+                            style: TextStyle(decoration: TextDecoration.lineThrough)),
                       ],
                     ),
                   ],

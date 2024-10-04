@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _key,
       drawer: const Drawer(),
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       body: RefreshIndicator(
         onRefresh: () => refreshHome(),
         child: CustomScrollView(
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   Container(
-                    color: colors.background,
+                    color: colors.surface,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
                       child: Row(

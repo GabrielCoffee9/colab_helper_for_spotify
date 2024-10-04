@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 
 class HomeInteractiveButton extends StatelessWidget {
   const HomeInteractiveButton({
@@ -16,10 +16,11 @@ class HomeInteractiveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Badge(
+    return badges.Badge(
       showBadge: notificationCounter > 0,
       badgeContent: Text((notificationCounter).toString()),
-      animationType: BadgeAnimationType.fade,
+      badgeAnimation: badges.BadgeAnimation.fade(),
+    
       child: IconButton(
         onPressed: onPressed,
         style: IconButton.styleFrom(
