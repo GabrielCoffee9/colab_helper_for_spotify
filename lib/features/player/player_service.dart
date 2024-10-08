@@ -21,7 +21,7 @@ class PlayerService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 

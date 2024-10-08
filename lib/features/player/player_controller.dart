@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
+// import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
 import 'package:colab_helper_for_spotify/features/player/music_player.dart';
 import 'package:colab_helper_for_spotify/features/player/player_service.dart';
 import 'package:flutter/material.dart';
@@ -23,15 +23,18 @@ class PlayerController {
 
   Future<void> showPlayerDialog(BuildContext context) async {
     try {
-      getPlayerState().then((initialPlayerState) {
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) =>
-              MusicPlayer(initialPlayerState: initialPlayerState),
-        );
-      });
+      if (context.mounted) {
+        getPlayerState().then((initialPlayerState) {
+          return showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) =>
+                MusicPlayer(initialPlayerState: initialPlayerState),
+          );
+        });
+      }
     } catch (e) {
-      AuthController().verifyAppConnection();
+      // AuthController().verifyAppConnection();
     }
   }
 

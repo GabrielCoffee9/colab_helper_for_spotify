@@ -27,7 +27,7 @@ class UserService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         await AuthService().getToken();
         return true;
       }

@@ -58,8 +58,12 @@ class _AuthPageState extends State<AuthPage> {
           buttonState = ButtonState.done;
         });
 
-        Future.delayed(const Duration(seconds: 1))
-            .then((value) => Navigator.popAndPushNamed(context, '/app'));
+        if (mounted) {
+          Future.delayed(const Duration(seconds: 1))
+              // ignore: use_build_context_synchronously
+              .then((value) => Navigator.popAndPushNamed(context, '/app'));
+        }
+
         return;
       }
     });

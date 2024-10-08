@@ -32,7 +32,7 @@ class PlaylistService {
           )
           .timeout(const Duration(seconds: 5));
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 
@@ -56,7 +56,7 @@ class PlaylistService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 
@@ -83,7 +83,7 @@ class PlaylistService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 
