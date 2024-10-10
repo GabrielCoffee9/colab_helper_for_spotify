@@ -21,9 +21,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
 
   bool userPlaylistsLoading = true;
 
-  Future<void> refreshPage() async {
+  Future<void> getPlaylists({int offset = 0}) async {
     playlistController
-        .getCurrentUserPlaylists(limit: 25, offset: 0)
+        .getCurrentUserPlaylists(limit: 25, offset: offset)
         .then((value) {
       userPlaylists = value;
       userPlaylistsLoading = false;
@@ -43,7 +43,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
       }
     });
 
-    refreshPage();
+    getPlaylists();
     super.initState();
   }
 
@@ -64,7 +64,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         title: const Text('All Playlists'),
       ),
       body: RefreshIndicator(
-        onRefresh: () => refreshPage(),
+        onRefresh: () => getPlaylists(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: userPlaylistsLoading
@@ -89,16 +89,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                         ((userPlaylists.total ?? 0) > (index + 1)) &&
                         playlistController.state.value !=
                             PlaylistState.loading) {
-                      playlistController
-                          .getCurrentUserPlaylists(limit: 25, offset: index + 1)
-                          .then(
-                        (value) {
-                          userPlaylists = value;
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                      );
+                      getPlaylists(offset: index + 1);
                     }
 
                     if (playlistController.state.value ==

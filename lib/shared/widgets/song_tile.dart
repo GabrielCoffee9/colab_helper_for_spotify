@@ -9,23 +9,25 @@ class SongTile extends StatelessWidget {
     required this.artist,
     required this.imageUrl,
     required this.playingNow,
+    required this.selected,
     required this.onTap,
   });
   final String? songName;
   final String? artist;
   final String? imageUrl;
+  final bool selected;
   final bool playingNow;
   final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
-    final Size screenSize = MediaQuery.of(context).size;
+
     return Material(
       color: colors.surface,
       child: ListTile(
         key: key,
-        selected: playingNow,
+        selected: selected,
         selectedColor: colors.primary,
         contentPadding: const EdgeInsets.all(8),
         title: songName?.isNotEmpty ?? false
@@ -56,8 +58,8 @@ class SongTile extends StatelessWidget {
             placeholder: (context, url) => Container(color: Colors.transparent),
             errorWidget: (context, url, error) => EmptyPlaylistCover(
               size: 30,
-              height: screenSize.height / 8,
-              width: screenSize.width / 7,
+              height: 200,
+              width: 200,
             ),
           ),
         ),

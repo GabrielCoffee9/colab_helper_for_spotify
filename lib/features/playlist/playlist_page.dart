@@ -25,18 +25,23 @@ class _PlaylistPageState extends State<PlaylistPage> {
   final ScrollController _scrollController = ScrollController();
 
   Playlist playlist = Playlist();
-  ValueNotifier teste = ValueNotifier(false);
-  bool playlistLoading = true;
+  ValueNotifier<bool> playlistLoading = ValueNotifier(true);
 
-  int? selectedIndex;
+  String selectedSongUri = "";
 
-  Future<void> refreshPage() async {
-    playlistController.getPlaylistTracks(widget.playlist, 0).then((value) {
+  bool isPaused = false;
+
+  Future<void> getPlaylists({int offset = 0}) async {
+    playlistLoading.value = true;
+
+    playlistController.getPlaylistTracks(playlist, offset).then((value) {
       playlist = value;
-      playlistLoading = false;
+
       if (mounted) {
         setState(() {});
       }
+
+      playlistLoading.value = false;
     });
 
     return;
@@ -44,14 +49,35 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   @override
   void initState() {
+    playlist = widget.playlist;
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          mounted) {
         setState(() {});
       }
     });
 
-    refreshPage();
+    playerController.getPlayerState().then((data) {
+      if (mounted) {
+        setState(() {
+          selectedSongUri = data?.track?.uri ?? '';
+          isPaused = data?.isPaused ?? true;
+        });
+      }
+    });
+
+    playerController.playerState.listen((data) {
+      if (mounted) {
+        setState(() {
+          selectedSongUri = data.track?.uri ?? '';
+          isPaused = data.isPaused;
+        });
+      }
+    });
+
+    getPlaylists();
     super.initState();
   }
 
@@ -76,7 +102,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 curve: Curves.fastOutSlowIn);
           },
           child: Text(
-            playlistLoading ? '' : playlist.name ?? 'Unnamed Playlist',
+            playlistLoading.value ? '' : playlist.name ?? 'Unnamed Playlist',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 22,
@@ -111,8 +137,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => refreshPage(),
-        child: playlistLoading
+        onRefresh: () => getPlaylists(),
+        child: playlist.tracks?.isEmpty ?? true && playlistLoading.value
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -201,18 +227,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     },
                     itemCount: playlist.tracks?.length ?? 0,
                     itemBuilder: (context, index) {
-                      if (playlist.hasMoreToLoad &&
-                          playlistController.state.value !=
-                              PlaylistState.loading) {
-                        playlistController
-                            .getPlaylistTracks(playlist, index + 1)
-                            .then((value) {
-                          if (mounted) {
-                            setState(() {
-                              playlist = value;
-                            });
-                          }
-                        });
+                      if ((index + 20) == playlist.tracks?.length &&
+                          playlist.hasMoreToLoad &&
+                          !playlistLoading.value &&
+                          mounted) {
+                        getPlaylists(offset: index + 20);
                       }
 
                       return Padding(
@@ -238,21 +257,23 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   ? playlist
                                       .tracks![index].album!.images!.first.url
                                   : '',
-                              playingNow: index == selectedIndex,
-                              onTap: () async {
-                                int updatedindex;
-                                if (playlistController.state.value ==
-                                    PlaylistState.loading) {
-                                  updatedindex = index - 1;
-                                } else {
-                                  updatedindex = index;
-                                }
-
+                              selected: selectedSongUri ==
+                                  playlist.tracks?[index].uri,
+                              playingNow: (selectedSongUri ==
+                                      playlist.tracks?[index].uri) &&
+                                  !isPaused,
+                              onTap: () {
                                 setState(() {
-                                  selectedIndex = updatedindex;
+                                  if (selectedSongUri ==
+                                      playlist.tracks?[index].uri) {
+                                    isPaused
+                                        ? playerController.resume()
+                                        : playerController.pause();
+                                  } else {
+                                    playerController.playIndexPlaylist(
+                                        index, playlist.uri);
+                                  }
                                 });
-                                await playerController.playIndexPlaylist(
-                                    updatedindex, playlist.uri);
                               },
                             ),
                           ),

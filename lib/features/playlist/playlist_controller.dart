@@ -31,7 +31,7 @@ class PlaylistController extends ChangeNotifier {
   }
 
   Future<UserPlaylists> getCurrentUserPlaylists(
-      {required int limit, required int offset}) async {
+      {int limit = 25, required int offset}) async {
     state.value = PlaylistState.loading;
     if (offset == 0) {
       clearPlaylistsMemory();
