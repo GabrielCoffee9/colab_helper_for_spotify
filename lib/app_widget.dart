@@ -1,7 +1,8 @@
-import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
-import 'package:colab_helper_for_spotify/shared/static/text_theme.g.dart';
-import 'package:colab_helper_for_spotify/features/home/app_screens.dart';
-import 'package:colab_helper_for_spotify/features/auth/auth_page.dart';
+import 'features/auth/auth_page.dart';
+import 'features/home/app_screens.dart';
+import 'shared/static/color_schemes.g.dart';
+import 'shared/static/text_theme.g.dart';
+
 import 'package:flutter/material.dart';
 
 class ColabApp extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/external_urls_model.dart';
+import 'external_urls_model.dart';
 
 class Owner {
   String? displayName;

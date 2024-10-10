@@ -1,4 +1,5 @@
-import 'package:colab_helper_for_spotify/shared/modules/user/user_service.dart';
+import 'user_service.dart';
+
 import 'package:flutter/material.dart';
 
 enum UserState { idle, success, error, loading }

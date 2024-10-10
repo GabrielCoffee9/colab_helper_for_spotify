@@ -1,6 +1,7 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
-import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
+import '../../models/primary models/user_playlists_model.dart';
+import '../../models/secundary models/playlist_model.dart';
+import '../auth/auth_controller.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:retry/retry.dart';
@@ -31,7 +32,7 @@ class PlaylistService {
           )
           .timeout(const Duration(seconds: 5));
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 
@@ -55,7 +56,7 @@ class PlaylistService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 
@@ -82,7 +83,7 @@ class PlaylistService {
         }, contentType: Headers.jsonContentType),
       );
     }, retryIf: (e) async {
-      if (e is DioError && e.response!.statusMessage == 'Unauthorized') {
+      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
         return await AuthController().verifySync();
       }
 

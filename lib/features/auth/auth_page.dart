@@ -1,8 +1,9 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
-import 'package:colab_helper_for_spotify/shared/modules/user/user_controller.dart';
-import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/app_logo.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/circular_progress.dart';
+import '../../shared/modules/user/user_controller.dart';
+import '../../shared/static/color_schemes.g.dart';
+import '../../shared/widgets/app_logo.dart';
+import '../../shared/widgets/circular_progress.dart';
+import 'auth_controller.dart';
+
 import 'package:flutter/material.dart';
 
 enum ButtonState { idle, loading, done }
@@ -57,8 +58,12 @@ class _AuthPageState extends State<AuthPage> {
           buttonState = ButtonState.done;
         });
 
-        Future.delayed(const Duration(seconds: 1))
-            .then((value) => Navigator.popAndPushNamed(context, '/app'));
+        if (mounted) {
+          Future.delayed(const Duration(seconds: 1))
+              // ignore: use_build_context_synchronously
+              .then((value) => Navigator.popAndPushNamed(context, '/app'));
+        }
+
         return;
       }
     });
@@ -90,7 +95,8 @@ class _AuthPageState extends State<AuthPage> {
                 const SizedBox(
                   height: 40,
                 ),
-                Image.asset("lib/assets/Spotify_Logo_RGB_Green.png"),
+                Image.asset("lib/assets/Spotify_Logo_RGB_Green.png",
+                    cacheWidth: 1038, cacheHeight: 311),
                 const SizedBox(
                   height: 120,
                 ),

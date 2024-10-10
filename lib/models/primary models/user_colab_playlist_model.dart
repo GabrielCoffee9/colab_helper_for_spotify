@@ -1,4 +1,4 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
+import '../secundary models/playlist_model.dart';
 
 class UserColabPlaylist {
   String? href;

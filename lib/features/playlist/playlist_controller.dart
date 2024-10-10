@@ -1,6 +1,7 @@
-import 'package:colab_helper_for_spotify/models/primary%20models/user_playlists_model.dart';
-import 'package:colab_helper_for_spotify/models/secundary%20models/playlist_model.dart';
-import 'package:colab_helper_for_spotify/shared/modules/playlist/playlist_service.dart';
+import '../../models/primary models/user_playlists_model.dart';
+import '../../models/secundary models/playlist_model.dart';
+import 'playlist_service.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -30,7 +31,7 @@ class PlaylistController extends ChangeNotifier {
   }
 
   Future<UserPlaylists> getCurrentUserPlaylists(
-      {required int limit, required int offset}) async {
+      {int limit = 25, required int offset}) async {
     state.value = PlaylistState.loading;
     if (offset == 0) {
       clearPlaylistsMemory();

@@ -1,9 +1,10 @@
+import '../../shared/widgets/empty_playlist_cover.dart';
+import 'player_controller.dart';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:colab_helper_for_spotify/features/player/player_controller.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
-import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter/material.dart';
 
 class MusicPlayer extends StatefulWidget {
   const MusicPlayer({super.key, required this.initialPlayerState});
@@ -47,13 +48,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
       child: Scaffold(
         backgroundColor: colors.surface,
         appBar: AppBar(
-          title: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Image.asset(
-              'lib/assets/Spotify_Logo_RGB_Green.png',
-              scale: 15,
-            ),
-          ),
+          title: Text("Playing now on"),
           centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -83,19 +78,34 @@ class _MusicPlayerState extends State<MusicPlayer> {
                 textDirection: TextDirection.ltr,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: FadeInImage.memoryNetwork(
-                        imageScale: 1.78,
-                        placeholder: kTransparentImage,
-                        imageErrorBuilder: (context, error, stackTrace) {
-                          return const EmptyPlaylistCover(
-                            height: 355,
-                            width: 355,
-                            size: 60,
-                          );
-                        },
-                        image:
-                            'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}'),
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Image.asset(
+                      'lib/assets/Spotify_Logo_RGB_Green.png',
+                      scale: 2.5,
+                      cacheWidth: 413,
+                      cacheHeight: 124,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 24.0,
+                    ),
+                    child: SizedBox(
+                      height: 360,
+                      width: 360,
+                      child: FadeInImage.memoryNetwork(
+                          imageScale: 1.78,
+                          placeholder: kTransparentImage,
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return const EmptyPlaylistCover(
+                              height: 355,
+                              width: 355,
+                              size: 60,
+                            );
+                          },
+                          image:
+                              'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}'),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(24.0),
@@ -161,8 +171,12 @@ class _MusicPlayerState extends State<MusicPlayer> {
                               size: 34,
                             ),
                           ),
-                          onPressed: () async =>
-                              await playerController.skipPrevious(),
+                          onPressed: snapshot.data?.playbackRestrictions
+                                      .canSkipPrevious ??
+                                  false
+                              ? () async =>
+                                  await playerController.skipPrevious()
+                              : null,
                         ),
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
@@ -172,9 +186,8 @@ class _MusicPlayerState extends State<MusicPlayer> {
                                   width: 100,
                                   child: TextButton(
                                     style: ButtonStyle(
-                                        backgroundColor:
-                                            WidgetStatePropertyAll(
-                                                colors.primaryContainer)),
+                                        backgroundColor: WidgetStatePropertyAll(
+                                            colors.primaryContainer)),
                                     onPressed: () async =>
                                         playerController.resume(),
                                     child: const Icon(
@@ -188,9 +201,8 @@ class _MusicPlayerState extends State<MusicPlayer> {
                                   width: 100,
                                   child: TextButton(
                                     style: ButtonStyle(
-                                        backgroundColor:
-                                            WidgetStatePropertyAll(
-                                                colors.primaryContainer)),
+                                        backgroundColor: WidgetStatePropertyAll(
+                                            colors.primaryContainer)),
                                     onPressed: () async =>
                                         playerController.pause(),
                                     child: const Icon(
@@ -209,8 +221,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
                               size: 34,
                             ),
                           ),
-                          onPressed: () async =>
-                              await playerController.skipNext(),
+                          onPressed: snapshot
+                                      .data?.playbackRestrictions.canSkipNext ??
+                                  false
+                              ? () async => await playerController.skipNext()
+                              : null,
                         ),
                         IconButton(
                           onPressed: () => playerController.startPlayerTimer(),

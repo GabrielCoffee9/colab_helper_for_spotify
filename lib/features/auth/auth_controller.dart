@@ -1,7 +1,8 @@
-import 'package:colab_helper_for_spotify/features/auth/auth_service.dart';
+import 'auth_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
+// import 'package:spotify_sdk/spotify_sdk.dart';
 
 enum AuthState { idle, success, error, loading }
 
@@ -54,13 +55,13 @@ class AuthController extends ChangeNotifier {
     return false;
   }
 
-  verifyAppConnection() async {
-    bool isActive = false;
-    await SpotifySdk.isSpotifyAppActive.then((value) => isActive = value);
+  // verifyAppConnection() async {
+  //   bool isActive = false;
+  //   await SpotifySdk.isSpotifyAppActive.then((value) => isActive = value);
 
-    if (!isActive) {
-      await AuthService()
-          .connectSpotifyRemote(await storage.read(key: 'accessToken'));
-    }
-  }
+  //   if (!isActive) {
+  //     await AuthService()
+  //         .connectSpotifyRemote(await storage.read(key: 'accessToken'));
+  //   }
+  // }
 }

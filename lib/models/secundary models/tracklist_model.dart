@@ -1,4 +1,4 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/track_items_model.dart';
+import 'track_items_model.dart';
 
 class TrackList {
   String? href;
