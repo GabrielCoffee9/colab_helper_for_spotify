@@ -28,8 +28,8 @@ class _HomePageState extends State<HomePage> {
 
   bool userPlaylistsLoading = true;
 
-  Future<void> refreshHome() async {
-    playlistController.getCurrentUserPlaylists(limit: 5, offset: 0).then(
+  Future<void> getPlaylists({int offset = 0}) async {
+    playlistController.getCurrentUserPlaylists(limit: 5, offset: offset).then(
       (value) {
         userPlaylists = value;
         userPlaylistsLoading = false;
@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    refreshHome();
+    getPlaylists();
     super.initState();
   }
 
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       drawer: const Drawer(),
       backgroundColor: colors.surface,
       body: RefreshIndicator(
-        onRefresh: () => refreshHome(),
+        onRefresh: () => getPlaylists(),
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
@@ -205,7 +205,9 @@ class _HomePageState extends State<HomePage> {
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount:
-                                userPlaylists.playlists!.isNotEmpty ? 5 : 0,
+                                userPlaylists.playlists?.isNotEmpty ?? false
+                                    ? userPlaylists.playlists?.length
+                                    : 0,
                             cacheExtent: 5,
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
