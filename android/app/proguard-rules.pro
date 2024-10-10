@@ -1,0 +1,11 @@
+-dontwarn com.fasterxml.jackson.databind.deser.std.StdDeserializer
+-dontwarn com.fasterxml.jackson.databind.ser.std.StdSerializer
+-dontwarn com.google.errorprone.annotations.CanIgnoreReturnValue
+-dontwarn com.google.errorprone.annotations.CheckReturnValue
+-dontwarn com.google.errorprone.annotations.FormatMethod
+-dontwarn com.google.errorprone.annotations.Immutable
+-dontwarn com.google.errorprone.annotations.RestrictedApi
+-dontwarn com.spotify.base.annotations.NotNull
+-dontwarn javax.annotation.Nonnull
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.concurrent.GuardedBy
