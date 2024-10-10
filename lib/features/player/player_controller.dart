@@ -25,11 +25,19 @@ class PlayerController {
     try {
       if (context.mounted) {
         getPlayerState().then((initialPlayerState) {
-          return showDialog(
+          return showGeneralDialog(
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return Container();
+            },
             // ignore: use_build_context_synchronously
             context: context,
-            builder: (BuildContext context) =>
-                MusicPlayer(initialPlayerState: initialPlayerState),
+            transitionBuilder: (BuildContext context, a1, a2, widget) =>
+                SlideTransition(
+                    position: Tween<Offset>(
+                            begin: Offset(0, 0.5), end: const Offset(0, 0))
+                        .animate(
+                            CurvedAnimation(parent: a1, curve: Curves.ease)),
+                    child: MusicPlayer(initialPlayerState: initialPlayerState)),
           );
         });
       }

@@ -171,8 +171,12 @@ class _MusicPlayerState extends State<MusicPlayer> {
                               size: 34,
                             ),
                           ),
-                          onPressed: () async =>
-                              await playerController.skipPrevious(),
+                          onPressed: snapshot.data?.playbackRestrictions
+                                      .canSkipPrevious ??
+                                  false
+                              ? () async =>
+                                  await playerController.skipPrevious()
+                              : null,
                         ),
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
@@ -217,8 +221,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
                               size: 34,
                             ),
                           ),
-                          onPressed: () async =>
-                              await playerController.skipNext(),
+                          onPressed: snapshot
+                                      .data?.playbackRestrictions.canSkipNext ??
+                                  false
+                              ? () async => await playerController.skipNext()
+                              : null,
                         ),
                         IconButton(
                           onPressed: () => playerController.startPlayerTimer(),
