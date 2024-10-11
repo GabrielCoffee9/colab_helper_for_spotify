@@ -55,11 +55,15 @@ class PlaylistController extends ChangeNotifier {
     try {
       state.value = PlaylistState.loading;
       if (offset == 0) {
-        clearTracksMemory(playlistTracks);
+        clearTracksMemory(_userPlaylists
+            .playlists![_userPlaylists.playlists!.indexOf(playlistTracks)]);
       }
 
       return await PlaylistService()
-          .getPlaylistTracks(playlistTracks, offset)
+          .getPlaylistTracks(
+              _userPlaylists.playlists![
+                  _userPlaylists.playlists!.indexOf(playlistTracks)],
+              offset)
           .whenComplete(() => state.value = PlaylistState.idle);
     } on Exception catch (e) {
       lastError = e.toString();

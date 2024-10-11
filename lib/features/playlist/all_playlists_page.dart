@@ -25,10 +25,11 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
     playlistController
         .getCurrentUserPlaylists(limit: 25, offset: offset)
         .then((value) {
-      userPlaylists = value;
-      userPlaylistsLoading = false;
       if (mounted) {
-        setState(() {});
+        setState(() {
+          userPlaylists = value;
+          userPlaylistsLoading = false;
+        });
       }
     });
     return;
