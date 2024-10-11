@@ -9,16 +9,28 @@ class UserController extends ChangeNotifier {
 
   UserController();
 
+  String? lastError;
+
   Future<bool> getUserProfile() async {
     try {
       state.value = UserState.loading;
       await UserService().getCurrentUserProfile();
-    } catch (e) {
+    } on Exception catch (error) {
+      lastError = error.toString();
       state.value = UserState.error;
-      state.value = UserState.idle;
       return false;
     }
     state.value = UserState.success;
+    lastError = '';
     return true;
+  }
+
+  Future<String> getUserUrlProfileImage(userId) async {
+    try {
+      var result = await UserService().getUserUrlProfileImage(userId);
+      return result;
+    } on Exception catch (error) {
+      return 'Error: ${error.toString()}';
+    }
   }
 }

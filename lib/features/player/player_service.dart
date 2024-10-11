@@ -10,24 +10,26 @@ class PlayerService {
   var storage = const FlutterSecureStorage();
 
   getAvailableDevices() async {
-    final response = await retry(() async {
+    try {
       var accessToken = await storage.read(key: 'accessToken');
+      final response = await retry(() async {
+        return await dio.get(
+          '/me/player/devices',
+          options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        );
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthController().syncSpotifyRemote();
+          accessToken = await storage.read(key: 'accessToken');
+          return true;
+        }
 
-      return await dio.get(
-        '/me/player/devices',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        }, contentType: Headers.jsonContentType),
-      );
-    }, retryIf: (e) async {
-      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-        return await AuthController().verifySync();
-      }
-
-      return false;
-    });
-
-    log(response.data);
+        return false;
+      });
+      // debug only
+      log(response.data);
+    } on Exception {
+      rethrow;
+    }
   }
 }

@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class ColabPlaylistCard extends StatelessWidget {
   const ColabPlaylistCard({
@@ -29,22 +29,19 @@ class ColabPlaylistCard extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
               SizedBox(
-                height: 142,
-                width: 142,
-                child: urlImage != null
-                    ? FadeInImage.memoryNetwork(
-                        fit: BoxFit.fill,
-                        placeholder: kTransparentImage,
-                        image: urlImage ?? '',
-                        imageCacheHeight: 372,
-                        imageCacheWidth: 372,
-                      )
-                    : const EmptyPlaylistCover(
-                        height: 142,
-                        width: 142,
-                        size: 80,
-                      ),
-              ),
+                  height: 142,
+                  width: 142,
+                  child: CachedNetworkImage(
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => const EmptyPlaylistCover(),
+                    errorWidget: (context, url, error) =>
+                        const EmptyPlaylistCover(),
+                    imageUrl: urlImage ?? '',
+                    memCacheWidth: 372,
+                    memCacheHeight: 372,
+                    maxWidthDiskCache: 372,
+                    maxHeightDiskCache: 372,
+                  )),
               Padding(
                 padding: const EdgeInsets.only(left: 14, top: 2),
                 child: Column(
@@ -59,9 +56,7 @@ class ColabPlaylistCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.circle, size: 8),
                         const SizedBox(width: 4),
-                        Text('Playlist',
-                            style: TextStyle(
-                                decoration: TextDecoration.lineThrough)),
+                        Text('Playlist'),
                       ],
                     ),
                   ],

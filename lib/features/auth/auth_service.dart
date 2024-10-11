@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class AuthService {
@@ -23,7 +24,10 @@ class AuthService {
       'user-library-modify,'
       'user-library-read';
 
-  Future<String> getToken() async {
+  /// Get a new access token and connects to spotify remote client.
+  ///
+  /// Returns the access token as [String] if succesful.
+  Future<String> getNewTokenAndConnectToSpotifyRemote() async {
     try {
       String token;
 
@@ -35,16 +39,28 @@ class AuthService {
 
       await connectSpotifyRemote(token);
 
+      var storage = const FlutterSecureStorage();
+
+      await storage.write(key: 'accessToken', value: token);
+      await storage.write(
+          key: 'accessTokenDate',
+          value: DateTime.now().millisecondsSinceEpoch.toString());
+
       return token;
     } on Exception {
-      return '';
+      rethrow;
     }
   }
 
   connectSpotifyRemote(String? token) async {
-    await SpotifySdk.connectToSpotifyRemote(
+    try {
+      await SpotifySdk.connectToSpotifyRemote(
         clientId: _appClientId,
         redirectUrl: _appRedirectURI,
-        accessToken: token);
+        accessToken: token,
+      );
+    } on Exception {
+      rethrow;
+    }
   }
 }

@@ -15,81 +15,89 @@ class PlaylistService {
 
   Future<UserPlaylists> getCurrentUserPlaylists(
       UserPlaylists userPlaylists, int limit, offset) async {
-    final response = await retry(() async {
+    try {
       var accessToken = await storage.read(key: 'accessToken');
+      final response = await retry(() async {
+        return await dio
+            .get(
+              '/me/playlists',
+              queryParameters: {
+                'limit': limit,
+                'offset': offset,
+              },
+              options: Options(headers: {
+                'Authorization': 'Bearer $accessToken',
+                'Content-Type': 'application/json',
+              }, contentType: Headers.jsonContentType),
+            )
+            .timeout(const Duration(seconds: 5));
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthController().syncSpotifyRemote();
+          accessToken = await storage.read(key: 'accessToken');
+          return true;
+        }
+        return false;
+      });
 
-      return await dio
-          .get(
-            '/me/playlists',
-            queryParameters: {
-              'limit': limit,
-              'offset': offset,
-            },
-            options: Options(headers: {
-              'Authorization': 'Bearer $accessToken',
-              'Content-Type': 'application/json',
-            }, contentType: Headers.jsonContentType),
-          )
-          .timeout(const Duration(seconds: 5));
-    }, retryIf: (e) async {
-      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-        return await AuthController().verifySync();
-      }
-
-      return false;
-    });
-
-    userPlaylists.fromJson(response.data);
-
-    return userPlaylists;
+      userPlaylists.fromJson(response.data);
+      return userPlaylists;
+    } on Exception {
+      rethrow;
+    }
   }
 
   Future<Playlist> getPlaylist(Playlist playlist) async {
-    final response = await retry(() async {
+    try {
       var accessToken = await storage.read(key: 'accessToken');
 
-      return await dio.get(
-        '/playlists/${playlist.id}',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        }, contentType: Headers.jsonContentType),
-      );
-    }, retryIf: (e) async {
-      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-        return await AuthController().verifySync();
-      }
+      final response = await retry(() async {
+        return await dio.get(
+          '/playlists/${playlist.id}',
+          options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        );
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthController().syncSpotifyRemote();
+          accessToken = await storage.read(key: 'accessToken');
+          return true;
+        }
 
-      return false;
-    });
-    playlist.fromInstance(response.data);
-    return playlist;
+        return false;
+      });
+      playlist.fromInstance(response.data);
+      return playlist;
+    } on Exception {
+      rethrow;
+    }
   }
 
   Future<Playlist> getPlaylistTracks(
       Playlist playlistTracks, int offset) async {
-    final response = await retry(() async {
+    try {
       var accessToken = await storage.read(key: 'accessToken');
+      final response = await retry(() async {
+        return await dio.get(
+          '/playlists/${playlistTracks.id}/tracks',
+          queryParameters: {
+            'limit': 50,
+            'offset': offset,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        );
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthController().syncSpotifyRemote();
+          accessToken = await storage.read(key: 'accessToken');
+          return true;
+        }
 
-      return await dio.get(
-        '/playlists/${playlistTracks.id}/tracks',
-        queryParameters: {
-          'limit': 50,
-          'offset': offset,
-        },
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        }, contentType: Headers.jsonContentType),
-      );
-    }, retryIf: (e) async {
-      if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-        return await AuthController().verifySync();
-      }
-
-      return false;
-    });
-    playlistTracks.fromInstance(response.data);
-    return playlistTracks;
+        return false;
+      });
+      playlistTracks.fromInstance(response.data);
+      return playlistTracks;
+    } on Exception {
+      rethrow;
+    }
   }
 }

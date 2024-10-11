@@ -17,6 +17,8 @@ class PlaylistController extends ChangeNotifier {
 
   final UserPlaylists _userPlaylists = UserPlaylists.instance;
 
+  String? lastError;
+
   void clearPlaylistsMemory() {
     if (_userPlaylists.playlists != null &&
         _userPlaylists.playlists!.isNotEmpty) {
@@ -32,25 +34,37 @@ class PlaylistController extends ChangeNotifier {
 
   Future<UserPlaylists> getCurrentUserPlaylists(
       {int limit = 25, required int offset}) async {
-    state.value = PlaylistState.loading;
-    if (offset == 0) {
-      clearPlaylistsMemory();
-    }
+    try {
+      state.value = PlaylistState.loading;
+      if (offset == 0) {
+        clearPlaylistsMemory();
+      }
 
-    return await PlaylistService()
-        .getCurrentUserPlaylists(_userPlaylists, limit, offset)
-        .whenComplete(() => state.value = PlaylistState.idle);
+      return await PlaylistService()
+          .getCurrentUserPlaylists(_userPlaylists, limit, offset)
+          .whenComplete(() => state.value = PlaylistState.idle);
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return UserPlaylists();
+    }
   }
 
   Future<Playlist> getPlaylistTracks(
       Playlist playlistTracks, int offset) async {
-    state.value = PlaylistState.loading;
-    if (offset == 0) {
-      clearTracksMemory(playlistTracks);
-    }
+    try {
+      state.value = PlaylistState.loading;
+      if (offset == 0) {
+        clearTracksMemory(playlistTracks);
+      }
 
-    return await PlaylistService()
-        .getPlaylistTracks(playlistTracks, offset)
-        .whenComplete(() => state.value = PlaylistState.idle);
+      return await PlaylistService()
+          .getPlaylistTracks(playlistTracks, offset)
+          .whenComplete(() => state.value = PlaylistState.idle);
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return Playlist();
+    }
   }
 }

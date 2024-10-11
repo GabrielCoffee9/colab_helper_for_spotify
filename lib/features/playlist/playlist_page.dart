@@ -1,5 +1,8 @@
 import '../../models/secundary models/playlist_model.dart';
 import '../../models/secundary models/track_model.dart';
+import '../../shared/modules/user/user_controller.dart';
+import '../../shared/widgets/empty_playlist_cover.dart';
+import '../../shared/widgets/profile_picture.dart';
 import '../../shared/widgets/song_tile.dart';
 import '../player/player_controller.dart';
 import 'playlist_controller.dart';
@@ -22,6 +25,9 @@ class PlaylistPage extends StatefulWidget {
 class _PlaylistPageState extends State<PlaylistPage> {
   PlaylistController playlistController = PlaylistController();
   PlayerController playerController = PlayerController.instance;
+
+  UserController userController = UserController();
+
   final ScrollController _scrollController = ScrollController();
 
   Playlist playlist = Playlist();
@@ -31,20 +37,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   bool isPaused = false;
 
+  bool upPage = false;
+
+  String? urlOwnerPlaylist;
+
   Future<void> getPlaylists({int offset = 0}) async {
-    playlistLoading.value = true;
+    if (mounted) {
+      playlistController.getPlaylistTracks(playlist, offset).then((value) {
+        setState(() {
+          playlist = value;
+        });
 
-    playlistController.getPlaylistTracks(playlist, offset).then((value) {
-      playlist = value;
-
-      if (mounted) {
-        setState(() {});
-      }
-
-      playlistLoading.value = false;
-    });
+        playlistLoading.value = false;
+      });
+    }
 
     return;
+  }
+
+  void getOwnerPlaylist(userId) {
+    userController.getUserUrlProfileImage(userId).then((value) {
+      setState(() {
+        urlOwnerPlaylist = value;
+      });
+    });
   }
 
   @override
@@ -52,10 +68,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
     playlist = widget.playlist;
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          mounted) {
-        setState(() {});
+      if (_scrollController.position.pixels > 300) {
+        setState(() {
+          upPage = true;
+        });
+      } else {
+        setState(() {
+          upPage = false;
+        });
       }
     });
 
@@ -78,6 +98,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     });
 
     getPlaylists();
+    getOwnerPlaylist(playlist.owner!.id);
     super.initState();
   }
 
@@ -93,23 +114,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
     return Scaffold(
       backgroundColor: colors.surface,
+      floatingActionButton: upPage
+          ? FloatingActionButton(
+              mini: true,
+              child: Icon(Icons.keyboard_double_arrow_up),
+              onPressed: () {
+                _scrollController.animateTo(
+                    _scrollController.position.minScrollExtent,
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.fastOutSlowIn);
+              })
+          : null,
       appBar: AppBar(
-        title: GestureDetector(
-          onDoubleTap: () {
-            _scrollController.animateTo(
-                _scrollController.position.minScrollExtent,
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.fastOutSlowIn);
-          },
-          child: Text(
-            playlistLoading.value ? '' : playlist.name ?? 'Unnamed Playlist',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 22,
-              color: colors.onSurface,
-            ),
-          ),
-        ),
         primary: true,
         actions: [
           IconButton(
@@ -138,10 +154,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () => getPlaylists(),
-        child: playlist.tracks?.isEmpty ?? true && playlistLoading.value
+        child: (playlistLoading.value)
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: const [
                     CircularProgressIndicator(),
                     Text('Loading')
@@ -155,42 +172,85 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 controller: _scrollController,
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 170,
-                            height: 120,
-                            child: CachedNetworkImage(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: 220,
+                          height: 220,
+                          child: CachedNetworkImage(
+                              fit: BoxFit.cover,
                               imageUrl: playlist.images?.first.url! ?? '',
-                              memCacheWidth: 446,
-                              memCacheHeight: 315,
-                              maxWidthDiskCache: 446,
-                              maxHeightDiskCache: 315,
+                              memCacheWidth: 480,
+                              memCacheHeight: 350,
+                              maxWidthDiskCache: 480,
+                              maxHeightDiskCache: 350,
                               placeholder: (context, url) =>
-                                  Container(color: Colors.transparent),
-                              errorWidget: (context, url, error) => Container(
-                                width: 170,
-                                height: 170,
-                                color: Colors.grey[800],
-                                child: const Icon(
-                                  Icons.music_note_outlined,
-                                  color: Colors.white,
-                                  size: 80,
+                                  const EmptyPlaylistCover(),
+                              errorWidget: (context, url, error) =>
+                                  const EmptyPlaylistCover()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 12.0, right: 12.0, top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                playlistLoading.value
+                                    ? ''
+                                    : playlist.name ?? 'Unnamed Playlist',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  color: colors.onSurface,
                                 ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Row(
+                                  children: [
+                                    (playlist.owner?.id != 'spotify')
+                                        ? SizedBox(
+                                            width: 60,
+                                            child: ProfilePicture(
+                                              imageUrl: urlOwnerPlaylist ?? '',
+                                              avatar: true,
+                                            ),
+                                          )
+                                        : Image.asset(
+                                            'lib/assets/Spotify_Icon_RGB_Green.png',
+                                            height: 60,
+                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(playlist.owner?.displayName ??
+                                              ''),
+                                          Text(
+                                            "Creator",
+                                            style: TextStyle(
+                                                color: Colors.grey[500]),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SliverToBoxAdapter(
                     child: SizedBox.square(
                       child: Padding(
                         padding:
-                            const EdgeInsets.only(top: 8, left: 12, right: 12),
+                            const EdgeInsets.only(top: 12, left: 12, right: 12),
                         child: (playlist.tracks?.isNotEmpty ?? false)
                             ? Wrap(
                                 children: [
@@ -281,6 +341,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       );
                     },
                   ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 80),
+                  )
                 ],
               ),
       ),

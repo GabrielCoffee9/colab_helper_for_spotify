@@ -26,53 +26,58 @@ class _AuthPageState extends State<AuthPage> {
     super.initState();
 
     widget.authController.state.addListener(() {
-      if (widget.authController.state.value == AuthState.loading) {
-        buttonState = ButtonState.loading;
-        setState(() {});
-        return;
-      }
+      switch (widget.authController.state.value) {
+        case AuthState.loading:
+          setState(() {
+            buttonState = ButtonState.loading;
+          });
 
-      if (widget.authController.state.value == AuthState.error) {
-        buttonState = ButtonState.idle;
-        setState(() {
-          buildSnackBar(context);
-        });
-        return;
+          break;
+
+        case AuthState.error:
+          setState(() {
+            buttonState = ButtonState.idle;
+            buildSnackBar(context, error: widget.authController.lastError);
+          });
+          break;
+
+        case AuthState.success:
+          widget.userController.getUserProfile();
+          break;
+
+        default:
+          return;
       }
     });
 
     widget.userController.state.addListener(() {
-      if (widget.userController.state.value == UserState.error) {
-        setState(() {
-          buttonState = ButtonState.idle;
-          buildSnackBar(context);
-        });
-        return;
-      }
+      switch (widget.userController.state.value) {
+        case UserState.error:
+          setState(() {
+            buttonState = ButtonState.idle;
+            buildSnackBar(context, error: widget.userController.lastError);
+          });
 
-      if (widget.authController.state.value == AuthState.idle &&
-          widget.userController.state.value == UserState.success) {
-        widget.userController.state.value = UserState.idle;
+          break;
+        case UserState.success:
+          widget.userController.state.value = UserState.idle;
+          setState(() {
+            buttonState = ButtonState.done;
+          });
 
-        setState(() {
-          buttonState = ButtonState.done;
-        });
+          if (mounted) {
+            Future.delayed(const Duration(seconds: 1))
+                // ignore: use_build_context_synchronously
+                .then((value) => Navigator.popAndPushNamed(context, '/app'));
+          }
+          break;
 
-        if (mounted) {
-          Future.delayed(const Duration(seconds: 1))
-              // ignore: use_build_context_synchronously
-              .then((value) => Navigator.popAndPushNamed(context, '/app'));
-        }
-
-        return;
-      }
-    });
-
-    widget.authController.verifySync().then((value) async {
-      if (value) {
-        await widget.userController.getUserProfile();
+        default:
+          return;
       }
     });
+
+    widget.authController.syncSpotifyRemote();
   }
 
   @override
@@ -105,10 +110,8 @@ class _AuthPageState extends State<AuthPage> {
                   width: 300,
                   child: buttonState == ButtonState.idle
                       ? ElevatedButton(
-                          onPressed: () async {
-                            if (await widget.authController.verifySync()) {
-                              await widget.userController.getUserProfile();
-                            }
+                          onPressed: () {
+                            widget.authController.syncSpotifyRemote();
                           },
                           child: const Text('Sync account'),
                         )
@@ -131,12 +134,13 @@ class _AuthPageState extends State<AuthPage> {
   }
 }
 
-void buildSnackBar(BuildContext context) {
+void buildSnackBar(BuildContext context, {String? error}) {
   return WidgetsBinding.instance.addPostFrameCallback(
       (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: const Duration(seconds: 5),
-            content:
-                const Text('Error! Check your connection and try again later.'),
+            duration: Duration(seconds: 10),
+            content: Text(
+              error ?? ('Error! Check your connection and try again later.'),
+            ),
             action: SnackBarAction(
               label: 'Ok',
               onPressed: () {},

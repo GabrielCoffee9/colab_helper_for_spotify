@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../shared/widgets/empty_playlist_cover.dart';
 import 'player_controller.dart';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:spotify_sdk/models/player_state.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter/material.dart';
 
 class MusicPlayer extends StatefulWidget {
@@ -93,18 +94,14 @@ class _MusicPlayerState extends State<MusicPlayer> {
                     child: SizedBox(
                       height: 360,
                       width: 360,
-                      child: FadeInImage.memoryNetwork(
-                          imageScale: 1.78,
-                          placeholder: kTransparentImage,
-                          imageErrorBuilder: (context, error, stackTrace) {
-                            return const EmptyPlaylistCover(
-                              height: 355,
-                              width: 355,
-                              size: 60,
-                            );
-                          },
-                          image:
-                              'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}'),
+                      child: CachedNetworkImage(
+                        // imageScale: 1.78,
+                        placeholder: (context, url) => EmptyPlaylistCover(),
+                        errorWidget: (context, url, error) =>
+                            EmptyPlaylistCover(),
+                        imageUrl:
+                            'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}',
+                      ),
                     ),
                   ),
                   Padding(

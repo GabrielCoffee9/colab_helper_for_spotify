@@ -11,48 +11,55 @@ class AuthController extends ChangeNotifier {
 
   var storage = const FlutterSecureStorage();
 
-  Future<bool> verifySync() async {
-    String? accessTokenValue = await storage.read(key: 'accessToken');
-    String? accessTokenDate = await storage.read(key: 'accessTokenDate');
+  String? lastError;
 
-    bool validToken = isValidToken(accessTokenValue, accessTokenDate);
+  Future<bool> syncSpotifyRemote() async {
+    try {
+      String? accessTokenValue = await storage.read(key: 'accessToken');
+      String? accessTokenDate = await storage.read(key: 'accessTokenDate');
 
-    if (!validToken) {
-      await storage.delete(key: 'accessToken');
-      await storage.delete(key: 'accessTokenDate');
+      bool validToken = isValidToken(accessTokenValue, accessTokenDate);
 
-      state.value = AuthState.loading;
+      if (!validToken) {
+        await storage.delete(key: 'accessToken');
+        await storage.delete(key: 'accessTokenDate');
 
-      var newToken = await AuthService().getToken();
+        state.value = AuthState.loading;
 
-      if (newToken.isEmpty) {
-        state.value = AuthState.error;
-        state.value = AuthState.idle;
-        return false;
+        var newToken =
+            await AuthService().getNewTokenAndConnectToSpotifyRemote();
+
+        if (newToken.isEmpty) {
+          lastError = 'Error at getToken Function';
+          state.value = AuthState.error;
+          return false;
+        }
       }
 
-      await storage.write(key: 'accessToken', value: newToken);
-      await storage.write(
-          key: 'accessTokenDate',
-          value: DateTime.now().millisecondsSinceEpoch.toString());
+      state.value = AuthState.success;
+      lastError = '';
+      return true;
+    } on Exception catch (error) {
+      lastError = error.toString();
+      state.value = AuthState.error;
+      return false;
     }
-
-    state.value = AuthState.success;
-    state.value = AuthState.idle;
-
-    return true;
   }
 
   bool isValidToken(String? tokenValue, String? tokenDate) {
-    if (tokenValue != null && tokenDate != null) {
-      final actualDateTime = DateTime.now().millisecondsSinceEpoch;
+    try {
+      if (tokenValue != null && tokenDate != null) {
+        final actualDateTime = DateTime.now().millisecondsSinceEpoch;
 
-      final timeDiff = (actualDateTime - int.parse(tokenDate));
+        final timeDiff = (actualDateTime - int.parse(tokenDate));
 
-      return timeDiff > 3600 ? false : true;
+        return timeDiff > 3600 ? false : true;
+      }
+
+      return false;
+    } on Exception {
+      rethrow;
     }
-
-    return false;
   }
 
   // verifyAppConnection() async {

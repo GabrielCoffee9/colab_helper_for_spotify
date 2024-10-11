@@ -43,7 +43,6 @@ dependencies:
   appcheck: ^1.0.5
   dio: ^5.7.0
   retry: ^3.1.0
-  transparent_image: ^2.0.0
   animations: ^2.0.4
   badges: ^3.1.2
   html_unescape: ^2.0.0

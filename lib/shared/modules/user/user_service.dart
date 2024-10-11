@@ -16,26 +16,46 @@ class UserService {
   }
 
   Future<bool> getCurrentUserProfile() async {
+    try {
+      final response = await retry(() async {
+        var accessToken = await storage.read(key: 'accessToken');
+
+        return await dio.get(
+          '/me',
+          options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        );
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthService().getNewTokenAndConnectToSpotifyRemote();
+          return true;
+        }
+
+        return false;
+      });
+
+      userProfile.fromJson(response.data);
+      return true;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<String> getUserUrlProfileImage(userId) async {
     final response = await retry(() async {
       var accessToken = await storage.read(key: 'accessToken');
 
       return await dio.get(
-        '/me',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json'
-        }, contentType: Headers.jsonContentType),
+        '/users/$userId',
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
     }, retryIf: (e) async {
       if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-        await AuthService().getToken();
+        await AuthService().getNewTokenAndConnectToSpotifyRemote();
         return true;
       }
 
       return false;
     });
-
-    userProfile.fromJson(response.data);
-    return true;
+    return response.data['images'][0]['url'];
   }
 }

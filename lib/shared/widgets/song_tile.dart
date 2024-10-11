@@ -57,9 +57,9 @@ class SongTile extends StatelessWidget {
             maxHeightDiskCache: 147,
             placeholder: (context, url) => Container(color: Colors.transparent),
             errorWidget: (context, url, error) => EmptyPlaylistCover(
-              size: 30,
-              height: 200,
-              width: 200,
+              height: 150,
+              width: 170,
+              size: 60,
             ),
           ),
         ),

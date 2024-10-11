@@ -120,9 +120,13 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Row(
                                   children: [
-                                    ProfilePicture(
-                                        imageUrl:
-                                            userProfile.images?.first.url),
+                                    SizedBox(
+                                      width: 60,
+                                      child: ProfilePicture(
+                                        imageUrl: userProfile.images?.first.url,
+                                        avatar: true,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
                                     Column(
                                       crossAxisAlignment:
@@ -204,11 +208,12 @@ class _HomePageState extends State<HomePage> {
                           child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
-                            itemCount:
-                                userPlaylists.playlists?.isNotEmpty ?? false
-                                    ? userPlaylists.playlists?.length
-                                    : 0,
-                            cacheExtent: 5,
+                            itemCount: (userPlaylists.playlists!.length > 5
+                                ? 5
+                                : userPlaylists.playlists!.length),
+                            cacheExtent: (userPlaylists.playlists!.length > 5
+                                ? 5
+                                : userPlaylists.playlists!.length.toDouble()),
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
                                 onTap: () async {

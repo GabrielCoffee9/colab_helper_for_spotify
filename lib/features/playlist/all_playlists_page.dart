@@ -1,11 +1,11 @@
 import '../../models/primary models/user_playlists_model.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
+import 'widgets/search_playlists.dart';
 import 'playlist_controller.dart';
 import 'playlist_page.dart';
-import 'widgets/search_playlists.dart';
 
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AllPlaylistsPage extends StatefulWidget {
   const AllPlaylistsPage({super.key});
@@ -117,27 +117,24 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                         child: Column(
                           children: [
                             SizedBox(
-                              child: userPlaylists.playlists![index].images
-                                          ?.isNotEmpty ??
-                                      false
-                                  ? SizedBox(
-                                      height: 150,
-                                      width: 170,
-                                      child: FadeInImage.memoryNetwork(
-                                        imageCacheWidth: 446,
-                                        imageCacheHeight: 393,
-                                        fit: BoxFit.fill,
-                                        placeholder: kTransparentImage,
-                                        image: userPlaylists.playlists![index]
-                                                .images!.first.url ??
-                                            '',
-                                      ),
-                                    )
-                                  : const EmptyPlaylistCover(
-                                      height: 150,
-                                      width: 170,
-                                      size: 60,
-                                    ),
+                              child: SizedBox(
+                                height: 162,
+                                width: 170,
+                                child: CachedNetworkImage(
+                                  memCacheWidth: 446,
+                                  memCacheHeight: 393,
+                                  maxWidthDiskCache: 446,
+                                  maxHeightDiskCache: 393,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      EmptyPlaylistCover(),
+                                  errorWidget: (context, url, error) =>
+                                      EmptyPlaylistCover(),
+                                  imageUrl: userPlaylists.playlists![index]
+                                          .images?.first.url ??
+                                      '',
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 2),
                             Padding(
