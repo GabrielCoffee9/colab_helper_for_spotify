@@ -19,7 +19,7 @@ class PlayerService {
         );
       }, retryIf: (e) async {
         if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-          await AuthController().syncSpotifyRemote();
+          await AuthController().syncSpotifyRemote(forceTokenRefresh: true);
           accessToken = await storage.read(key: 'accessToken');
           return true;
         }

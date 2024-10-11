@@ -13,12 +13,18 @@ class AuthController extends ChangeNotifier {
 
   String? lastError;
 
-  Future<bool> syncSpotifyRemote() async {
+  Future<bool> syncSpotifyRemote({bool forceTokenRefresh = false}) async {
     try {
-      String? accessTokenValue = await storage.read(key: 'accessToken');
-      String? accessTokenDate = await storage.read(key: 'accessTokenDate');
+      bool validToken;
 
-      bool validToken = isValidToken(accessTokenValue, accessTokenDate);
+      if (forceTokenRefresh) {
+        validToken = false;
+      } else {
+        String? accessTokenValue = await storage.read(key: 'accessToken');
+        String? accessTokenDate = await storage.read(key: 'accessTokenDate');
+
+        validToken = isValidToken(accessTokenValue, accessTokenDate);
+      }
 
       if (!validToken) {
         await storage.delete(key: 'accessToken');
