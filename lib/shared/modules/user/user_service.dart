@@ -56,6 +56,11 @@ class UserService {
 
       return false;
     });
-    return response.data['images'][0]['url'];
+    List<dynamic> imagesList = response.data['images'];
+    if (imagesList.isNotEmpty) {
+      return response.data['images'][0]['url'];
+    } else {
+      return '';
+    }
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-// import 'package:colab_helper_for_spotify/features/auth/auth_controller.dart';
-import 'package:colab_helper_for_spotify/features/player/music_player.dart';
-import 'package:colab_helper_for_spotify/features/player/player_service.dart';
+import '../../models/secundary models/devices.dart';
+import 'player_service.dart';
+import 'player_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -37,7 +38,7 @@ class PlayerController {
                             begin: Offset(0, 0.5), end: const Offset(0, 0))
                         .animate(
                             CurvedAnimation(parent: a1, curve: Curves.ease)),
-                    child: MusicPlayer(initialPlayerState: initialPlayerState)),
+                    child: PlayerPage(initialPlayerState: initialPlayerState)),
           );
         });
       }
@@ -102,7 +103,19 @@ class PlayerController {
     }
   }
 
-  getAvailableDevices() async {
-    await PlayerService().getAvailableDevices();
+  Future<List<Devices>> getAvailableDevices() async {
+    try {
+      return await PlayerService().getAvailableDevices();
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<void> transferPlayback(deviceId) async {
+    try {
+      return await PlayerService().transferPlayback(deviceId);
+    } on Exception {
+      rethrow;
+    }
   }
 }

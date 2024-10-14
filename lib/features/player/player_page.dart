@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../models/primary models/user_profile_model.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import 'player_controller.dart';
 
@@ -7,14 +8,16 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:flutter/material.dart';
 
-class MusicPlayer extends StatefulWidget {
-  const MusicPlayer({super.key, required this.initialPlayerState});
+import 'widgets/devices_dialog.dart';
+
+class PlayerPage extends StatefulWidget {
+  const PlayerPage({super.key, required this.initialPlayerState});
   final PlayerState? initialPlayerState;
   @override
-  State<MusicPlayer> createState() => _MusicPlayerState();
+  State<PlayerPage> createState() => _PlayerPageState();
 }
 
-class _MusicPlayerState extends State<MusicPlayer> {
+class _PlayerPageState extends State<PlayerPage> {
   PlayerController playerController = PlayerController.instance;
   int _playerCurrentPosition = 0;
 
@@ -43,6 +46,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
     final ColorScheme colors = Theme.of(context).colorScheme;
     return Dialog(
       insetPadding: EdgeInsets.zero,
@@ -95,12 +99,17 @@ class _MusicPlayerState extends State<MusicPlayer> {
                       height: 360,
                       width: 360,
                       child: CachedNetworkImage(
-                        // imageScale: 1.78,
                         placeholder: (context, url) => EmptyPlaylistCover(),
                         errorWidget: (context, url, error) =>
                             EmptyPlaylistCover(),
                         imageUrl:
                             'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}',
+                        imageBuilder: (context, image) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            image: DecorationImage(image: image),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -138,13 +147,20 @@ class _MusicPlayerState extends State<MusicPlayer> {
                   SizedBox(
                     width: 355,
                     height: 20,
-                    child: ProgressBar(
-                        onSeek: ((value) =>
-                            playerController.seekTo(value.inMilliseconds)),
-                        progress:
-                            Duration(milliseconds: _playerCurrentPosition),
-                        total: Duration(
-                            milliseconds: snapshot.data?.track?.duration ?? 0)),
+                    child: IgnorePointer(
+                      ignoring: freeUser,
+                      child: ProgressBar(
+                          thumbRadius: freeUser ? 0 : 10.0,
+                          onSeek: freeUser
+                              ? null
+                              : ((value) => playerController
+                                  .seekTo(value.inMilliseconds)),
+                          progress:
+                              Duration(milliseconds: _playerCurrentPosition),
+                          total: Duration(
+                              milliseconds:
+                                  snapshot.data?.track?.duration ?? 0)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -156,7 +172,14 @@ class _MusicPlayerState extends State<MusicPlayer> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DevicesDialog();
+                              },
+                            );
+                          },
                           icon: const Icon(Icons.devices_rounded),
                         ),
                         IconButton(
