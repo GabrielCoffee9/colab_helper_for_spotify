@@ -22,6 +22,7 @@ class Playlist {
   String? type;
   String? uri;
   bool haveImage = false;
+  int total = 0;
 
   Playlist(
       {this.collaborative,
@@ -50,6 +51,7 @@ class Playlist {
         ? ExternalUrls.fromJson(json['external_urls'])
         : null;
     href = json['href'];
+    total = json['total'] ?? 0;
     id = json['id'] ?? id;
     if (json['images'] != null) {
       images = <Images>[];
@@ -91,6 +93,12 @@ class Playlist {
   }
 
   fromInstance(Map<String, dynamic> json) {
+    var previousInvalidTracks = 0;
+
+    if (tracks?.isNotEmpty ?? false) {
+      previousInvalidTracks = tracks!.last.previousInvalidTracks;
+    }
+
     hasMoreToLoad = true;
     collaborative = json['collaborative'] ?? collaborative;
     description = json['description'] ?? description;
@@ -98,6 +106,7 @@ class Playlist {
         ? ExternalUrls.fromJson(json['external_urls'])
         : null;
     href = json['href'];
+    total = json['total'] ?? 0;
     id = json['id'] ?? id;
     if (json['images'] != null) {
       images = <Images>[];
@@ -117,15 +126,31 @@ class Playlist {
     snapshotId = json['snapshot_id'];
 
     if (json['items'] != null) {
-      // tracks = <Track>[];
       json['items'].forEach((v) {
-        tracks!.add(Track.fromJson(v['track']));
+        var newTrack = Track.fromJson(v['track']);
+        if (((newTrack.name?.isEmpty ?? true) && (newTrack.durationMs == 0)) ||
+            newTrack.previewUrl == null) {
+          newTrack.invalid = true;
+          previousInvalidTracks++;
+        }
+
+        if (previousInvalidTracks > 0) {
+          newTrack.previousInvalidTracks = previousInvalidTracks;
+        }
+        tracks!.add(newTrack);
       });
     }
 
     if (json['tracks'] != null) {
-      // tracks = <Track>[];
-      tracks!.add(Track.fromJson(json['tracks']));
+      var newTrack = Track.fromJson(json['tracks']);
+      if ((newTrack.name?.isEmpty ?? true) && (newTrack.durationMs == 0)) {
+        newTrack.invalid = true;
+        previousInvalidTracks++;
+      }
+      if (previousInvalidTracks > 0) {
+        newTrack.previousInvalidTracks = previousInvalidTracks;
+      }
+      tracks!.add(newTrack);
     }
 
     if (json['next'] == null) {

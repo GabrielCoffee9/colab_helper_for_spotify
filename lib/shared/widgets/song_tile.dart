@@ -10,6 +10,7 @@ class SongTile extends StatelessWidget {
     required this.imageUrl,
     required this.playingNow,
     required this.selected,
+    required this.invalidTrack,
     required this.onTap,
   });
   final String? songName;
@@ -17,6 +18,7 @@ class SongTile extends StatelessWidget {
   final String? imageUrl;
   final bool selected;
   final bool playingNow;
+  final bool invalidTrack;
   final void Function()? onTap;
 
   @override
@@ -63,16 +65,18 @@ class SongTile extends StatelessWidget {
             ),
           ),
         ),
-        trailing: playingNow
-            ? const Icon(
-                Icons.pause_circle,
-                size: 40,
-              )
-            : const Icon(
-                Icons.play_arrow_rounded,
-                size: 40,
-              ),
-        onTap: onTap,
+        trailing: invalidTrack
+            ? null
+            : playingNow
+                ? const Icon(
+                    Icons.pause_circle,
+                    size: 40,
+                  )
+                : const Icon(
+                    Icons.play_arrow_rounded,
+                    size: 40,
+                  ),
+        onTap: invalidTrack ? null : onTap,
       ),
     );
   }

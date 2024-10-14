@@ -37,7 +37,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   bool isPaused = false;
 
-  bool upPage = false;
+  bool showScrollToTopButton = false;
 
   String? urlOwnerPlaylist;
 
@@ -54,8 +54,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return;
   }
 
-  void getOwnerPlaylist(userId) {
-    userController.getUserUrlProfileImage(userId).then((value) {
+  void getOwnerPlaylist() {
+    userController.getUserUrlProfileImage(playlist.owner!.id).then((value) {
       setState(() {
         urlOwnerPlaylist = value;
       });
@@ -68,14 +68,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels > 300) {
-        if (!upPage) {
+        if (!showScrollToTopButton) {
           setState(() {
-            upPage = true;
+            showScrollToTopButton = true;
           });
         }
       } else {
         setState(() {
-          upPage = false;
+          showScrollToTopButton = false;
         });
       }
     });
@@ -99,7 +99,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     });
 
     getTracks();
-    getOwnerPlaylist(playlist.owner!.id);
+    getOwnerPlaylist();
     super.initState();
   }
 
@@ -115,7 +115,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      floatingActionButton: upPage
+      floatingActionButton: showScrollToTopButton
           ? FloatingActionButton(
               mini: true,
               child: Icon(Icons.keyboard_double_arrow_up),
@@ -293,14 +293,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       itemCount: playlist.tracks?.length ?? 0,
                       itemBuilder: (context, index) {
                         if (index + 1 == (playlist.tracks?.length ?? 0) &&
-                            (playlist.hasMoreToLoad) &&
+                            ((playlist.total) > (index + 1)) &&
                             playlistController.state.value !=
                                 PlaylistState.loading) {
                           getTracks(offset: index + 1);
                         }
 
-                        if (playlistController.state.value ==
-                            PlaylistState.loading) {
+                        if ((index + 1 >= (playlist.tracks?.length ?? 0)) &&
+                            playlistController.state.value ==
+                                PlaylistState.loading) {
                           return Column(
                             key: Key('$index'),
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -339,6 +340,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                 playingNow: (selectedSongUri ==
                                         playlist.tracks?[index].uri) &&
                                     !isPaused,
+                                invalidTrack:
+                                    playlist.tracks?[index].invalid ?? true,
                                 onTap: () {
                                   setState(() {
                                     if (selectedSongUri ==
@@ -348,7 +351,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                           : playerController.pause();
                                     } else {
                                       playerController.playIndexPlaylist(
-                                          index, playlist.uri);
+                                          index -
+                                              (playlist.tracks?[index]
+                                                      .previousInvalidTracks ??
+                                                  0),
+                                          playlist.uri);
                                     }
                                   });
                                 },

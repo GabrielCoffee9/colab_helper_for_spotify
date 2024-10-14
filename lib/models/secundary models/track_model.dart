@@ -26,6 +26,8 @@ class Track {
   String? uri;
   List<Images>? images;
   String? allArtists;
+  bool invalid = false;
+  int previousInvalidTracks = 0;
 
   Track(
       {this.album,
