@@ -1,5 +1,6 @@
 import '../../models/primary models/user_playlists_model.dart';
 import '../../models/primary models/user_profile_model.dart';
+import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/colab_playlist_card.dart';
 import '../../shared/widgets/music_visualizer.dart';
@@ -28,6 +29,10 @@ class _HomePageState extends State<HomePage> {
 
   bool userPlaylistsLoading = true;
 
+  void getUserProfile() {
+    UserController().getUserProfile();
+  }
+
   Future<void> getPlaylists({int offset = 0}) async {
     playlistController.getCurrentUserPlaylists(limit: 5, offset: offset).then(
       (value) {
@@ -44,6 +49,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    getUserProfile();
     getPlaylists();
     super.initState();
   }
@@ -111,58 +117,55 @@ class _HomePageState extends State<HomePage> {
                 : SliverToBoxAdapter(
                     child: Column(
                       children: [
-                        Container(
-                          color: colors.surface,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 60,
-                                      child: ProfilePicture(
-                                        imageUrl: userProfile.images?.first.url,
-                                        avatar: true,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                    child: ProfilePicture(
+                                      imageUrl: userProfile.images?.first.url,
+                                      avatar: true,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(userProfile.displayName ?? ''),
+                                      Text(
+                                        '${userProfile.product}',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(userProfile.displayName!),
-                                        Text(
-                                          '${userProfile.product}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    HomeInteractiveButton(
-                                        notificationCounter: 0,
-                                        onPressed: () {},
-                                        colors: colors,
-                                        iconButton:
-                                            Icons.notifications_none_outlined),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    HomeInteractiveButton(
-                                        notificationCounter: 0,
-                                        onPressed: () {},
-                                        colors: colors,
-                                        iconButton: Icons.message_outlined),
-                                    const SizedBox(width: 2),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  HomeInteractiveButton(
+                                      notificationCounter: 0,
+                                      onPressed: () {},
+                                      colors: colors,
+                                      iconButton:
+                                          Icons.notifications_none_outlined),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  HomeInteractiveButton(
+                                      notificationCounter: 0,
+                                      onPressed: () {},
+                                      colors: colors,
+                                      iconButton: Icons.message_outlined),
+                                  const SizedBox(width: 2),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                         Padding(
@@ -193,7 +196,8 @@ class _HomePageState extends State<HomePage> {
                                           },
                                           label: const Text('View all'),
                                           icon: const Icon(
-                                              Icons.navigate_before_outlined),
+                                            Icons.navigate_before_outlined,
+                                          ),
                                         ),
                                       ),
                                     ],

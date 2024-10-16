@@ -1,5 +1,8 @@
 import 'auth_service.dart';
 
+import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'package:spotify_sdk/spotify_sdk.dart';
@@ -11,18 +14,20 @@ class AuthController extends ChangeNotifier {
 
   var storage = const FlutterSecureStorage();
 
+  Stream<ConnectionStatus> get connectionStatus =>
+      SpotifySdk.subscribeConnectionStatus().asBroadcastStream();
+
   String? lastError;
 
   Future<bool> syncSpotifyRemote({bool forceTokenRefresh = false}) async {
     try {
       bool validToken;
+      String? accessTokenValue = await storage.read(key: 'accessToken');
 
       if (forceTokenRefresh) {
         validToken = false;
       } else {
-        String? accessTokenValue = await storage.read(key: 'accessToken');
         String? accessTokenDate = await storage.read(key: 'accessTokenDate');
-
         validToken = isValidToken(accessTokenValue, accessTokenDate);
       }
 
@@ -30,24 +35,12 @@ class AuthController extends ChangeNotifier {
         await storage.delete(key: 'accessToken');
         await storage.delete(key: 'accessTokenDate');
 
-        state.value = AuthState.loading;
-
-        var newToken =
-            await AuthService().getNewTokenAndConnectToSpotifyRemote();
-
-        if (newToken.isEmpty) {
-          lastError = 'Error at getToken Function';
-          state.value = AuthState.error;
-          return false;
-        }
+        return await AuthService().getNewTokenAndConnectToSpotifyRemote();
+      } else {
+        return await AuthService().connectSpotifyRemote(accessTokenValue);
       }
-
-      state.value = AuthState.success;
-      lastError = '';
-      return true;
     } on Exception catch (error) {
       lastError = error.toString();
-      state.value = AuthState.error;
       return false;
     }
   }

@@ -1,5 +1,4 @@
 import '../../shared/modules/user/user_controller.dart';
-import '../../shared/static/color_schemes.g.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/circular_progress.dart';
 import 'auth_controller.dart';
@@ -21,63 +20,45 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   ButtonState buttonState = ButtonState.idle;
 
-  @override
-  void initState() {
-    super.initState();
-
-    widget.authController.state.addListener(() {
-      switch (widget.authController.state.value) {
-        case AuthState.loading:
-          setState(() {
-            buttonState = ButtonState.loading;
-          });
-
-          break;
-
-        case AuthState.error:
-          setState(() {
-            buttonState = ButtonState.idle;
-            buildSnackBar(context, error: widget.authController.lastError);
-          });
-          break;
-
-        case AuthState.success:
-          widget.userController.getUserProfile();
-          break;
-
-        default:
-          return;
-      }
-    });
-
-    widget.userController.state.addListener(() {
-      switch (widget.userController.state.value) {
-        case UserState.error:
-          setState(() {
-            buttonState = ButtonState.idle;
-            buildSnackBar(context, error: widget.userController.lastError);
-          });
-
-          break;
-        case UserState.success:
-          widget.userController.state.value = UserState.idle;
-          setState(() {
-            buttonState = ButtonState.done;
-          });
-
-          if (mounted) {
-            Future.delayed(const Duration(seconds: 1))
-                // ignore: use_build_context_synchronously
-                .then((value) => Navigator.popAndPushNamed(context, '/app'));
-          }
-          break;
-
-        default:
-          return;
-      }
+  void syncSpotify() {
+    setState(() {
+      buttonState = ButtonState.loading;
     });
 
     widget.authController.syncSpotifyRemote();
+  }
+
+  @override
+  void initState() {
+    widget.authController.connectionStatus.listen(
+      (event) {
+        if (event.connected) {
+          if (mounted) {
+            setState(() {
+              buttonState = ButtonState.done;
+            });
+            Future.delayed(const Duration(seconds: 1))
+                // ignore: use_build_context_synchronously
+                .then((_) => Navigator.popAndPushNamed(context, '/app'));
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              buttonState = ButtonState.idle;
+              buildSnackBar(context, error: event.message);
+            });
+          }
+        }
+      },
+    );
+
+    syncSpotify();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -111,19 +92,12 @@ class _AuthPageState extends State<AuthPage> {
                   child: buttonState == ButtonState.idle
                       ? ElevatedButton(
                           onPressed: () {
-                            widget.authController.syncSpotifyRemote();
+                            syncSpotify();
                           },
                           child: const Text('Sync account'),
                         )
                       : CircularProgress(
-                          backgroundColor: isDarkMode
-                              ? darkColorScheme.onPrimary
-                              : lightColorScheme.onPrimary,
-                          circularColor: isDarkMode
-                              ? darkColorScheme.primary
-                              : lightColorScheme.primary,
-                          isDone: buttonState == ButtonState.done,
-                        ),
+                          isDone: buttonState == ButtonState.done),
                 )
               ],
             ),
@@ -136,14 +110,17 @@ class _AuthPageState extends State<AuthPage> {
 
 void buildSnackBar(BuildContext context, {String? error}) {
   return WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: Duration(seconds: 10),
-            content: Text(
-              error ?? ('Error! Check your connection and try again later.'),
-            ),
-            action: SnackBarAction(
-              label: 'Ok',
-              onPressed: () {},
-            ),
-          )));
+    (_) => ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: 10),
+        content: Text(
+          error ?? ('Error! Check your connection and try again later.'),
+        ),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {},
+        ),
+      ),
+    ),
+  );
 }

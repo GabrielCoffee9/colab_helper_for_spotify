@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import '../../shared/widgets/syncing_spotify.dart';
+import '../auth/auth_controller.dart';
 import 'home_page.dart';
 
 import 'package:animations/animations.dart';
@@ -11,6 +15,29 @@ class AppScreens extends StatefulWidget {
 }
 
 class _AppScreensState extends State<AppScreens> {
+  bool showingSync = false;
+  @override
+  void initState() {
+    AuthController().connectionStatus.listen((data) {
+      if (!data.connected && !showingSync) {
+        showingSync = true;
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return SyncingSpotify();
+          },
+        );
+      } else {
+        if (showingSync) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
+
+    super.initState();
+  }
+
   int pageIndex = 0;
   List<Widget> pageList = <Widget>[
     const HomePage(),

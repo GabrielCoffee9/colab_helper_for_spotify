@@ -16,23 +16,35 @@ class HomeInteractiveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return badges.Badge(
-      showBadge: notificationCounter > 0,
-      badgeContent: Text((notificationCounter).toString()),
-      badgeAnimation: badges.BadgeAnimation.fade(),
-    
-      child: IconButton(
-        onPressed: onPressed,
-        style: IconButton.styleFrom(
-          foregroundColor: colors.onSecondaryContainer,
-          backgroundColor: colors.secondaryContainer,
-          disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
-          hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
-          focusColor: colors.onSecondaryContainer.withOpacity(0.12),
-          highlightColor: colors.onSecondaryContainer.withOpacity(0.12),
+    return Stack(
+      children: [
+        IconButton(
+          padding: EdgeInsets.zero,
+          onPressed: onPressed,
+          style: IconButton.styleFrom(
+            foregroundColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
+            hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
+            focusColor: colors.onSecondaryContainer.withOpacity(0.12),
+            highlightColor: colors.onSecondaryContainer.withOpacity(0.12),
+          ),
+          icon: Icon(
+            iconButton,
+            size: 24,
+            color: colors.primary,
+          ),
         ),
-        icon: Icon(iconButton, size: 24),
-      ),
+        Positioned(
+          right: 1,
+          top: 1,
+          child: badges.Badge(
+            showBadge: notificationCounter > 0,
+            badgeContent: Text((notificationCounter).toString()),
+            badgeAnimation: badges.BadgeAnimation.fade(),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,4 +1,5 @@
 import '../../models/primary models/user_playlists_model.dart';
+import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import 'widgets/search_playlists.dart';
 import 'playlist_controller.dart';
@@ -98,7 +99,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          CircularProgressIndicator(),
+                          CircularProgress(isDone: false),
                           Text('Loading')
                         ],
                       );

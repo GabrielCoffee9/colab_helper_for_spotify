@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 const devicesIconList = {
   "Smartphone": Icons.smartphone_outlined,
-  "Computer": Icons.computer_outlined
+  "Computer": Icons.computer_outlined,
+  "Speaker": Icons.speaker,
 };
 
 class DeviceTile extends StatelessWidget {

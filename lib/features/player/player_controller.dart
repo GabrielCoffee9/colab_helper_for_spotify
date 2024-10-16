@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import '../../models/secundary models/devices.dart';
 import 'player_service.dart';
 import 'player_page.dart';
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -20,7 +19,12 @@ class PlayerController {
   //UniqueInstance
   PlayerController._();
 
-  final playerState = SpotifySdk.subscribePlayerState().asBroadcastStream();
+  final playerState =
+      SpotifySdk.subscribePlayerState().asBroadcastStream().handleError((data) {
+    return;
+  });
+
+  final playerContext = SpotifySdk.subscribeConnectionStatus();
 
   Future<void> showPlayerDialog(BuildContext context) async {
     try {
@@ -80,7 +84,7 @@ class PlayerController {
     SpotifySdk.seekTo(positionedMilliseconds: seek);
   }
 
-  void startPlayerTimer() {
+  void resumePlayerProgress() {
     if (playerTimer?.isActive ?? false) {
       playerTimer!.cancel();
     }
@@ -89,7 +93,7 @@ class PlayerController {
       const Duration(milliseconds: 1000),
       (timer) {
         if (playerCurrentPosition.value >= playertotal.value) {
-          stopPlayerTimer();
+          pausePlayerProgress();
         }
 
         playerCurrentPosition.value += 1000;
@@ -97,7 +101,7 @@ class PlayerController {
     );
   }
 
-  void stopPlayerTimer() {
+  void pausePlayerProgress() {
     if (playerTimer != null) {
       playerTimer!.cancel();
     }
@@ -111,9 +115,13 @@ class PlayerController {
     }
   }
 
-  Future<void> transferPlayback(deviceId) async {
+  Future<void> transferPlayback(String? deviceId) async {
     try {
-      return await PlayerService().transferPlayback(deviceId);
+      if (deviceId != null || deviceId!.isNotEmpty) {
+        return await PlayerService().transferPlayback(deviceId);
+      }
+
+      throw Exception('DeviceId invalid in TransferPlayblack');
     } on Exception {
       rethrow;
     }

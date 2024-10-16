@@ -26,8 +26,8 @@ class AuthService {
 
   /// Get a new access token and connects to spotify remote client.
   ///
-  /// Returns the access token as [String] if succesful.
-  Future<String> getNewTokenAndConnectToSpotifyRemote() async {
+  /// Returns a confirmation [bool].
+  Future<bool> getNewTokenAndConnectToSpotifyRemote() async {
     try {
       String token;
 
@@ -36,9 +36,6 @@ class AuthService {
         redirectUrl: _appRedirectURI,
         scope: _scope,
       );
-
-      await connectSpotifyRemote(token);
-
       var storage = const FlutterSecureStorage();
 
       await storage.write(key: 'accessToken', value: token);
@@ -46,15 +43,15 @@ class AuthService {
           key: 'accessTokenDate',
           value: DateTime.now().millisecondsSinceEpoch.toString());
 
-      return token;
+      return await connectSpotifyRemote(token);
     } on Exception {
       rethrow;
     }
   }
 
-  connectSpotifyRemote(String? token) async {
+  Future<bool> connectSpotifyRemote(String? token) async {
     try {
-      await SpotifySdk.connectToSpotifyRemote(
+      return await SpotifySdk.connectToSpotifyRemote(
         clientId: _appClientId,
         redirectUrl: _appRedirectURI,
         accessToken: token,

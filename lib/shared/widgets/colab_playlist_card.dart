@@ -24,7 +24,6 @@ class ColabPlaylistCard extends StatelessWidget {
         child: Card(
           margin: const EdgeInsets.all(4),
           color: colors.secondaryContainer,
-          surfaceTintColor: colors.surface,
           child: Column(
             children: [
               const SizedBox(height: 8),
@@ -32,7 +31,7 @@ class ColabPlaylistCard extends StatelessWidget {
                   height: 142,
                   width: 142,
                   child: CachedNetworkImage(
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     placeholder: (context, url) => const EmptyPlaylistCover(),
                     errorWidget: (context, url, error) =>
                         const EmptyPlaylistCover(),
@@ -43,21 +42,15 @@ class ColabPlaylistCard extends StatelessWidget {
                     maxHeightDiskCache: 372,
                   )),
               Padding(
-                padding: const EdgeInsets.only(left: 14, top: 2),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.only(left: 14, top: 8),
+                child: Row(
                   children: [
-                    Text(
-                      playlistName,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(Icons.circle, size: 8),
-                        const SizedBox(width: 4),
-                        Text('Playlist'),
-                      ],
+                    Expanded(
+                      child: Text(
+                        playlistName,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

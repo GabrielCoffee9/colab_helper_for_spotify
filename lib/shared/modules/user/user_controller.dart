@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum UserState { idle, success, error, loading }
 
-class UserController extends ChangeNotifier {
+class UserController {
   var state = ValueNotifier(UserState.idle);
 
   UserController();

@@ -32,6 +32,8 @@ class SongTile extends StatelessWidget {
         selected: selected,
         selectedColor: colors.primary,
         contentPadding: const EdgeInsets.all(8),
+        tileColor: colors.surface,
+        selectedTileColor: colors.secondaryContainer,
         title: songName?.isNotEmpty ?? false
             ? Text(
                 songName ?? 'Error',

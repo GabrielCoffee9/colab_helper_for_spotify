@@ -1,6 +1,7 @@
 import '../../models/secundary models/playlist_model.dart';
 import '../../models/secundary models/track_model.dart';
 import '../../shared/modules/user/user_controller.dart';
+import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import '../../shared/widgets/profile_picture.dart';
 import '../../shared/widgets/song_tile.dart';
@@ -161,7 +162,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: const [
-                    CircularProgressIndicator(),
+                    CircularProgress(isDone: false),
                     Text('Loading')
                   ],
                 ),

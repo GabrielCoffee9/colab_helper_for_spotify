@@ -44,7 +44,7 @@ class PlayerService {
     }
   }
 
-  transferPlayback(deviceId) async {
+  transferPlayback(String deviceId) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       await retry(() async {
@@ -53,6 +53,33 @@ class PlayerService {
           data: {
             "device_ids": [deviceId]
           },
+          options: Options(headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json'
+          }),
+        );
+      }, retryIf: (e) async {
+        if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
+          await AuthController().syncSpotifyRemote(forceTokenRefresh: true);
+          accessToken = await storage.read(key: 'accessToken');
+          return true;
+        }
+
+        return false;
+      });
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  getPlayblackState(String userCountryCode) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      await retry(() async {
+        return await dio.get(
+          '/me/player',
+          queryParameters: {'market': userCountryCode},
+          data: {"device_ids": []},
           options: Options(headers: {
             'Authorization': 'Bearer $accessToken',
             'Content-Type': 'application/json'
