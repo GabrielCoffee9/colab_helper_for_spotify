@@ -90,14 +90,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
       }
     });
 
-    playerController.playerState.listen((data) {
-      if (mounted) {
-        setState(() {
-          selectedSongUri = data.track?.uri ?? '';
-          isPaused = data.isPaused;
-        });
-      }
-    });
+    if (playerController.playerState != null) {
+      playerController.playerState!.listen((data) {
+        if (mounted) {
+          setState(() {
+            selectedSongUri = data.track?.uri ?? '';
+            isPaused = data.isPaused;
+          });
+        }
+      });
+    }
 
     getTracks();
     getOwnerPlaylist();

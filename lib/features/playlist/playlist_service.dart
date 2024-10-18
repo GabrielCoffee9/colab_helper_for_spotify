@@ -33,7 +33,8 @@ class PlaylistService {
             .timeout(const Duration(seconds: 5));
       }, retryIf: (e) async {
         if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-          await AuthController().syncSpotifyRemote(forceTokenRefresh: true);
+          await AuthController.instance
+              .syncSpotifyRemote(forceTokenRefresh: true);
           accessToken = await storage.read(key: 'accessToken');
           return true;
         }
@@ -58,7 +59,8 @@ class PlaylistService {
         );
       }, retryIf: (e) async {
         if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-          await AuthController().syncSpotifyRemote(forceTokenRefresh: true);
+          await AuthController.instance
+              .syncSpotifyRemote(forceTokenRefresh: true);
           accessToken = await storage.read(key: 'accessToken');
           return true;
         }
@@ -87,7 +89,8 @@ class PlaylistService {
         );
       }, retryIf: (e) async {
         if (e is DioException && e.response!.statusMessage == 'Unauthorized') {
-          await AuthController().syncSpotifyRemote(forceTokenRefresh: true);
+          await AuthController.instance
+              .syncSpotifyRemote(forceTokenRefresh: true);
           accessToken = await storage.read(key: 'accessToken');
           return true;
         }

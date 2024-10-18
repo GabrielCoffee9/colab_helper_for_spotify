@@ -5,16 +5,21 @@ import 'package:spotify_sdk/spotify_sdk.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:spotify_sdk/spotify_sdk.dart';
 
 enum AuthState { idle, success, error, loading }
 
-class AuthController extends ChangeNotifier {
+class AuthController {
+  static final AuthController _instance = AuthController._();
+  static AuthController get instance => _instance;
+
+  //UniqueInstance
+  AuthController._();
+
   var state = ValueNotifier(AuthState.idle);
 
   var storage = const FlutterSecureStorage();
 
-  Stream<ConnectionStatus> get connectionStatus =>
+  Stream<ConnectionStatus> connectionStatus =
       SpotifySdk.subscribeConnectionStatus().asBroadcastStream();
 
   String? lastError;
@@ -56,6 +61,14 @@ class AuthController extends ChangeNotifier {
       }
 
       return false;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<bool> disconnectSpotifyRemote() async {
+    try {
+      return await AuthService().disconnectSpotifyRemote();
     } on Exception {
       rethrow;
     }

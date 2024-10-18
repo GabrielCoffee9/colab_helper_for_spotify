@@ -27,11 +27,12 @@ class _PlayerPageState extends State<PlayerPage> {
       playerController.playerCurrentPosition.value =
           widget.initialPlayerState?.playbackPosition ?? 0;
     }
-
-    playerController.playerState.listen((data) {
-      playerController.playerCurrentPosition.value = data.playbackPosition;
-      playerController.playertotal.value = data.track?.duration ?? 0;
-    });
+    if (playerController.playerState != null) {
+      playerController.playerState!.listen((data) {
+        playerController.playerCurrentPosition.value = data.playbackPosition;
+        playerController.playertotal.value = data.track?.duration ?? 0;
+      });
+    }
 
     playerController.playerCurrentPosition.addListener(() {
       if (mounted) {

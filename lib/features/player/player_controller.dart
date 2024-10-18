@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
 
 class PlayerController {
   static final PlayerController _instance = PlayerController._();
@@ -19,12 +20,19 @@ class PlayerController {
   //UniqueInstance
   PlayerController._();
 
-  final playerState =
-      SpotifySdk.subscribePlayerState().asBroadcastStream().handleError((data) {
-    return;
-  });
+  Stream<PlayerState>? playerState =
+      SpotifySdk.subscribePlayerState().asBroadcastStream();
 
-  final playerContext = SpotifySdk.subscribeConnectionStatus();
+  Stream<ConnectionStatus>? playerContext =
+      SpotifySdk.subscribeConnectionStatus();
+
+  restartListeners() {
+    playerState = null;
+    playerContext = null;
+
+    playerState = SpotifySdk.subscribePlayerState().asBroadcastStream();
+    playerContext = SpotifySdk.subscribeConnectionStatus();
+  }
 
   Future<void> showPlayerDialog(BuildContext context) async {
     try {

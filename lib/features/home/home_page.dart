@@ -5,6 +5,7 @@ import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/colab_playlist_card.dart';
 import '../../shared/widgets/music_visualizer.dart';
 import '../../shared/widgets/profile_picture.dart';
+import '../auth/auth_controller.dart';
 import '../player/player_controller.dart';
 import '../playlist/all_playlists_page.dart';
 import '../playlist/playlist_controller.dart';
@@ -23,7 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   PlaylistController playlistController = PlaylistController();
 
-  PlayerController playerController = PlayerController.instance;
+  AuthController authController = AuthController.instance;
 
   UserPlaylists userPlaylists = UserPlaylists();
 
@@ -49,6 +50,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    AuthController.instance.connectionStatus.listen(
+      (event) {
+        if (event.connected) {
+          setState(() {});
+        }
+      },
+    );
+
     getUserProfile();
     getPlaylists();
     super.initState();
@@ -87,7 +96,7 @@ class _HomePageState extends State<HomePage> {
               flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
                   title: StreamBuilder(
-                    stream: playerController.playerState,
+                    stream: PlayerController.instance.playerState,
                     builder: (context, snapshot) {
                       return AnimatedSwitcher(
                         duration: const Duration(milliseconds: 1400),
@@ -97,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(8.0),
                           child: snapshot.data?.isPaused ?? true
                               ? GestureDetector(
-                                  onTap: (() => playerController
+                                  onTap: (() => PlayerController.instance
                                       .showPlayerDialog(context)),
                                   child: AppLogo(
                                       iconSize: 36,

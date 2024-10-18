@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import '../../shared/widgets/syncing_spotify.dart';
 import '../auth/auth_controller.dart';
 import 'home_page.dart';
@@ -18,8 +16,8 @@ class _AppScreensState extends State<AppScreens> {
   bool showingSync = false;
   @override
   void initState() {
-    AuthController().connectionStatus.listen((data) {
-      if (!data.connected && !showingSync) {
+    AuthController.instance.connectionStatus.listen((data) {
+      if (!data.connected && !showingSync && mounted) {
         showingSync = true;
         showDialog(
           barrierDismissible: false,
@@ -29,7 +27,7 @@ class _AppScreensState extends State<AppScreens> {
           },
         );
       } else {
-        if (showingSync) {
+        if (showingSync && mounted) {
           Navigator.of(context).pop();
         }
       }

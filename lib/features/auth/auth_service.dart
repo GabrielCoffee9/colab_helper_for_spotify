@@ -60,4 +60,12 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<bool> disconnectSpotifyRemote() async {
+    try {
+      return await SpotifySdk.disconnect();
+    } on Exception {
+      rethrow;
+    }
+  }
 }

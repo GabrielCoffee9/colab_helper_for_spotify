@@ -10,7 +10,7 @@ enum ButtonState { idle, loading, done }
 class AuthPage extends StatefulWidget {
   AuthPage({super.key});
 
-  final AuthController authController = AuthController();
+  final AuthController authController = AuthController.instance;
   final UserController userController = UserController();
 
   @override
@@ -37,9 +37,8 @@ class _AuthPageState extends State<AuthPage> {
             setState(() {
               buttonState = ButtonState.done;
             });
-            Future.delayed(const Duration(seconds: 1))
-                // ignore: use_build_context_synchronously
-                .then((_) => Navigator.popAndPushNamed(context, '/app'));
+            Future.delayed(const Duration(seconds: 1)).then((_) =>
+                mounted ? Navigator.popAndPushNamed(context, '/app') : null);
           }
         } else {
           if (mounted) {
