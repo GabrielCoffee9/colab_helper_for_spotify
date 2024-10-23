@@ -70,9 +70,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: userPlaylistsLoading
-              ? Center(
+              ? const Center(
                   child: Column(
-                    children: const [
+                    children: [
                       LinearProgressIndicator(),
                       Text('Loading'),
                     ],
@@ -96,9 +96,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
 
                     if (playlistController.state.value ==
                         PlaylistState.loading) {
-                      return Column(
+                      return const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           CircularProgress(isDone: false),
                           Text('Loading')
                         ],
@@ -129,9 +129,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                   maxHeightDiskCache: 393,
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) =>
-                                      EmptyPlaylistCover(),
+                                      const EmptyPlaylistCover(),
                                   errorWidget: (context, url, error) =>
-                                      EmptyPlaylistCover(),
+                                      const EmptyPlaylistCover(),
                                   imageUrl: userPlaylists.playlists![index]
                                           .images?.first.url ??
                                       '',

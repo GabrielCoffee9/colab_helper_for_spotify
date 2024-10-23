@@ -16,12 +16,12 @@ class ProfilePicture extends StatelessWidget {
       errorWidget: (context, url, error) => Container(
         decoration: BoxDecoration(
           color: Colors.grey[800],
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(10),
           ),
         ),
         width: 60,
-        child: Icon(
+        child: const Icon(
           Icons.person_outlined,
           color: Colors.white,
           size: 60,
@@ -32,7 +32,7 @@ class ProfilePicture extends StatelessWidget {
           ? (context, image) => Container(
                 width: 60,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                   image: DecorationImage(image: image),
                 ),
               )

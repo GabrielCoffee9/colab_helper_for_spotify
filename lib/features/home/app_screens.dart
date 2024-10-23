@@ -23,7 +23,7 @@ class _AppScreensState extends State<AppScreens> {
           barrierDismissible: false,
           context: context,
           builder: (context) {
-            return SyncingSpotify();
+            return const SyncingSpotify();
           },
         );
       } else {

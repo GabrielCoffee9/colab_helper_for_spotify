@@ -2,11 +2,12 @@ import '../../models/secundary models/devices.dart';
 import 'player_service.dart';
 import 'player_page.dart';
 
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
+
+import 'dart:async';
+import 'package:flutter/material.dart';
 
 class PlayerController {
   static final PlayerController _instance = PlayerController._();
@@ -47,15 +48,16 @@ class PlayerController {
             transitionBuilder: (BuildContext context, a1, a2, widget) =>
                 SlideTransition(
                     position: Tween<Offset>(
-                            begin: Offset(0, 0.5), end: const Offset(0, 0))
+                            begin: const Offset(0, 0.5),
+                            end: const Offset(0, 0))
                         .animate(
                             CurvedAnimation(parent: a1, curve: Curves.ease)),
                     child: PlayerPage(initialPlayerState: initialPlayerState)),
           );
         });
       }
-    } catch (e) {
-      // AuthController().verifyAppConnection();
+    } on Exception {
+      rethrow;
     }
   }
 

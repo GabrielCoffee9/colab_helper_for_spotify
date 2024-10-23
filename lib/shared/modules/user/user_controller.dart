@@ -30,7 +30,10 @@ class UserController {
       var result = await UserService().getUserUrlProfileImage(userId);
       return result;
     } on Exception catch (error) {
-      return 'Error: ${error.toString()}';
+      lastError = error.toString();
+      state.value = UserState.error;
+
+      return 'Error';
     }
   }
 }

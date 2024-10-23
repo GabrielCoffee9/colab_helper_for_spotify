@@ -1,5 +1,6 @@
+import 'empty_playlist_cover.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
 import 'package:flutter/material.dart';
 
 class SongTile extends StatelessWidget {
@@ -60,7 +61,7 @@ class SongTile extends StatelessWidget {
             maxWidthDiskCache: 147,
             maxHeightDiskCache: 147,
             placeholder: (context, url) => Container(color: Colors.transparent),
-            errorWidget: (context, url, error) => EmptyPlaylistCover(
+            errorWidget: (context, url, error) => const EmptyPlaylistCover(
               height: 150,
               width: 170,
               size: 60,

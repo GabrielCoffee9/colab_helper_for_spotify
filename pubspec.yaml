@@ -47,6 +47,7 @@ dependencies:
   html_unescape: ^2.0.0
   audio_video_progress_bar: ^2.0.3
   cached_network_image: ^3.4.1
+  url_launcher: ^6.3.1
 
 
 dev_dependencies:
@@ -73,10 +74,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/assets/Spotify_Logo_RGB_Green.png
-    - lib/assets/Spotify_Icon_RGB_Green.png
-    - lib/assets/splashImage.png
-    - lib/assets/splashImageDark.png
+    - lib/assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

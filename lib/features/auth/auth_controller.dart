@@ -73,14 +73,4 @@ class AuthController {
       rethrow;
     }
   }
-
-  // verifyAppConnection() async {
-  //   bool isActive = false;
-  //   await SpotifySdk.isSpotifyAppActive.then((value) => isActive = value);
-
-  //   if (!isActive) {
-  //     await AuthService()
-  //         .connectSpotifyRemote(await storage.read(key: 'accessToken'));
-  //   }
-  // }
 }

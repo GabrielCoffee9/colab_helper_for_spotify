@@ -121,7 +121,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       floatingActionButton: showScrollToTopButton
           ? FloatingActionButton(
               mini: true,
-              child: Icon(Icons.keyboard_double_arrow_up),
+              child: const Icon(Icons.keyboard_double_arrow_up),
               onPressed: () {
                 _scrollController.animateTo(
                     _scrollController.position.minScrollExtent,
@@ -159,14 +159,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
         child: (playlistLoading.value)
-            ? Center(
+            ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    CircularProgress(isDone: false),
-                    Text('Loading')
-                  ],
+                  children: [CircularProgress(isDone: false), Text('Loading')],
                 ),
               )
             : Scrollbar(
@@ -368,7 +365,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         );
                       },
                     ),
-                    SliverToBoxAdapter(
+                    const SliverToBoxAdapter(
                       child: SizedBox(height: 80),
                     )
                   ],

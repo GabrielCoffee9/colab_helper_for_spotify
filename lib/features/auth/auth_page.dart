@@ -1,9 +1,11 @@
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/circular_progress.dart';
+import '../../shared/widgets/get_spotify.dart';
 import 'auth_controller.dart';
 
 import 'package:flutter/material.dart';
+import 'package:appcheck/appcheck.dart';
 
 enum ButtonState { idle, loading, done }
 
@@ -20,12 +22,33 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   ButtonState buttonState = ButtonState.idle;
 
+  Future<bool> checkSpotifyApp() async {
+    return AppCheck().isAppInstalled('com.spotify.music');
+  }
+
   void syncSpotify() {
     setState(() {
       buttonState = ButtonState.loading;
     });
 
-    widget.authController.syncSpotifyRemote();
+    checkSpotifyApp().then((result) {
+      if (result) {
+        widget.authController.syncSpotifyRemote();
+      } else {
+        if (mounted) {
+          setState(() {
+            buttonState = ButtonState.idle;
+          });
+          showDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (context) {
+              return const GetSpotify();
+            },
+          );
+        }
+      }
+    });
   }
 
   @override
@@ -44,7 +67,10 @@ class _AuthPageState extends State<AuthPage> {
           if (mounted) {
             setState(() {
               buttonState = ButtonState.idle;
-              buildSnackBar(context, error: event.message);
+              buildSnackBar(
+                context,
+                error: event.message,
+              );
             });
           }
         }
@@ -52,6 +78,7 @@ class _AuthPageState extends State<AuthPage> {
     );
 
     syncSpotify();
+
     super.initState();
   }
 
@@ -111,7 +138,8 @@ void buildSnackBar(BuildContext context, {String? error}) {
   return WidgetsBinding.instance.addPostFrameCallback(
     (_) => ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(seconds: 10),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 10),
         content: Text(
           error ?? ('Error! Check your connection and try again later.'),
         ),

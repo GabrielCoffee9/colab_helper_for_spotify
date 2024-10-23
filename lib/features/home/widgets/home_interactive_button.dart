@@ -41,7 +41,7 @@ class HomeInteractiveButton extends StatelessWidget {
           child: badges.Badge(
             showBadge: notificationCounter > 0,
             badgeContent: Text((notificationCounter).toString()),
-            badgeAnimation: badges.BadgeAnimation.fade(),
+            badgeAnimation: const badges.BadgeAnimation.fade(),
           ),
         ),
       ],

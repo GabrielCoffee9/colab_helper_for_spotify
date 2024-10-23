@@ -31,16 +31,21 @@ class _HomePageState extends State<HomePage> {
   bool userPlaylistsLoading = true;
 
   void getUserProfile() {
-    UserController().getUserProfile();
+    UserController().getUserProfile().then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   Future<void> getPlaylists({int offset = 0}) async {
     playlistController.getCurrentUserPlaylists(limit: 5, offset: offset).then(
       (value) {
-        userPlaylists = value;
-        userPlaylistsLoading = false;
         if (mounted) {
-          setState(() {});
+          setState(() {
+            userPlaylists = value;
+            userPlaylistsLoading = false;
+          });
         }
       },
     );
@@ -49,10 +54,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void initState() {
     AuthController.instance.connectionStatus.listen(
       (event) {
-        if (event.connected) {
+        if (event.connected && mounted) {
           setState(() {});
         }
       },
@@ -69,6 +79,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     UserProfile userProfile = UserProfile.instance;
     final ColorScheme colors = Theme.of(context).colorScheme;
+    int playlistCount = userPlaylists.playlists?.length ?? 0;
+    int maxDisplayedPlaylists = playlistCount > 5 ? 5 : playlistCount;
     return Scaffold(
       key: _key,
       drawer: const Drawer(),
@@ -84,7 +96,9 @@ class _HomePageState extends State<HomePage> {
               leadingWidth: 50,
               leading: IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () => _key.currentState!.openDrawer(),
+                onPressed: () {
+                  if (mounted) _key.currentState?.openDrawer();
+                },
               ),
               actions: [
                 IconButton(
@@ -109,9 +123,10 @@ class _HomePageState extends State<HomePage> {
                                   onTap: (() => PlayerController.instance
                                       .showPlayerDialog(context)),
                                   child: AppLogo(
-                                      iconSize: 36,
-                                      darkTheme:
-                                          colors.brightness == Brightness.dark),
+                                    iconSize: 36,
+                                    darkTheme:
+                                        colors.brightness == Brightness.dark,
+                                  ),
                                 )
                               : const MusicVisualizer(),
                         ),
@@ -120,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                   )),
             ),
             userPlaylistsLoading
-                ? SliverToBoxAdapter(
+                ? const SliverToBoxAdapter(
                     child: Material(),
                   )
                 : SliverToBoxAdapter(
@@ -221,31 +236,31 @@ class _HomePageState extends State<HomePage> {
                           child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
-                            itemCount: (userPlaylists.playlists!.length > 5
-                                ? 5
-                                : userPlaylists.playlists!.length),
-                            cacheExtent: (userPlaylists.playlists!.length > 5
-                                ? 5
-                                : userPlaylists.playlists!.length.toDouble()),
+                            itemCount: maxDisplayedPlaylists,
+                            cacheExtent: maxDisplayedPlaylists.toDouble(),
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
-                                onTap: () async {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => PlaylistPage(
-                                        playlist:
-                                            userPlaylists.playlists![index],
+                                onTap: () {
+                                  if (userPlaylists.playlists?.isNotEmpty ??
+                                      false) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => PlaylistPage(
+                                          playlist:
+                                              userPlaylists.playlists![index],
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 },
                                 playlistName:
-                                    '${userPlaylists.playlists![index].name}',
-                                urlImage: userPlaylists.playlists![index].images
+                                    userPlaylists.playlists?[index].name ??
+                                        'Loading',
+                                urlImage: userPlaylists.playlists?[index].images
                                             ?.isNotEmpty ??
                                         false
                                     ? userPlaylists
-                                        .playlists![index].images!.first.url
+                                        .playlists![index].images?.first.url
                                     : null,
                               );
                             },

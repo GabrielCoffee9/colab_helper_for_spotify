@@ -1,7 +1,6 @@
 import '../../../models/primary models/user_profile_model.dart';
 import '../player_controller.dart';
 import '../../../models/secundary models/devices.dart';
-import 'device_tile.dart';
 
 import 'package:flutter/material.dart';
 
@@ -37,6 +36,18 @@ class _DevicesDialogState extends State<DevicesDialog> {
     bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
     return SimpleDialog(
       children: [
+        if (freeUser)
+          Chip(
+            shape: RoundedRectangleBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                side:
+                    BorderSide(color: Theme.of(context).colorScheme.tertiary)),
+            avatar:
+                Icon(Icons.info, color: Theme.of(context).colorScheme.tertiary),
+            label: const Text('Spotify Free - Visualization only'),
+            labelStyle:
+                TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          ),
         SizedBox(
           height: 400,
           width: 300,
@@ -71,6 +82,42 @@ class _DevicesDialogState extends State<DevicesDialog> {
           ),
         ),
       ],
+    );
+  }
+}
+
+const devicesIconList = {
+  "Smartphone": Icons.smartphone_outlined,
+  "Computer": Icons.computer_outlined,
+  "Speaker": Icons.speaker,
+};
+
+class DeviceTile extends StatelessWidget {
+  const DeviceTile({
+    super.key,
+    required this.deviceName,
+    required this.deviceType,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String deviceType;
+  final String deviceName;
+  final bool active;
+  final Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(0),
+        leading: Icon(devicesIconList[deviceType]),
+        title: Text(deviceName),
+        subtitle:
+            active ? const Text('Current device') : const Text('Not playing'),
+        selected: active,
+        onTap: onTap,
+      ),
     );
   }
 }

@@ -1,14 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
-
 import '../../models/primary models/user_profile_model.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
+import 'widgets/devices_dialog.dart';
 import 'player_controller.dart';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:spotify_sdk/models/player_state.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import 'widgets/devices_dialog.dart';
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key, required this.initialPlayerState});
@@ -48,13 +46,14 @@ class _PlayerPageState extends State<PlayerPage> {
   @override
   Widget build(BuildContext context) {
     bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
+
     final ColorScheme colors = Theme.of(context).colorScheme;
     return Dialog(
       insetPadding: EdgeInsets.zero,
       child: Scaffold(
         backgroundColor: colors.surface,
         appBar: AppBar(
-          title: Text("Playing now on"),
+          title: const Text("Playing now on"),
           centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -80,6 +79,13 @@ class _PlayerPageState extends State<PlayerPage> {
               } else {
                 playerController.resumePlayerProgress();
               }
+
+              bool canSkipPrevious =
+                  snapshot.data?.playbackRestrictions.canSkipPrevious ?? false;
+
+              bool canSkipNext =
+                  snapshot.data?.playbackRestrictions.canSkipNext ?? false;
+
               return Column(
                 textDirection: TextDirection.ltr,
                 children: [
@@ -97,20 +103,17 @@ class _PlayerPageState extends State<PlayerPage> {
                       top: 24.0,
                     ),
                     child: GestureDetector(
-                      onHorizontalDragEnd: (DragEndDetails details) async {
+                      onHorizontalDragEnd: (DragEndDetails details) {
                         if (details.primaryVelocity! > 0) {
-                          if (snapshot
-                                  .data?.playbackRestrictions.canSkipPrevious ??
-                              false) {
+                          if (canSkipPrevious) {
                             if (_playerCurrentPosition > 2000) {
-                              await playerController.skipPrevious();
+                              playerController.skipPrevious();
                             }
-                            await playerController.skipPrevious();
+                            playerController.skipPrevious();
                           }
                         } else if (details.primaryVelocity! < 0) {
-                          if (snapshot.data?.playbackRestrictions.canSkipNext ??
-                              false) {
-                            await playerController.skipNext();
+                          if (canSkipNext) {
+                            playerController.skipNext();
                           }
                         }
                       },
@@ -118,15 +121,16 @@ class _PlayerPageState extends State<PlayerPage> {
                         height: 360,
                         width: 360,
                         child: CachedNetworkImage(
-                          placeholder: (context, url) => EmptyPlaylistCover(),
+                          placeholder: (context, url) =>
+                              const EmptyPlaylistCover(),
                           errorWidget: (context, url, error) =>
-                              EmptyPlaylistCover(),
+                              const EmptyPlaylistCover(),
                           imageUrl:
                               'https://i.scdn.co/image/${snapshot.data?.track?.imageUri.raw.split(':')[2]}',
                           imageBuilder: (context, image) => Container(
                             decoration: BoxDecoration(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
+                                  const BorderRadius.all(Radius.circular(4)),
                               image: DecorationImage(image: image),
                             ),
                           ),
@@ -160,7 +164,10 @@ class _PlayerPageState extends State<PlayerPage> {
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(Icons.favorite),
+                            icon: Image.asset(
+                              'lib/assets/like_icon_like.png',
+                              height: 30,
+                            ),
                           )
                         ],
                       ),
@@ -172,16 +179,16 @@ class _PlayerPageState extends State<PlayerPage> {
                     child: IgnorePointer(
                       ignoring: freeUser,
                       child: ProgressBar(
-                          thumbRadius: freeUser ? 0 : 10.0,
-                          onSeek: freeUser
-                              ? null
-                              : ((value) => playerController
-                                  .seekTo(value.inMilliseconds)),
-                          progress:
-                              Duration(milliseconds: _playerCurrentPosition),
-                          total: Duration(
-                              milliseconds:
-                                  snapshot.data?.track?.duration ?? 0)),
+                        thumbRadius: freeUser ? 0 : 10.0,
+                        onSeek: freeUser
+                            ? null
+                            : ((value) =>
+                                playerController.seekTo(value.inMilliseconds)),
+                        progress:
+                            Duration(milliseconds: _playerCurrentPosition),
+                        total: Duration(
+                            milliseconds: snapshot.data?.track?.duration ?? 0),
+                      ),
                     ),
                   ),
                   Padding(
@@ -196,11 +203,8 @@ class _PlayerPageState extends State<PlayerPage> {
                         IconButton(
                           onPressed: () {
                             showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DevicesDialog();
-                              },
-                            );
+                                context: context,
+                                builder: (context) => const DevicesDialog());
                           },
                           icon: Icon(
                             Icons.devices_rounded,
@@ -210,14 +214,13 @@ class _PlayerPageState extends State<PlayerPage> {
                         IconButton(
                           icon: Icon(
                             Icons.keyboard_arrow_left,
-                            color: colors.primary,
+                            color: canSkipPrevious
+                                ? colors.primary
+                                : Colors.blueGrey,
                             size: 34,
                           ),
-                          onPressed: snapshot.data?.playbackRestrictions
-                                      .canSkipPrevious ??
-                                  false
-                              ? () async =>
-                                  await playerController.skipPrevious()
+                          onPressed: canSkipPrevious
+                              ? () => playerController.skipPrevious()
                               : null,
                         ),
                         AnimatedSwitcher(
@@ -232,8 +235,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                         colors.primary,
                                       ),
                                     ),
-                                    onPressed: () async =>
-                                        playerController.resume(),
+                                    onPressed: () => playerController.resume(),
                                     child: Icon(
                                       Icons.play_arrow_outlined,
                                       color: colors.onPrimary,
@@ -249,8 +251,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                       backgroundColor: WidgetStatePropertyAll(
                                           colors.primary),
                                     ),
-                                    onPressed: () async =>
-                                        playerController.pause(),
+                                    onPressed: () => playerController.pause(),
                                     child: Icon(
                                       Icons.pause,
                                       color: colors.onPrimary,
@@ -262,13 +263,12 @@ class _PlayerPageState extends State<PlayerPage> {
                         IconButton(
                           icon: Icon(
                             Icons.keyboard_arrow_right,
-                            color: colors.primary,
+                            color:
+                                canSkipNext ? colors.primary : Colors.blueGrey,
                             size: 34,
                           ),
-                          onPressed: snapshot
-                                      .data?.playbackRestrictions.canSkipNext ??
-                                  false
-                              ? () async => await playerController.skipNext()
+                          onPressed: canSkipNext
+                              ? () => playerController.skipNext()
                               : null,
                         ),
                         IconButton(

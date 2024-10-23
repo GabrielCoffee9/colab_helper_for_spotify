@@ -1,4 +1,5 @@
-import 'package:colab_helper_for_spotify/shared/static/color_schemes.g.dart';
+import '../static/color_schemes.g.dart';
+
 import 'package:flutter/material.dart';
 
 class AppLogo extends StatelessWidget {

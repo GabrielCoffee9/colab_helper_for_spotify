@@ -29,7 +29,7 @@ class _SyncingSpotifyState extends State<SyncingSpotify> {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleDialog(
+    return const SimpleDialog(
       title: Text('Spotify sync connection was lost'),
       children: [
         SizedBox(

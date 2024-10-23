@@ -1,5 +1,6 @@
+import 'empty_playlist_cover.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:colab_helper_for_spotify/shared/widgets/empty_playlist_cover.dart';
 import 'package:flutter/material.dart';
 
 class ColabPlaylistCard extends StatelessWidget {
