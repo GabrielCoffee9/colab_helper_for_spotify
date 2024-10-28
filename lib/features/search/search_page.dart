@@ -13,8 +13,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
-    searchFocusNode = FocusNode();
     super.initState();
+    searchFocusNode = FocusNode();
   }
 
   @override

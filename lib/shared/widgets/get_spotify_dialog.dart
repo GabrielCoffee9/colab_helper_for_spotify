@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GetSpotify extends StatefulWidget {
-  const GetSpotify({super.key});
+class GetSpotifyDialog extends StatefulWidget {
+  const GetSpotifyDialog({super.key});
 
   @override
-  State<GetSpotify> createState() => _GetSpotifyState();
+  State<GetSpotifyDialog> createState() => _GetSpotifyDialogState();
 }
 
-class _GetSpotifyState extends State<GetSpotify> {
+class _GetSpotifyDialogState extends State<GetSpotifyDialog> {
   @override
   void initState() {
     super.initState();

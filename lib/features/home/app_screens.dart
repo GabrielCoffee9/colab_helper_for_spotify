@@ -16,6 +16,8 @@ class _AppScreensState extends State<AppScreens> {
   bool showingSync = false;
   @override
   void initState() {
+    super.initState();
+
     AuthController.instance.connectionStatus.listen((data) {
       if (!data.connected && !showingSync && mounted) {
         showingSync = true;
@@ -32,8 +34,6 @@ class _AppScreensState extends State<AppScreens> {
         }
       }
     });
-
-    super.initState();
   }
 
   int pageIndex = 0;

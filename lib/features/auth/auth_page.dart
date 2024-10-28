@@ -1,9 +1,10 @@
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/circular_progress.dart';
-import '../../shared/widgets/get_spotify.dart';
+import '../../shared/widgets/get_spotify_dialog.dart';
 import 'auth_controller.dart';
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:appcheck/appcheck.dart';
 
@@ -21,6 +22,8 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   ButtonState buttonState = ButtonState.idle;
+
+  late StreamSubscription _connectionStatusListener;
 
   Future<bool> checkSpotifyApp() async {
     return AppCheck().isAppInstalled('com.spotify.music');
@@ -43,7 +46,7 @@ class _AuthPageState extends State<AuthPage> {
             barrierDismissible: true,
             context: context,
             builder: (context) {
-              return const GetSpotify();
+              return const GetSpotifyDialog();
             },
           );
         }
@@ -53,37 +56,34 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void initState() {
-    widget.authController.connectionStatus.listen(
+    super.initState();
+
+    _connectionStatusListener = widget.authController.connectionStatus.listen(
       (event) {
         if (event.connected) {
-          if (mounted) {
-            setState(() {
-              buttonState = ButtonState.done;
-            });
-            Future.delayed(const Duration(seconds: 1)).then((_) =>
-                mounted ? Navigator.popAndPushNamed(context, '/app') : null);
-          }
+          setState(() {
+            buttonState = ButtonState.done;
+          });
+          Future.delayed(const Duration(seconds: 1)).then((_) =>
+              mounted ? Navigator.popAndPushNamed(context, '/app') : null);
         } else {
-          if (mounted) {
-            setState(() {
-              buttonState = ButtonState.idle;
-              buildSnackBar(
-                context,
-                error: event.message,
-              );
-            });
-          }
+          setState(() {
+            buttonState = ButtonState.idle;
+            buildSnackBar(
+              context,
+              error: event.message,
+            );
+          });
         }
       },
     );
 
     syncSpotify();
-
-    super.initState();
   }
 
   @override
   void dispose() {
+    _connectionStatusListener.cancel();
     super.dispose();
   }
 

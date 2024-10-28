@@ -1,4 +1,5 @@
 import '../../models/secundary models/devices.dart';
+import '../../models/secundary models/queue.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -51,19 +52,17 @@ class PlayerService {
     }
   }
 
-  getPlayblackState(String userCountryCode) async {
+  Future<Queue> getUserQueue() async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
 
-      await dio.get(
-        '/me/player',
-        queryParameters: {'market': userCountryCode},
-        data: {"device_ids": []},
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json'
-        }),
+      final response = await dio.get(
+        '/me/player/queue',
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
+      Queue userQueue = Queue.fromJson(response.data);
+
+      return userQueue;
     } on Exception {
       rethrow;
     }

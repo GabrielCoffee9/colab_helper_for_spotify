@@ -7,7 +7,7 @@ import 'images_model.dart';
 class Track {
   Album? album;
   List<Artist>? artists;
-  // List<String>? availableMarkets;
+  List<String>? availableMarkets;
   int? discNumber;
   int? durationMs;
   bool? episode;
@@ -32,7 +32,7 @@ class Track {
   Track(
       {this.album,
       this.artists,
-      // this.availableMarkets,
+      this.availableMarkets,
       this.discNumber,
       this.durationMs,
       this.episode,
@@ -62,7 +62,11 @@ class Track {
       });
       allArtists = allArtists!.substring(0, allArtists!.lastIndexOf(','));
     }
-    // availableMarkets = json['available_markets'].cast<String>();
+
+    if (json['available_markets'] != null) {
+      availableMarkets = json['available_markets'].cast<String>();
+    }
+
     discNumber = json['disc_number'];
     durationMs = json['duration_ms'];
     episode = json['episode'];
@@ -93,7 +97,11 @@ class Track {
     if (artists != null) {
       data['artists'] = artists!.map((v) => v.toJson()).toList();
     }
-    // data['available_markets'] = availableMarkets;
+
+    if (availableMarkets != null) {
+      data['available_markets'] = availableMarkets;
+    }
+
     data['disc_number'] = discNumber;
     data['duration_ms'] = durationMs;
     data['episode'] = episode;

@@ -15,6 +15,8 @@ class SyncingSpotify extends StatefulWidget {
 class _SyncingSpotifyState extends State<SyncingSpotify> {
   @override
   void initState() {
+    super.initState();
+
     retry(
       () {
         AuthController.instance.syncSpotifyRemote().whenComplete(() {
@@ -23,8 +25,6 @@ class _SyncingSpotifyState extends State<SyncingSpotify> {
       },
       retryIf: (_) => true,
     );
-
-    super.initState();
   }
 
   @override

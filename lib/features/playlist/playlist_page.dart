@@ -44,12 +44,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Future<void> getTracks({int offset = 0}) async {
     playlistController.getPlaylistTracks(playlist, offset).then((value) {
-      if (mounted) {
-        setState(() {
-          playlist = value;
-          playlistLoading.value = false;
-        });
-      }
+      setState(() {
+        playlist = value;
+        playlistLoading.value = false;
+      });
     });
 
     return;
@@ -64,7 +62,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
+    super.initState();
+
     playlist = widget.playlist;
 
     _scrollController.addListener(() {
@@ -82,28 +89,23 @@ class _PlaylistPageState extends State<PlaylistPage> {
     });
 
     playerController.getPlayerState().then((data) {
-      if (mounted) {
-        setState(() {
-          selectedSongUri = data?.track?.uri ?? '';
-          isPaused = data?.isPaused ?? true;
-        });
-      }
+      setState(() {
+        selectedSongUri = data?.track?.uri ?? '';
+        isPaused = data?.isPaused ?? true;
+      });
     });
 
     if (playerController.playerState != null) {
       playerController.playerState!.listen((data) {
-        if (mounted) {
-          setState(() {
-            selectedSongUri = data.track?.uri ?? '';
-            isPaused = data.isPaused;
-          });
-        }
+        setState(() {
+          selectedSongUri = data.track?.uri ?? '';
+          isPaused = data.isPaused;
+        });
       });
     }
 
     getTracks();
     getOwnerPlaylist();
-    super.initState();
   }
 
   @override
@@ -333,7 +335,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                 imageUrl: playlist.tracks![index].album!.images!
                                         .isNotEmpty
                                     ? playlist
-                                        .tracks![index].album!.images!.first.url
+                                        .tracks![index].album!.images![1].url
                                     : '',
                                 selected: selectedSongUri ==
                                     playlist.tracks?[index].uri,

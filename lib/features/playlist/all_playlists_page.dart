@@ -38,6 +38,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -46,7 +48,6 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
     });
 
     getPlaylists();
-    super.initState();
   }
 
   @override
@@ -58,7 +59,10 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         actions: [
           IconButton(
             onPressed: () {
-              showSearch(context: context, delegate: SearchPlaylists());
+              showSearch(
+                context: context,
+                delegate: SearchPlaylists(),
+              );
             },
             icon: const Icon(Icons.search),
           )

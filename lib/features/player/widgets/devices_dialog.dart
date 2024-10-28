@@ -15,26 +15,36 @@ class _DevicesDialogState extends State<DevicesDialog> {
   List<Devices> devicesList = [];
   PlayerController playlistController = PlayerController.instance;
 
-  getCurrentDevices() {
-    playlistController.getAvailableDevices().then((data) {
-      if (mounted) {
-        setState(() {
-          devicesList = data;
-        });
-      }
-    });
+  bool isloading = false;
+
+  void getCurrentDevices() {
+    if (mounted && !isloading) {
+      setState(() {
+        isloading = true;
+      });
+      playlistController.getAvailableDevices().then((data) {
+        if (mounted) {
+          setState(() {
+            devicesList = data;
+            isloading = false;
+          });
+        }
+      });
+    }
   }
 
   @override
   void initState() {
-    getCurrentDevices();
     super.initState();
+
+    getCurrentDevices();
   }
 
   @override
   Widget build(BuildContext context) {
     bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
     return SimpleDialog(
+      title: const Text('Your devices'),
       children: [
         if (freeUser)
           Chip(
@@ -51,35 +61,34 @@ class _DevicesDialogState extends State<DevicesDialog> {
         SizedBox(
           height: 400,
           width: 300,
-          child: ListView.builder(
-            itemCount: devicesList.length,
-            itemBuilder: (context, index) {
-              return SimpleDialogOption(
-                child: Column(
-                  children: [
-                    IgnorePointer(
-                      ignoring: freeUser,
-                      child: DeviceTile(
-                        deviceName: devicesList[index].name ?? '',
-                        deviceType: devicesList[index].type ?? '',
-                        active: devicesList[index].isActive ?? false,
-                        onTap: () {
-                          playlistController
-                              .transferPlayback(devicesList[index].id)
-                              .then((_) {
-                            if (mounted) {
-                              getCurrentDevices();
-                              setState(() {});
-                            }
-                          });
-                        },
+          child: devicesList.isNotEmpty
+              ? ListView.builder(
+                  itemCount: devicesList.length,
+                  itemBuilder: (context, index) {
+                    return SimpleDialogOption(
+                      child: Column(
+                        children: [
+                          IgnorePointer(
+                            ignoring: freeUser,
+                            child: DeviceTile(
+                              deviceName: devicesList[index].name ?? '',
+                              deviceType: devicesList[index].type ?? '',
+                              active: devicesList[index].isActive ?? false,
+                              onTap: () {
+                                playlistController
+                                    .transferPlayback(devicesList[index].id)
+                                    .then((_) {
+                                  getCurrentDevices();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                    );
+                  },
+                )
+              : const Center(child: Text('No compatible devices were found')),
         ),
       ],
     );

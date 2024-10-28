@@ -22,6 +22,8 @@ class _UnitAudioWaveState extends State<UnitAudioWave>
 
   @override
   void initState() {
+    super.initState();
+
     animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: widget.duration),
@@ -36,8 +38,6 @@ class _UnitAudioWaveState extends State<UnitAudioWave>
             setState(() {});
           });
     animationController.repeat(reverse: true);
-
-    super.initState();
   }
 
   @override

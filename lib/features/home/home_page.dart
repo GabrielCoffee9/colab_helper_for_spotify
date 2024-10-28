@@ -22,6 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
   PlaylistController playlistController = PlaylistController();
 
   AuthController authController = AuthController.instance;
@@ -32,21 +34,17 @@ class _HomePageState extends State<HomePage> {
 
   void getUserProfile() {
     UserController().getUserProfile().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
+      setState(() {});
     });
   }
 
   Future<void> getPlaylists({int offset = 0}) async {
     playlistController.getCurrentUserPlaylists(limit: 5, offset: offset).then(
       (value) {
-        if (mounted) {
-          setState(() {
-            userPlaylists = value;
-            userPlaylistsLoading = false;
-          });
-        }
+        setState(() {
+          userPlaylists = value;
+          userPlaylistsLoading = false;
+        });
       },
     );
 
@@ -54,15 +52,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   void initState() {
+    super.initState();
+
     AuthController.instance.connectionStatus.listen(
       (event) {
-        if (event.connected && mounted) {
+        if (event.connected) {
           setState(() {});
         }
       },
@@ -70,10 +72,12 @@ class _HomePageState extends State<HomePage> {
 
     getUserProfile();
     getPlaylists();
-    super.initState();
   }
 
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     width: 60,
                                     child: ProfilePicture(
-                                      imageUrl: userProfile.images?.first.url,
+                                      imageUrl: userProfile.images?[1].url,
                                       avatar: true,
                                     ),
                                   ),

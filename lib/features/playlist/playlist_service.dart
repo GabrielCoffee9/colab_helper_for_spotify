@@ -1,3 +1,4 @@
+import '../../models/primary models/user_colab_playlist_model.dart';
 import '../../models/primary models/user_playlists_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 
@@ -15,19 +16,17 @@ class PlaylistService {
       UserPlaylists userPlaylists, int limit, offset) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
-      final response = await dio
-          .get(
-            '/me/playlists',
-            queryParameters: {
-              'limit': limit,
-              'offset': offset,
-            },
-            options: Options(headers: {
-              'Authorization': 'Bearer $accessToken',
-              'Content-Type': 'application/json',
-            }, contentType: Headers.jsonContentType),
-          )
-          .timeout(const Duration(seconds: 5));
+      final response = await dio.get(
+        '/me/playlists',
+        queryParameters: {
+          'limit': limit,
+          'offset': offset,
+        },
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }, contentType: Headers.jsonContentType),
+      );
 
       userPlaylists.fromJson(response.data);
       return userPlaylists;
@@ -67,6 +66,32 @@ class PlaylistService {
 
       playlistTracks.fromInstance(response.data);
       return playlistTracks;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<UserColabPlaylist> searchPlaylists(
+      String query, String market, int offset) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/search',
+        queryParameters: {
+          'q': query,
+          'type': 'playlist',
+          'market': market,
+          'limit': 20,
+          'offset': offset
+        },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      UserColabPlaylist playlistsSearch = UserColabPlaylist();
+
+      playlistsSearch = UserColabPlaylist.fromJson(response.data['playlists']);
+
+      return playlistsSearch;
     } on Exception {
       rethrow;
     }

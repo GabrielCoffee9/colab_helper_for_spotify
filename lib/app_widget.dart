@@ -19,9 +19,10 @@ class ColabApp extends StatelessWidget {
         textTheme: rubikTextTheme,
       ),
       darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: darkColorScheme,
-          textTheme: rubikTextTheme),
+        useMaterial3: true,
+        colorScheme: darkColorScheme,
+        textTheme: rubikTextTheme,
+      ),
       initialRoute: '/',
       routes: {
         '/': (context) => AuthPage(),

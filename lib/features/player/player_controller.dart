@@ -1,10 +1,12 @@
 import '../../models/secundary models/devices.dart';
+import '../../models/secundary models/queue.dart';
 import 'player_service.dart';
-import 'player_page.dart';
+import 'player_dialog.dart';
 
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/models/library_state.dart';
+import 'package:spotify_sdk/models/player_context.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -18,21 +20,22 @@ class PlayerController {
   ValueNotifier<int> playerCurrentPosition = ValueNotifier(0);
   ValueNotifier<int> playertotal = ValueNotifier(0);
 
+  ValueNotifier<PlayerContext?> playerContext = ValueNotifier(null);
+
   //UniqueInstance
-  PlayerController._();
+  PlayerController._() {
+    SpotifySdk.subscribePlayerContext().listen((event) {
+      playerContext.value = event;
+    });
+  }
 
   Stream<PlayerState>? playerState =
       SpotifySdk.subscribePlayerState().asBroadcastStream();
 
-  Stream<ConnectionStatus>? playerContext =
-      SpotifySdk.subscribeConnectionStatus();
-
   restartListeners() {
     playerState = null;
-    playerContext = null;
 
     playerState = SpotifySdk.subscribePlayerState().asBroadcastStream();
-    playerContext = SpotifySdk.subscribeConnectionStatus();
   }
 
   Future<void> showPlayerDialog(BuildContext context) async {
@@ -52,7 +55,8 @@ class PlayerController {
                             end: const Offset(0, 0))
                         .animate(
                             CurvedAnimation(parent: a1, curve: Curves.ease)),
-                    child: PlayerPage(initialPlayerState: initialPlayerState)),
+                    child:
+                        PlayerDialog(initialPlayerState: initialPlayerState)),
           );
         });
       }
@@ -92,6 +96,42 @@ class PlayerController {
 
   seekTo(int seek) {
     SpotifySdk.seekTo(positionedMilliseconds: seek);
+  }
+
+  seekToRelativePosition(int seek) {
+    SpotifySdk.seekToRelativePosition(relativeMilliseconds: seek);
+  }
+
+  setPlaybackSpeed(double playbackSpeed) {
+    late PodcastPlaybackSpeed newPlaybackSpeed;
+
+    switch (playbackSpeed) {
+      case 0.5:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_50;
+
+      case 0.8:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_80;
+
+      case 1.0:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_100;
+
+      case 1.2:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_120;
+
+      case 1.5:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_150;
+
+      case 2.0:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_200;
+
+      case 3.0:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_300;
+
+      default:
+        newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_100;
+    }
+
+    SpotifySdk.setPodcastPlaybackSpeed(podcastPlaybackSpeed: newPlaybackSpeed);
   }
 
   void resumePlayerProgress() {
@@ -135,5 +175,25 @@ class PlayerController {
     } on Exception {
       rethrow;
     }
+  }
+
+  Future<Queue> getUserQueue() async {
+    try {
+      return await PlayerService().getUserQueue();
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  likeSong(String spotifyUri) async {
+    SpotifySdk.addToLibrary(spotifyUri: spotifyUri);
+  }
+
+  deslikeSong(String spotifyUri) async {
+    SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri);
+  }
+
+  Future<LibraryState?> getLibraryState(String spotifyUri) async {
+    return await SpotifySdk.getLibraryState(spotifyUri: spotifyUri);
   }
 }

@@ -55,7 +55,7 @@ class SongTile extends StatelessWidget {
           width: 56,
           height: 56,
           child: CachedNetworkImage(
-            imageUrl: imageUrl!,
+            imageUrl: imageUrl ?? '',
             memCacheWidth: 147,
             memCacheHeight: 147,
             maxWidthDiskCache: 147,
