@@ -1,7 +1,7 @@
 import '../../models/primary models/user_playlists_model.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
-import 'widgets/search_playlists.dart';
+import 'widgets/search_playlists_page.dart';
 import 'playlist_controller.dart';
 import 'playlist_page.dart';
 
@@ -61,7 +61,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchPlaylists(),
+                delegate: SearchPlaylistsPage(),
               );
             },
             icon: const Icon(Icons.search),

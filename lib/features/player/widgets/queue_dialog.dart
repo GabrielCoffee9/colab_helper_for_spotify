@@ -1,4 +1,4 @@
-import '../../../models/secundary models/queue.dart';
+import '../../../models/secundary models/queue_model.dart';
 import '../../../shared/widgets/circular_progress.dart';
 import '../../../shared/widgets/song_tile.dart';
 import '../player_controller.dart';

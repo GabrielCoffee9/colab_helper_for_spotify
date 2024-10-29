@@ -1,15 +1,15 @@
-import 'track_items_model.dart';
+import 'album_model.dart';
 
-class TrackList {
+class SearchAlbumsContainer {
   String? href;
-  List<TrackItems>? items;
+  List<Album>? items;
   int? limit;
   String? next;
   int? offset;
   String? previous;
   int? total;
 
-  TrackList(
+  SearchAlbumsContainer(
       {this.href,
       this.items,
       this.limit,
@@ -18,12 +18,12 @@ class TrackList {
       this.previous,
       this.total});
 
-  TrackList.fromJson(Map<String, dynamic> json) {
+  SearchAlbumsContainer.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      items = <TrackItems>[];
+      items = <Album>[];
       json['items'].forEach((v) {
-        items!.add(TrackItems.fromJson(v));
+        items!.add(Album.fromJson(v));
       });
     }
     limit = json['limit'];
@@ -36,9 +36,7 @@ class TrackList {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['href'] = href;
-    if (items != null) {
-      data['items'] = items!.map((v) => v.toJson()).toList();
-    }
+    data['items'] = items;
     data['limit'] = limit;
     data['next'] = next;
     data['offset'] = offset;

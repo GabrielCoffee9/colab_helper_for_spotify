@@ -1,4 +1,4 @@
-import '../../models/primary models/user_colab_playlist_model.dart';
+import '../../models/primary models/search_items.dart';
 import '../../models/primary models/user_playlists_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 import 'playlist_service.dart';
@@ -73,7 +73,7 @@ class PlaylistController extends ChangeNotifier {
     }
   }
 
-  Future<UserColabPlaylist> searchPlaylists(
+  Future<SearchItems> searchPlaylists(
       String query, String market, int offset) async {
     return await PlaylistService().searchPlaylists(query, market, offset);
   }

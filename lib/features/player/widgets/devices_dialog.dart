@@ -1,6 +1,6 @@
 import '../../../models/primary models/user_profile_model.dart';
 import '../player_controller.dart';
-import '../../../models/secundary models/devices.dart';
+import '../../../models/secundary models/devices_model.dart';
 
 import 'package:flutter/material.dart';
 

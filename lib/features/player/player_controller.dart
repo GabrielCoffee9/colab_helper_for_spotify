@@ -1,5 +1,5 @@
-import '../../models/secundary models/devices.dart';
-import '../../models/secundary models/queue.dart';
+import '../../models/secundary models/devices_model.dart';
+import '../../models/secundary models/queue_model.dart';
 import 'player_service.dart';
 import 'player_dialog.dart';
 

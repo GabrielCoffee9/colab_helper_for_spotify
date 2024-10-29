@@ -1,4 +1,4 @@
-import '../../models/primary models/user_colab_playlist_model.dart';
+import '../../models/primary models/search_items.dart';
 import '../../models/primary models/user_playlists_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 
@@ -71,7 +71,7 @@ class PlaylistService {
     }
   }
 
-  Future<UserColabPlaylist> searchPlaylists(
+  Future<SearchItems> searchPlaylists(
       String query, String market, int offset) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
@@ -87,9 +87,9 @@ class PlaylistService {
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 
-      UserColabPlaylist playlistsSearch = UserColabPlaylist();
+      SearchItems playlistsSearch = SearchItems();
 
-      playlistsSearch = UserColabPlaylist.fromJson(response.data['playlists']);
+      playlistsSearch = SearchItems.fromJson(response.data);
 
       return playlistsSearch;
     } on Exception {

@@ -1,46 +1,42 @@
-import '../secundary models/playlist_model.dart';
+import 'track_model.dart';
 
-class UserPlaylists {
+class SearchTracksContainer {
   String? href;
-  List<Playlist>? playlists = <Playlist>[];
+  List<Track>? items;
   int? limit;
   String? next;
   int? offset;
   String? previous;
   int? total;
 
-  static final UserPlaylists _instance = UserPlaylists._();
-  static UserPlaylists get instance => _instance;
-
-  UserPlaylists._();
-
-  UserPlaylists(
+  SearchTracksContainer(
       {this.href,
-      this.playlists,
+      this.items,
       this.limit,
       this.next,
       this.offset,
       this.previous,
       this.total});
 
-  fromJson(Map<String, dynamic> json) {
+  SearchTracksContainer.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      playlists = <Playlist>[];
+      items = <Track>[];
       json['items'].forEach((v) {
-        playlists!.add(Playlist.fromJson(v));
+        items!.add(Track.fromJson(v));
       });
     }
     limit = json['limit'];
-    next = json['next'] ?? '';
+    next = json['next'];
     offset = json['offset'];
-    previous = json['previous'] ?? '';
+    previous = json['previous'];
     total = json['total'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['href'] = href;
+    data['items'] = items;
     data['limit'] = limit;
     data['next'] = next;
     data['offset'] = offset;
