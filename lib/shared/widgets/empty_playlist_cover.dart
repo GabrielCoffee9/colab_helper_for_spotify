@@ -11,9 +11,14 @@ class EmptyPlaylistCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[800],
+        borderRadius: const BorderRadius.all(
+          Radius.circular(4),
+        ),
+      ),
       height: height,
       width: width,
-      color: Colors.grey[800],
       child: Icon(
         Icons.music_note_outlined,
         color: Colors.white,

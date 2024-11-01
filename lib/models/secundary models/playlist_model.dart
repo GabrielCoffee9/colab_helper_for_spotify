@@ -11,13 +11,13 @@ class Playlist {
   ExternalUrls? externalUrls;
   String? href;
   String? id;
-  List<Images>? images;
+  List<Images>? images = <Images>[];
   String? name;
   Owner? owner;
   String? primaryColor;
   bool? public;
   String? snapshotId;
-  List<Track>? tracks = <Track>[];
+  List<Track> tracks = <Track>[];
   bool hasMoreToLoad = true;
   String? type;
   String? uri;
@@ -36,7 +36,7 @@ class Playlist {
       this.primaryColor,
       this.public,
       this.snapshotId,
-      this.tracks,
+      this.tracks = const <Track>[],
       this.type,
       this.uri});
 
@@ -54,7 +54,6 @@ class Playlist {
     total = json['total'] ?? 0;
     id = json['id'] ?? id;
     if (json['images'] != null) {
-      images = <Images>[];
       json['images'].forEach((v) {
         images!.add(Images.fromJson(v));
       });
@@ -73,15 +72,17 @@ class Playlist {
     snapshotId = json['snapshot_id'];
 
     if (json['items'] != null) {
-      tracks = <Track>[];
       json['items'].forEach((v) {
-        tracks!.add(Track.fromJson(v['track']));
+        if (v['track']['id'] != null) {
+          tracks.add(Track.fromJson(v['track']));
+        }
       });
     }
 
     if (json['tracks'] != null) {
-      tracks = <Track>[];
-      tracks!.add(Track.fromJson(json['tracks']));
+      if (json['tracks']['id'] != null) {
+        tracks.add(Track.fromJson(json['tracks']));
+      }
     }
 
     if (json['next'] == null) {
@@ -95,8 +96,8 @@ class Playlist {
   fromInstance(Map<String, dynamic> json) {
     var previousInvalidTracks = 0;
 
-    if (tracks?.isNotEmpty ?? false) {
-      previousInvalidTracks = tracks!.last.previousInvalidTracks;
+    if (tracks.isNotEmpty) {
+      previousInvalidTracks = tracks.last.previousInvalidTracks;
     }
 
     hasMoreToLoad = true;
@@ -109,7 +110,6 @@ class Playlist {
     total = json['total'] ?? 0;
     id = json['id'] ?? id;
     if (json['images'] != null) {
-      images = <Images>[];
       json['images'].forEach((v) {
         images!.add(Images.fromJson(v));
       });
@@ -137,7 +137,7 @@ class Playlist {
         if (previousInvalidTracks > 0) {
           newTrack.previousInvalidTracks = previousInvalidTracks;
         }
-        tracks!.add(newTrack);
+        tracks.add(newTrack);
       });
     }
 
@@ -150,7 +150,7 @@ class Playlist {
       if (previousInvalidTracks > 0) {
         newTrack.previousInvalidTracks = previousInvalidTracks;
       }
-      tracks!.add(newTrack);
+      tracks.add(newTrack);
     }
 
     if (json['next'] == null) {
@@ -181,9 +181,7 @@ class Playlist {
     data['public'] = public;
     data['snapshot_id'] = snapshotId;
 
-    if (tracks != null) {
-      data['tracks'] = tracks!.map((v) => v.toJson()).toList();
-    }
+    data['tracks'] = tracks.map((v) => v.toJson()).toList();
 
     data['type'] = type;
     data['uri'] = uri;

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
 class UnitAudioWave extends StatefulWidget {
-  const UnitAudioWave(
-      {super.key,
-      required this.duration,
-      required this.lineHeight,
-      required this.color});
+  const UnitAudioWave({
+    super.key,
+    required this.duration,
+    required this.lineHeight,
+    required this.lineWidth,
+    required this.color,
+  });
 
   final int duration;
   final double lineHeight;
+  final double lineWidth;
   final Color color;
 
   @override
@@ -49,7 +52,7 @@ class _UnitAudioWaveState extends State<UnitAudioWave>
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 4,
+      width: widget.lineWidth,
       decoration: BoxDecoration(
         color: widget.color,
         borderRadius: BorderRadius.circular(5),

@@ -2,33 +2,27 @@ import '../secundary models/playlist_model.dart';
 
 class UserPlaylists {
   String? href;
-  List<Playlist>? playlists = <Playlist>[];
+  List<Playlist> playlists = <Playlist>[];
   int? limit;
   String? next;
   int? offset;
   String? previous;
   int? total;
 
-  static final UserPlaylists _instance = UserPlaylists._();
-  static UserPlaylists get instance => _instance;
-
-  UserPlaylists._();
-
   UserPlaylists(
       {this.href,
-      this.playlists,
+      this.playlists = const <Playlist>[],
       this.limit,
       this.next,
       this.offset,
       this.previous,
       this.total});
 
-  fromJson(Map<String, dynamic> json) {
+  UserPlaylists.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      playlists = <Playlist>[];
       json['items'].forEach((v) {
-        playlists!.add(Playlist.fromJson(v));
+        playlists.add(Playlist.fromJson(v));
       });
     }
     limit = json['limit'];
@@ -36,6 +30,20 @@ class UserPlaylists {
     offset = json['offset'];
     previous = json['previous'] ?? '';
     total = json['total'];
+  }
+
+  fromInstance(Map<String, dynamic> json) {
+    href = json['href'] ?? href;
+    if (json['items'] != null) {
+      json['items'].forEach((v) {
+        playlists.add(Playlist.fromJson(v));
+      });
+    }
+    limit = json['limit'] ?? limit;
+    next = json['next'] ?? next;
+    offset = json['offset'] ?? offset;
+    previous = json['previous'] ?? previous;
+    total = json['total'] ?? total;
   }
 
   Map<String, dynamic> toJson() {

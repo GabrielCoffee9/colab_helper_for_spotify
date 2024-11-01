@@ -10,6 +10,7 @@ import '../player/player_controller.dart';
 import '../playlist/all_playlists_page.dart';
 import '../playlist/playlist_controller.dart';
 import '../playlist/playlist_page.dart';
+import '../search/search_page.dart';
 import 'widgets/home_interactive_button.dart';
 
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   bool userPlaylistsLoading = true;
 
+  bool isPlayerPaused = true;
+
   void getUserProfile() {
     UserController().getUserProfile().then((_) {
       setState(() {});
@@ -49,6 +52,12 @@ class _HomePageState extends State<HomePage> {
     );
 
     return;
+  }
+
+  getPlayerPausedState() {
+    PlayerController.instance
+        .getPlayerState()
+        .then((data) => isPlayerPaused = data?.isPaused ?? true);
   }
 
   @override
@@ -72,6 +81,7 @@ class _HomePageState extends State<HomePage> {
 
     getUserProfile();
     getPlaylists();
+    getPlayerPausedState();
   }
 
   @override
@@ -83,7 +93,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     UserProfile userProfile = UserProfile.instance;
     final ColorScheme colors = Theme.of(context).colorScheme;
-    int playlistCount = userPlaylists.playlists?.length ?? 0;
+    int playlistCount = userPlaylists.playlists.length;
     int maxDisplayedPlaylists = playlistCount > 5 ? 5 : playlistCount;
     return Scaffold(
       key: _key,
@@ -106,7 +116,12 @@ class _HomePageState extends State<HomePage> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showSearch(
+                      context: context,
+                      delegate: SearchPage(),
+                    );
+                  },
                   icon: const Icon(Icons.search),
                 )
               ],
@@ -116,13 +131,15 @@ class _HomePageState extends State<HomePage> {
                   title: StreamBuilder(
                     stream: PlayerController.instance.playerState,
                     builder: (context, snapshot) {
+                      isPlayerPaused =
+                          snapshot.data?.isPaused ?? isPlayerPaused;
                       return AnimatedSwitcher(
                         duration: const Duration(milliseconds: 1400),
                         switchInCurve: Curves.bounceIn,
                         switchOutCurve: Curves.bounceOut,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: snapshot.data?.isPaused ?? true
+                          child: isPlayerPaused
                               ? GestureDetector(
                                   onTap: (() => PlayerController.instance
                                       .showPlayerDialog(context)),
@@ -132,7 +149,12 @@ class _HomePageState extends State<HomePage> {
                                         colors.brightness == Brightness.dark,
                                   ),
                                 )
-                              : const MusicVisualizer(),
+                              : const MusicVisualizer(
+                                  unitAudioWavecount: 8,
+                                  lineWidth: 4,
+                                  width: 60,
+                                  circularBorderRadius: 12,
+                                ),
                         ),
                       );
                     },
@@ -155,7 +177,9 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     width: 60,
                                     child: ProfilePicture(
-                                      imageUrl: userProfile.images?[1].url,
+                                      imageUrl: userProfile.images.isNotEmpty
+                                          ? userProfile.images.first.url
+                                          : '',
                                       avatar: true,
                                     ),
                                   ),
@@ -245,26 +269,25 @@ class _HomePageState extends State<HomePage> {
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
                                 onTap: () {
-                                  if (userPlaylists.playlists?.isNotEmpty ??
-                                      false) {
+                                  if (userPlaylists.playlists.isNotEmpty) {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => PlaylistPage(
                                           playlist:
-                                              userPlaylists.playlists![index],
+                                              userPlaylists.playlists[index],
                                         ),
                                       ),
                                     );
                                   }
                                 },
                                 playlistName:
-                                    userPlaylists.playlists?[index].name ??
+                                    userPlaylists.playlists[index].name ??
                                         'Loading',
-                                urlImage: userPlaylists.playlists?[index].images
+                                urlImage: userPlaylists.playlists[index].images
                                             ?.isNotEmpty ??
                                         false
                                     ? userPlaylists
-                                        .playlists![index].images?.first.url
+                                        .playlists[index].images?.first.url
                                     : null,
                               );
                             },

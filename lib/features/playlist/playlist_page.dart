@@ -32,7 +32,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   final ScrollController _scrollController = ScrollController();
 
   Playlist playlist = Playlist();
-  ValueNotifier<bool> playlistLoading = ValueNotifier(true);
+  ValueNotifier<bool> isplaylistLoading = ValueNotifier(true);
 
   String selectedSongUri = "";
 
@@ -46,7 +46,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     playlistController.getPlaylistTracks(playlist, offset).then((value) {
       setState(() {
         playlist = value;
-        playlistLoading.value = false;
+        isplaylistLoading.value = false;
       });
     });
 
@@ -133,34 +133,35 @@ class _PlaylistPageState extends State<PlaylistPage> {
           : null,
       appBar: AppBar(
         primary: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    backgroundColor: colors.surface,
-                    title: const Text('Edit playlist details'),
-                    actions: [
-                      TextButton(onPressed: () {}, child: const Text('Cancel')),
-                      TextButton(onPressed: () {}, child: const Text('Save'))
-                    ],
-                  );
-                },
-              );
-            },
-            icon: const Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          )
-        ],
+        //Disabled for now.
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       showDialog(
+        //         context: context,
+        //         builder: (context) {
+        //           return AlertDialog(
+        //             backgroundColor: colors.surface,
+        //             title: const Text('Edit playlist details'),
+        //             actions: [
+        //               TextButton(onPressed: () {}, child: const Text('Cancel')),
+        //               TextButton(onPressed: () {}, child: const Text('Save'))
+        //             ],
+        //           );
+        //         },
+        //       );
+        //     },
+        //     icon: const Icon(Icons.edit),
+        //   ),
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: const Icon(Icons.search),
+        //   )
+        // ],
       ),
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
-        child: (playlistLoading.value)
+        child: (isplaylistLoading.value)
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -182,12 +183,24 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             width: 220,
                             height: 220,
                             child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: playlist.images?.first.url! ?? '',
+                                imageUrl: playlist.images!.isNotEmpty
+                                    ? playlist.images!.first.url!
+                                    : '',
                                 memCacheWidth: 480,
                                 memCacheHeight: 350,
                                 maxWidthDiskCache: 480,
                                 maxHeightDiskCache: 350,
+                                imageBuilder: (context, image) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(4),
+                                        ),
+                                        image: DecorationImage(
+                                          image: image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                 placeholder: (context, url) =>
                                     const EmptyPlaylistCover(),
                                 errorWidget: (context, url, error) =>
@@ -200,7 +213,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  playlistLoading.value
+                                  isplaylistLoading.value
                                       ? ''
                                       : playlist.name ?? 'Unnamed Playlist',
                                   overflow: TextOverflow.ellipsis,
@@ -212,37 +225,44 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 12.0),
                                   child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      (playlist.owner?.id != 'spotify')
-                                          ? SizedBox(
-                                              width: 60,
-                                              child: ProfilePicture(
-                                                imageUrl:
-                                                    urlOwnerPlaylist ?? '',
-                                                avatar: true,
-                                              ),
-                                            )
-                                          : Image.asset(
-                                              'lib/assets/Spotify_Icon_RGB_Green.png',
-                                              height: 60,
+                                      Row(
+                                        children: [
+                                          (playlist.owner?.id != 'spotify')
+                                              ? SizedBox(
+                                                  width: 60,
+                                                  child: ProfilePicture(
+                                                    imageUrl:
+                                                        urlOwnerPlaylist ?? '',
+                                                    avatar: true,
+                                                  ),
+                                                )
+                                              : Image.asset(
+                                                  'lib/assets/Spotify_Icon_RGB_Green.png',
+                                                  height: 60,
+                                                ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(playlist
+                                                        .owner?.displayName ??
+                                                    ''),
+                                                Text(
+                                                  "Playlist",
+                                                  style: TextStyle(
+                                                      color: colors.tertiary),
+                                                ),
+                                              ],
                                             ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(playlist.owner?.displayName ??
-                                                ''),
-                                            Text(
-                                              "Creator",
-                                              style: TextStyle(
-                                                  color: Colors.grey[500]),
-                                            ),
-                                          ],
-                                        ),
-                                      )
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -257,7 +277,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 12, left: 12, right: 12),
-                          child: (playlist.tracks?.isNotEmpty ?? false)
+                          child: (playlist.tracks.isNotEmpty)
                               ? Wrap(
                                   children: [
                                     Text(
@@ -287,21 +307,20 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
                           }
-                          final Track item =
-                              playlist.tracks!.removeAt(oldIndex);
-                          playlist.tracks!.insert(newIndex, item);
+                          final Track item = playlist.tracks.removeAt(oldIndex);
+                          playlist.tracks.insert(newIndex, item);
                         });
                       },
-                      itemCount: playlist.tracks?.length ?? 0,
+                      itemCount: playlist.tracks.length,
                       itemBuilder: (context, index) {
-                        if (index + 1 == (playlist.tracks?.length ?? 0) &&
+                        if (index + 1 == (playlist.tracks.length) &&
                             ((playlist.total) > (index + 1)) &&
                             playlistController.state.value !=
                                 PlaylistState.loading) {
                           getTracks(offset: index + 1);
                         }
 
-                        if ((index + 1 >= (playlist.tracks?.length ?? 0)) &&
+                        if ((index + 1 >= (playlist.tracks.length)) &&
                             playlistController.state.value ==
                                 PlaylistState.loading) {
                           return Column(
@@ -330,33 +349,34 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               index: index,
                               child: SongTile(
                                 key: Key('$index'),
-                                songName: playlist.tracks![index].name,
-                                artist: playlist.tracks?[index].allArtists,
-                                imageUrl: playlist.tracks![index].album!.images!
-                                        .isNotEmpty
+                                songName: playlist.tracks[index].name,
+                                artist: playlist.tracks[index].allArtists,
+                                imageUrl: playlist.tracks[index].album?.images
+                                            .isNotEmpty ??
+                                        false
                                     ? playlist
-                                        .tracks![index].album!.images![1].url
+                                        .tracks[index].album!.images[1].url
                                     : '',
                                 selected: selectedSongUri ==
-                                    playlist.tracks?[index].uri,
+                                    playlist.tracks[index].uri,
                                 playingNow: (selectedSongUri ==
-                                        playlist.tracks?[index].uri) &&
+                                        playlist.tracks[index].uri) &&
                                     !isPaused,
-                                invalidTrack:
-                                    playlist.tracks?[index].invalid ?? true,
+                                invalidTrack: playlist.tracks[index].invalid,
+                                explicit:
+                                    playlist.tracks[index].explicit ?? false,
                                 onTap: () {
                                   setState(() {
                                     if (selectedSongUri ==
-                                        playlist.tracks?[index].uri) {
+                                        playlist.tracks[index].uri) {
                                       isPaused
                                           ? playerController.resume()
                                           : playerController.pause();
                                     } else {
-                                      playerController.playIndexPlaylist(
+                                      playerController.skipToIndex(
                                           index -
-                                              (playlist.tracks?[index]
-                                                      .previousInvalidTracks ??
-                                                  0),
+                                              (playlist.tracks[index]
+                                                  .previousInvalidTracks),
                                           playlist.uri);
                                     }
                                   });

@@ -1,5 +1,6 @@
 import '../../models/secundary models/devices_model.dart';
 import '../../models/secundary models/queue_model.dart';
+import '../../shared/modules/app_remote/app_remote_handler.dart';
 import 'player_service.dart';
 import 'player_dialog.dart';
 
@@ -50,13 +51,14 @@ class PlayerController {
             context: context,
             transitionBuilder: (BuildContext context, a1, a2, widget) =>
                 SlideTransition(
-                    position: Tween<Offset>(
-                            begin: const Offset(0, 0.5),
-                            end: const Offset(0, 0))
-                        .animate(
-                            CurvedAnimation(parent: a1, curve: Curves.ease)),
-                    child:
-                        PlayerDialog(initialPlayerState: initialPlayerState)),
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.5),
+                end: const Offset(0, 0),
+              ).animate(
+                CurvedAnimation(parent: a1, curve: Curves.ease),
+              ),
+              child: PlayerDialog(initialPlayerState: initialPlayerState),
+            ),
           );
         });
       }
@@ -66,43 +68,60 @@ class PlayerController {
   }
 
   Future<PlayerState?> getPlayerState() async {
-    return await SpotifySdk.getPlayerState();
+    return await appRemoteHandler<PlayerState?>(
+      () => SpotifySdk.getPlayerState(),
+    );
   }
 
-  playSong(String? contextUri) async {
-    await SpotifySdk.play(spotifyUri: contextUri ?? '');
+  play(String? contextUri) async {
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.play(spotifyUri: contextUri ?? ''),
+    );
   }
 
-  playIndexPlaylist(int? trackIndex, String? contextUri) async {
-    await SpotifySdk.skipToIndex(
-        spotifyUri: contextUri ?? '', trackIndex: trackIndex ?? 0);
+  skipToIndex(int? trackIndex, String? contextUri) async {
+    return await appRemoteHandler<dynamic>(
+      () => SpotifySdk.skipToIndex(
+          spotifyUri: contextUri ?? '', trackIndex: trackIndex ?? 0),
+    );
   }
 
   resume() async {
-    await SpotifySdk.resume();
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.resume(),
+    );
   }
 
   pause() async {
-    await SpotifySdk.pause();
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.pause(),
+    );
   }
 
   skipNext() async {
-    await SpotifySdk.skipNext();
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.skipNext(),
+    );
   }
 
   skipPrevious() async {
-    await SpotifySdk.skipPrevious();
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.skipPrevious(),
+    );
   }
 
-  seekTo(int seek) {
-    SpotifySdk.seekTo(positionedMilliseconds: seek);
+  seekTo(int seek) async {
+    await appRemoteHandler<dynamic>(
+        () => SpotifySdk.seekTo(positionedMilliseconds: seek));
   }
 
-  seekToRelativePosition(int seek) {
-    SpotifySdk.seekToRelativePosition(relativeMilliseconds: seek);
+  seekToRelativePosition(int seek) async {
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.seekToRelativePosition(relativeMilliseconds: seek),
+    );
   }
 
-  setPlaybackSpeed(double playbackSpeed) {
+  setPlaybackSpeed(double playbackSpeed) async {
     late PodcastPlaybackSpeed newPlaybackSpeed;
 
     switch (playbackSpeed) {
@@ -131,7 +150,10 @@ class PlayerController {
         newPlaybackSpeed = PodcastPlaybackSpeed.playbackSpeed_100;
     }
 
-    SpotifySdk.setPodcastPlaybackSpeed(podcastPlaybackSpeed: newPlaybackSpeed);
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.setPodcastPlaybackSpeed(
+          podcastPlaybackSpeed: newPlaybackSpeed),
+    );
   }
 
   void resumePlayerProgress() {
@@ -159,19 +181,33 @@ class PlayerController {
 
   Future<List<Devices>> getAvailableDevices() async {
     try {
-      return await PlayerService().getAvailableDevices();
+      final response = await PlayerService().getAvailableDevices();
+
+      List<Devices> devicesList = [];
+
+      for (var element in response.data['devices']) {
+        var newDevice = Devices.fromJson(element);
+
+        devicesList.add(newDevice);
+      }
+
+      return devicesList;
     } on Exception {
       rethrow;
     }
   }
 
-  Future<void> transferPlayback(String? deviceId) async {
+  Future<bool> transferPlayback(String? deviceId) async {
     try {
-      if (deviceId != null || deviceId!.isNotEmpty) {
-        return await PlayerService().transferPlayback(deviceId);
+      if (deviceId == null || deviceId.isEmpty) {
+        throw Exception('DeviceId invalid at TransferPlayblack');
       }
+      final response = await PlayerService().transferPlayback(deviceId);
 
-      throw Exception('DeviceId invalid in TransferPlayblack');
+      if (response.statusCode == 204) {
+        return true;
+      }
+      return false;
     } on Exception {
       rethrow;
     }
@@ -179,21 +215,29 @@ class PlayerController {
 
   Future<Queue> getUserQueue() async {
     try {
-      return await PlayerService().getUserQueue();
+      final response = await PlayerService().getUserQueue();
+
+      return Queue.fromJson(response.data);
     } on Exception {
       rethrow;
     }
   }
 
   likeSong(String spotifyUri) async {
-    SpotifySdk.addToLibrary(spotifyUri: spotifyUri);
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.addToLibrary(spotifyUri: spotifyUri),
+    );
   }
 
   deslikeSong(String spotifyUri) async {
-    SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri);
+    await appRemoteHandler<dynamic>(
+      () => SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri),
+    );
   }
 
   Future<LibraryState?> getLibraryState(String spotifyUri) async {
-    return await SpotifySdk.getLibraryState(spotifyUri: spotifyUri);
+    return await appRemoteHandler<LibraryState?>(
+      () => SpotifySdk.getLibraryState(spotifyUri: spotifyUri),
+    );
   }
 }

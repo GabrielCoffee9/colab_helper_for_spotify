@@ -19,7 +19,7 @@ class UserProfile extends ChangeNotifier {
   Followers? followers;
   String? href;
   String? id;
-  List<Images>? images;
+  List<Images> images = <Images>[];
   String? product;
   String? type;
   String? uri;
@@ -33,7 +33,7 @@ class UserProfile extends ChangeNotifier {
       this.followers,
       this.href,
       this.id,
-      this.images,
+      this.images = const <Images>[],
       this.product,
       this.type,
       this.uri});
@@ -54,9 +54,8 @@ class UserProfile extends ChangeNotifier {
     href = json['href'];
     id = json['id'];
     if (json['images'] != null) {
-      images = <Images>[];
       json['images'].forEach((v) {
-        images!.add(Images.fromJson(v));
+        images.add(Images.fromJson(v));
       });
     }
     product = json['product'];
@@ -80,9 +79,7 @@ class UserProfile extends ChangeNotifier {
     }
     data['href'] = href;
     data['id'] = id;
-    if (images != null) {
-      data['images'] = images!.map((v) => v.toJson()).toList();
-    }
+    data['images'] = images.map((v) => v.toJson()).toList();
     data['product'] = product;
     data['type'] = type;
     data['uri'] = uri;

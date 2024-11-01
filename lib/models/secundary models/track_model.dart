@@ -6,8 +6,8 @@ import 'images_model.dart';
 
 class Track {
   Album? album;
-  List<Artist>? artists;
-  List<String>? availableMarkets;
+  List<Artist> artists = <Artist>[];
+  List<String> availableMarkets = <String>[];
   int? discNumber;
   int? durationMs;
   bool? episode;
@@ -31,8 +31,8 @@ class Track {
 
   Track(
       {this.album,
-      this.artists,
-      this.availableMarkets,
+      this.artists = const <Artist>[],
+      this.availableMarkets = const <String>[],
       this.discNumber,
       this.durationMs,
       this.episode,
@@ -55,10 +55,9 @@ class Track {
   Track.fromJson(Map<String, dynamic> json) {
     album = json['album'] != null ? Album.fromJson(json['album']) : null;
     if (json['artists'] != null) {
-      artists = <Artist>[];
       json['artists'].forEach((v) {
         allArtists = '${allArtists ?? ''}${v['name']}, ';
-        artists!.add(Artist.fromJson(v));
+        artists.add(Artist.fromJson(v));
       });
       allArtists = allArtists!.substring(0, allArtists!.lastIndexOf(','));
     }
@@ -94,13 +93,9 @@ class Track {
     if (album != null) {
       data['album'] = album!.toJson();
     }
-    if (artists != null) {
-      data['artists'] = artists!.map((v) => v.toJson()).toList();
-    }
+    data['artists'] = artists.map((v) => v.toJson()).toList();
 
-    if (availableMarkets != null) {
-      data['available_markets'] = availableMarkets;
-    }
+    data['available_markets'] = availableMarkets;
 
     data['disc_number'] = discNumber;
     data['duration_ms'] = durationMs;

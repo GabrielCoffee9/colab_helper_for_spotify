@@ -1,8 +1,7 @@
-import 'package:colab_helper_for_spotify/models/secundary%20models/search_tracks_container_model.dart';
-
 import '../secundary models/search_albums_container_model.dart';
 import '../secundary models/search_artists_container_model.dart';
 import '../secundary models/search_playlists_container_model.dart';
+import '../secundary models/search_tracks_container_model.dart';
 
 class SearchItems {
   SearchTracksContainer? tracksContainer;
@@ -32,6 +31,24 @@ class SearchItems {
 
     if (json['playlists'] != null) {
       playlistContainer = SearchPlaylistContainer.fromJson(json['playlists']);
+    }
+  }
+
+  fromInstance(Map<String, dynamic> json) {
+    if (json['tracks'] != null && tracksContainer != null) {
+      tracksContainer!.fromInstance(json['tracks']);
+    }
+
+    if (json['artists'] != null && artistsContainer != null) {
+      artistsContainer!.fromInstance(json['artists']);
+    }
+
+    if (json['albums'] != null && albumsContainer != null) {
+      albumsContainer!.fromInstance(json['albums']);
+    }
+
+    if (json['playlists'] != null && playlistContainer != null) {
+      playlistContainer!.fromInstance(json['playlists']);
     }
   }
 

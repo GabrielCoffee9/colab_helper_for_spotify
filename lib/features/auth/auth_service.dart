@@ -29,6 +29,16 @@ class AuthService {
   /// Returns a confirmation [bool].
   Future<bool> getNewTokenAndConnectToSpotifyRemote() async {
     try {
+      final token = await getAccessToken();
+      final confirmation = await connectSpotifyRemote(token);
+      return confirmation;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<String> getAccessToken() async {
+    try {
       String token;
 
       token = await SpotifySdk.getAccessToken(
@@ -43,7 +53,7 @@ class AuthService {
           key: 'accessTokenDate',
           value: DateTime.now().millisecondsSinceEpoch.toString());
 
-      return await connectSpotifyRemote(token);
+      return token;
     } on Exception {
       rethrow;
     }
@@ -56,14 +66,6 @@ class AuthService {
         redirectUrl: _appRedirectURI,
         accessToken: token,
       );
-    } on Exception {
-      rethrow;
-    }
-  }
-
-  Future<bool> disconnectSpotifyRemote() async {
-    try {
-      return await SpotifySdk.disconnect();
     } on Exception {
       rethrow;
     }

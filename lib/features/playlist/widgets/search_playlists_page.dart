@@ -1,13 +1,43 @@
-import '../../../models/primary models/search_items.dart';
-import '../../../models/primary models/user_profile_model.dart';
-import '../../../shared/widgets/circular_progress.dart';
+import '../../../models/secundary models/playlist_model.dart';
+import '../../../models/primary models/user_playlists_model.dart';
+import '../../player/player_controller.dart';
+import '../../search/widgets/playlist_search_tile.dart';
 import '../playlist_controller.dart';
+import '../playlist_page.dart';
 
 import 'package:flutter/material.dart';
 
 class SearchPlaylistsPage extends SearchDelegate {
+  final UserPlaylists initialPlaylists;
+
+  ValueNotifier<UserPlaylists> searchData = ValueNotifier(UserPlaylists());
+
+  bool isloadingData = false;
+
+  SearchPlaylistsPage(this.initialPlaylists) {
+    searchData.value = initialPlaylists;
+    searchPlaylists();
+  }
+
+  searchPlaylists() {
+    if (!isloadingData &&
+        (searchData.value.total! > searchData.value.playlists.length)) {
+      isloadingData = true;
+      PlaylistController()
+          .getCurrentUserPlaylists(
+              limit: 25,
+              offset: searchData.value.playlists.length,
+              currentUserPlaylists: searchData.value)
+          .then((value) {
+        searchData.value = value;
+        isloadingData = false;
+        searchPlaylists();
+      });
+    }
+  }
+
   @override
-  String? get searchFieldLabel => 'Search Playlists';
+  String? get searchFieldLabel => 'Search Your Playlists';
 
   @override
   List<Widget>? buildActions(BuildContext context) => [
@@ -26,42 +56,41 @@ class SearchPlaylistsPage extends SearchDelegate {
       );
 
   @override
-  Widget buildResults(BuildContext context) => searchPlaylists();
+  Widget buildResults(BuildContext context) => buildPlaylistsSuggestions();
 
   @override
-  Widget buildSuggestions(BuildContext context) => searchPlaylists();
+  Widget buildSuggestions(BuildContext context) => buildPlaylistsSuggestions();
 
-  Widget searchPlaylists() {
+  Widget buildPlaylistsSuggestions() {
     if (query.isNotEmpty) {
-      return FutureBuilder(
-        future: PlaylistController()
-            .searchPlaylists(query, UserProfile.instance.country ?? 'US', 0),
-        builder: (context, AsyncSnapshot<SearchItems> searchSnapshot) {
-          if (searchSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: SizedBox(
-                width: 50,
-                child: CircularProgress(isDone: false),
-              ),
-            );
-          } else if (searchSnapshot.hasError) {
-            return const Center(child: Text('Error loading searching.'));
-          } else if (searchSnapshot.data?.playlistContainer?.items?.isEmpty ??
-              true) {
-            return const Center(child: Text('No results found.'));
-          }
+      List<Playlist> searchPlaylistItems = [];
 
-          final searchPlaylistItems =
-              searchSnapshot.data?.playlistContainer?.items;
+      for (var element in searchData.value.playlists) {
+        if ((element.name?.toLowerCase().contains(query.toLowerCase()) ??
+                false) ||
+            (element.owner?.displayName
+                    ?.toLowerCase()
+                    .contains(query.toLowerCase()) ??
+                false)) {
+          searchPlaylistItems.add(element);
+        }
+      }
 
-          return ListView.builder(
-            itemCount: searchPlaylistItems?.length ?? 0,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(searchPlaylistItems?[index].name ?? 'Loading...'),
-                subtitle:
-                    Text(searchPlaylistItems?[index].owner?.displayName ?? ''),
-                onTap: () {},
+      return ListView.builder(
+        itemCount: searchPlaylistItems.length,
+        itemBuilder: (context, index) {
+          String contextUri =
+              PlayerController.instance.playerContext.value?.uri ?? '';
+          return PlaylistSearchTile(
+            playlist: searchPlaylistItems[index],
+            isPlaying: contextUri == searchPlaylistItems[index].uri,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PlaylistPage(
+                    playlist: searchPlaylistItems[index],
+                  ),
+                ),
               );
             },
           );

@@ -4,32 +4,51 @@ import 'unit_audio_wave.dart';
 import 'package:flutter/material.dart';
 
 class MusicVisualizer extends StatelessWidget {
-  const MusicVisualizer({super.key});
+  /// Max to 8 waves.
+  final int unitAudioWavecount;
+
+  final double? height;
+  final double? width;
+  final double lineWidth;
+  final double circularBorderRadius;
+
+  const MusicVisualizer({
+    super.key,
+    required this.unitAudioWavecount,
+    this.height,
+    this.width,
+    required this.lineWidth,
+    this.circularBorderRadius = 8,
+  });
 
   @override
   Widget build(BuildContext context) {
     PlayerController playerController = PlayerController.instance;
-    List<int> durations = [680, 780, 900, 800, 700, 650, 720, 750];
+    List<int> durations = [680, 900, 780, 650, 720, 700, 800, 750];
     durations.shuffle();
 
-    List<double> lineHeight = [8, 12, 16, 25, 20, 15, 11, 8];
+    List<double> lineHeight = [8, 25, 12, 16, 20, 15, 11, 8];
 
     return GestureDetector(
       onTap: (() => playerController.showPlayerDialog(context)),
       child: Container(
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: BorderRadius.circular(12)),
-        width: 60,
+            borderRadius: BorderRadius.circular(circularBorderRadius)),
+        width: width,
+        height: height,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List<Widget>.generate(
-              8,
-              (index) => UnitAudioWave(
-                    duration: durations[index],
-                    lineHeight: lineHeight[index],
-                    color: Theme.of(context).colorScheme.primary,
-                  )),
+          children: List<Widget>.generate(unitAudioWavecount, (index) {
+            lineHeight.shuffle();
+            durations.shuffle();
+            return UnitAudioWave(
+              duration: durations[index],
+              lineHeight: lineHeight[index],
+              lineWidth: lineWidth,
+              color: Theme.of(context).colorScheme.primary,
+            );
+          }),
         ),
       ),
     );

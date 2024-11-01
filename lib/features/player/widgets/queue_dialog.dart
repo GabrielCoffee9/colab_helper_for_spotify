@@ -87,12 +87,13 @@ class _QueueDialogState extends State<QueueDialog> {
                 !loading
                     ? SongTile(
                         songName: userQueue.currentlyPlaying?.name,
-                        artist: userQueue.currentlyPlaying?.artists?.first.name,
+                        artist: userQueue.currentlyPlaying?.artists.first.name,
                         imageUrl:
-                            userQueue.currentlyPlaying?.album?.images?[1].url,
+                            userQueue.currentlyPlaying?.album?.images[1].url,
                         playingNow: true,
                         selected: true,
                         invalidTrack: true,
+                        explicit: userQueue.currentlyPlaying?.explicit ?? false,
                         onTap: () {})
                     : const Center(child: CircularProgress(isDone: false)),
                 Padding(
@@ -112,17 +113,23 @@ class _QueueDialogState extends State<QueueDialog> {
                           thumbVisibility: true,
                           child: ListView.builder(
                             controller: _scrollcontroller,
-                            itemCount: userQueue.items?.length ?? 0,
+                            itemCount: userQueue.items.length,
                             itemBuilder: (context, index) {
                               return SongTile(
-                                  songName: userQueue.items?[index].name,
-                                  artist: userQueue
-                                      .items?[index].artists?.first.name,
-                                  imageUrl: userQueue
-                                      .items?[index].album?.images?[1].url,
+                                  songName: userQueue.items[index].name,
+                                  artist:
+                                      userQueue.items[index].artists.first.name,
+                                  imageUrl: (userQueue.items[index].album
+                                              ?.images.isNotEmpty ??
+                                          false)
+                                      ? userQueue
+                                          .items[index].album!.images[1].url
+                                      : '',
                                   playingNow: false,
                                   selected: false,
                                   invalidTrack: true,
+                                  explicit:
+                                      userQueue.items[index].explicit ?? false,
                                   onTap: () {
                                     // PlayerController.instance.playIndexPlaylist(trackIndex, contextUri);
                                   });

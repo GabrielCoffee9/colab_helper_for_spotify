@@ -17,19 +17,22 @@ class AllPlaylistsPage extends StatefulWidget {
 
 class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
   UserPlaylists userPlaylists = UserPlaylists();
-  final ScrollController _scrollController = ScrollController();
   PlaylistController playlistController = PlaylistController();
 
-  bool userPlaylistsLoading = true;
+  ValueNotifier<bool> isUserPlaylistsLoading = ValueNotifier(true);
 
   Future<void> getPlaylists({int offset = 0}) async {
     playlistController
-        .getCurrentUserPlaylists(limit: 25, offset: offset)
+        .getCurrentUserPlaylists(
+      limit: 25,
+      offset: offset,
+      currentUserPlaylists: userPlaylists,
+    )
         .then((value) {
       if (mounted) {
         setState(() {
           userPlaylists = value;
-          userPlaylistsLoading = false;
+          isUserPlaylistsLoading.value = false;
         });
       }
     });
@@ -39,13 +42,6 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
   @override
   void initState() {
     super.initState();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {});
-      }
-    });
 
     getPlaylists();
   }
@@ -61,7 +57,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchPlaylistsPage(),
+                delegate: SearchPlaylistsPage(userPlaylists),
               );
             },
             icon: const Icon(Icons.search),
@@ -73,7 +69,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         onRefresh: () => getPlaylists(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: userPlaylistsLoading
+          child: isUserPlaylistsLoading.value
               ? const Center(
                   child: Column(
                     children: [
@@ -83,23 +79,26 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                   ),
                 )
               : GridView.builder(
-                  controller: _scrollController,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                   ),
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
-                  itemCount: userPlaylists.playlists?.length ?? 0,
+                  itemCount: userPlaylists.playlists.length,
                   itemBuilder: (context, index) {
-                    if (index + 1 == (userPlaylists.playlists?.length ?? 0) &&
+                    bool isLastItem =
+                        index + 1 == (userPlaylists.playlists.length);
+
+                    if (isLastItem &&
                         ((userPlaylists.total ?? 0) > (index + 1)) &&
                         playlistController.state.value !=
                             PlaylistState.loading) {
                       getPlaylists(offset: index + 1);
                     }
 
-                    if (playlistController.state.value ==
-                        PlaylistState.loading) {
+                    if (isLastItem &&
+                        playlistController.state.value ==
+                            PlaylistState.loading) {
                       return const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -115,7 +114,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PlaylistPage(
-                                playlist: userPlaylists.playlists![index],
+                                playlist: userPlaylists.playlists[index],
                               ),
                             ),
                           );
@@ -131,14 +130,26 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                   memCacheHeight: 393,
                                   maxWidthDiskCache: 446,
                                   maxHeightDiskCache: 393,
-                                  fit: BoxFit.cover,
                                   placeholder: (context, url) =>
                                       const EmptyPlaylistCover(),
                                   errorWidget: (context, url, error) =>
                                       const EmptyPlaylistCover(),
-                                  imageUrl: userPlaylists.playlists![index]
-                                          .images?.first.url ??
-                                      '',
+                                  imageUrl: userPlaylists
+                                          .playlists[index].images!.isNotEmpty
+                                      ? userPlaylists
+                                          .playlists[index].images!.first.url!
+                                      : '',
+                                  imageBuilder: (context, image) => Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4),
+                                      ),
+                                      image: DecorationImage(
+                                        image: image,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -154,8 +165,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          userPlaylists
-                                                  .playlists![index].name ??
+                                          userPlaylists.playlists[index].name ??
                                               'Unnamed Playlist',
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
@@ -164,7 +174,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                     ],
                                   ),
                                   Text(
-                                    userPlaylists.playlists![index].owner
+                                    userPlaylists.playlists[index].owner
                                             ?.displayName ??
                                         'Unknown',
                                     style: const TextStyle(color: Colors.grey),

@@ -66,9 +66,17 @@ class AuthController {
     }
   }
 
+  getNewAccessToken() async {
+    try {
+      return await AuthService().getAccessToken();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<bool> disconnectSpotifyRemote() async {
     try {
-      return await AuthService().disconnectSpotifyRemote();
+      return await SpotifySdk.disconnect();
     } on Exception {
       rethrow;
     }

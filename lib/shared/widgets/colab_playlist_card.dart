@@ -32,11 +32,21 @@ class ColabPlaylistCard extends StatelessWidget {
                   height: 142,
                   width: 142,
                   child: CachedNetworkImage(
-                    fit: BoxFit.cover,
                     placeholder: (context, url) => const EmptyPlaylistCover(),
                     errorWidget: (context, url, error) =>
                         const EmptyPlaylistCover(),
                     imageUrl: urlImage ?? '',
+                    imageBuilder: (context, image) => Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(4),
+                        ),
+                        image: DecorationImage(
+                          image: image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                     memCacheWidth: 372,
                     memCacheHeight: 372,
                     maxWidthDiskCache: 372,

@@ -1,3 +1,4 @@
+import '../../../models/primary models/user_profile_model.dart';
 import 'user_service.dart';
 
 import 'package:flutter/material.dart';
@@ -14,7 +15,11 @@ class UserController {
   Future<bool> getUserProfile() async {
     try {
       state.value = UserState.loading;
-      await UserService().getCurrentUserProfile();
+      final response = await UserService().getCurrentUserProfile();
+
+      UserProfile userProfile = UserProfile.instance;
+
+      userProfile.fromJson(response.data);
     } on Exception catch (error) {
       lastError = error.toString();
       state.value = UserState.error;
@@ -25,10 +30,23 @@ class UserController {
     return true;
   }
 
-  Future<String> getUserUrlProfileImage(userId) async {
+  Future<String> getUserUrlProfileImage(String? userId) async {
     try {
-      var result = await UserService().getUserUrlProfileImage(userId);
-      return result;
+      if (userId == null || userId.isEmpty) {
+        lastError =
+            'the given userId at getUserUrlProfileImage is null or empty';
+        state.value = UserState.error;
+        return '';
+      }
+
+      var response = await UserService().getUserUrlProfileImage(userId);
+
+      List<dynamic> imagesList = response.data['images'];
+      if (imagesList.isNotEmpty) {
+        return response.data['images'][0]['url'];
+      } else {
+        return '';
+      }
     } on Exception catch (error) {
       lastError = error.toString();
       state.value = UserState.error;

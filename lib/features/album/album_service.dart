@@ -1,27 +1,22 @@
-import '../../shared/modules/network/http.dart';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class PlaylistService {
+import '../../shared/modules/network/http.dart';
+
+class AlbumService {
   final dio = Http.instance.dio;
   var storage = const FlutterSecureStorage();
 
-  PlaylistService();
-
-  Future<Response<dynamic>> getCurrentUserPlaylists(int limit, offset) async {
+  Future<Response<dynamic>> getAlbumInformation(
+      String albumId, String market) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
-        '/me/playlists',
+        '/albums/$albumId',
         queryParameters: {
-          'limit': limit,
-          'offset': offset,
+          'market': market,
         },
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        }, contentType: Headers.jsonContentType),
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 
       return response;
@@ -30,14 +25,15 @@ class PlaylistService {
     }
   }
 
-  Future<Response<dynamic>> getPlaylistTracks(
-      String playlistId, int offset) async {
+  Future<Response<dynamic>> getAlbumTracks(
+      String albumId, String market, int offset) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
-        '/playlists/$playlistId/tracks',
+        '/albums/$albumId/tracks',
         queryParameters: {
           'limit': 50,
+          'market': market,
           'offset': offset,
         },
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
@@ -49,19 +45,11 @@ class PlaylistService {
     }
   }
 
-  Future<Response<dynamic>> searchPlaylists(
-      String query, String market, int offset) async {
+  Future<Response<dynamic>> getArtist(String artistId) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
-        '/search',
-        queryParameters: {
-          'q': query,
-          'type': 'playlist',
-          'market': market,
-          'limit': 20,
-          'offset': offset
-        },
+        '/artists/$artistId',
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 

@@ -43,6 +43,9 @@ class _PlayerDialogState extends State<PlayerDialog> {
   void initState() {
     super.initState();
 
+    playerController.getPlayerState().then((data) => playerController
+        .playerCurrentPosition.value = data?.playbackPosition ?? 0);
+
     if (playerController.playerCurrentPosition.value == 0) {
       playerController.playerCurrentPosition.value =
           widget.initialPlayerState?.playbackPosition ?? 0;

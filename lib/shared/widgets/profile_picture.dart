@@ -11,13 +11,12 @@ class ProfilePicture extends StatelessWidget {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       height: 60,
-      fit: BoxFit.cover,
       placeholder: (context, _) => Container(color: Colors.transparent),
       errorWidget: (context, url, error) => Container(
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: const BorderRadius.all(
-            Radius.circular(10),
+            Radius.circular(12),
           ),
         ),
         width: 60,
@@ -32,8 +31,11 @@ class ProfilePicture extends StatelessWidget {
           ? (context, image) => Container(
                 width: 60,
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  image: DecorationImage(image: image),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  image: DecorationImage(
+                    image: image,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               )
           : null,

@@ -1,19 +1,14 @@
-import '../../../models/primary models/user_profile_model.dart';
+import '../network/http.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserService {
-  Dio dio = Dio();
   var storage = const FlutterSecureStorage();
 
-  UserProfile userProfile = UserProfile.instance;
+  final dio = Http.instance.dio;
 
-  UserService() {
-    dio.options.baseUrl = 'https://api.spotify.com/v1';
-  }
-
-  Future<bool> getCurrentUserProfile() async {
+  Future<Response<dynamic>> getCurrentUserProfile() async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
@@ -21,25 +16,22 @@ class UserService {
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 
-      userProfile.fromJson(response.data);
-      return true;
+      return response;
     } on Exception {
       rethrow;
     }
   }
 
-  Future<String> getUserUrlProfileImage(userId) async {
-    var accessToken = await storage.read(key: 'accessToken');
-    final response = await dio.get(
-      '/users/$userId',
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
-    );
-
-    List<dynamic> imagesList = response.data['images'];
-    if (imagesList.isNotEmpty) {
-      return response.data['images'][0]['url'];
-    } else {
-      return '';
+  Future<Response<dynamic>> getUserUrlProfileImage(userId) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/users/$userId',
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+      return response;
+    } on Exception {
+      rethrow;
     }
   }
 }

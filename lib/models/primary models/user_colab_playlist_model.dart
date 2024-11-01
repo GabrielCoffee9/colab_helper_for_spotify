@@ -2,7 +2,7 @@ import '../secundary models/playlist_model.dart';
 
 class UserColabPlaylist {
   String? href;
-  List<Playlist>? items;
+  List<Playlist> items = <Playlist>[];
   int? limit;
   String? next;
   int? offset;
@@ -11,7 +11,7 @@ class UserColabPlaylist {
 
   UserColabPlaylist(
       {this.href,
-      this.items,
+      this.items = const <Playlist>[],
       this.limit,
       this.next,
       this.offset,
@@ -21,10 +21,9 @@ class UserColabPlaylist {
   UserColabPlaylist.fromJson(Map<String, dynamic> json) {
     href = json['href'];
     if (json['items'] != null) {
-      items = <Playlist>[];
       json['items'].forEach((v) {
         if (v['collaborative'] == true) {
-          items!.add(Playlist.fromJson(v));
+          items.add(Playlist.fromJson(v));
         }
       });
     }

@@ -3,47 +3,42 @@ import '../../models/primary models/user_playlists_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 import 'playlist_service.dart';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum PlaylistState { idle, success, error, loading }
 
 class PlaylistController extends ChangeNotifier {
   PlaylistController();
-  Dio dio = Dio();
 
   var state = ValueNotifier(PlaylistState.idle);
   var storage = const FlutterSecureStorage();
 
-  final UserPlaylists _userPlaylists = UserPlaylists.instance;
-
   String? lastError;
 
-  void clearPlaylistsMemory() {
-    if (_userPlaylists.playlists != null &&
-        _userPlaylists.playlists!.isNotEmpty) {
-      _userPlaylists.playlists!.clear();
-    }
-  }
-
-  void clearTracksMemory(Playlist targetPlaylist) {
-    if (targetPlaylist.tracks != null && targetPlaylist.tracks!.isNotEmpty) {
-      targetPlaylist.tracks!.clear();
-    }
-  }
-
-  Future<UserPlaylists> getCurrentUserPlaylists(
-      {int limit = 25, required int offset}) async {
+  Future<UserPlaylists> getCurrentUserPlaylists({
+    int limit = 25,
+    required int offset,
+    UserPlaylists? currentUserPlaylists,
+  }) async {
     try {
       state.value = PlaylistState.loading;
-      if (offset == 0) {
-        clearPlaylistsMemory();
+
+      if (offset > 0 && currentUserPlaylists == null) {
+        throw Exception('The given currentUserPlaylists is null');
       }
 
-      return await PlaylistService()
-          .getCurrentUserPlaylists(_userPlaylists, limit, offset)
-          .whenComplete(() => state.value = PlaylistState.idle);
+      final response =
+          await PlaylistService().getCurrentUserPlaylists(limit, offset);
+
+      if (offset == 0) {
+        state.value = PlaylistState.idle;
+        return UserPlaylists.fromJson(response.data);
+      } else {
+        currentUserPlaylists!.fromInstance(response.data);
+        state.value = PlaylistState.idle;
+        return currentUserPlaylists;
+      }
     } on Exception catch (e) {
       lastError = e.toString();
       state.value = PlaylistState.error;
@@ -52,20 +47,18 @@ class PlaylistController extends ChangeNotifier {
   }
 
   Future<Playlist> getPlaylistTracks(
-      Playlist playlistTracks, int offset) async {
+    Playlist playlist,
+    int offset,
+  ) async {
     try {
       state.value = PlaylistState.loading;
-      if (offset == 0) {
-        clearTracksMemory(_userPlaylists
-            .playlists![_userPlaylists.playlists!.indexOf(playlistTracks)]);
-      }
 
-      return await PlaylistService()
-          .getPlaylistTracks(
-              _userPlaylists.playlists![
-                  _userPlaylists.playlists!.indexOf(playlistTracks)],
-              offset)
-          .whenComplete(() => state.value = PlaylistState.idle);
+      final response =
+          await PlaylistService().getPlaylistTracks(playlist.id!, offset);
+
+      playlist.fromInstance(response.data);
+      state.value = PlaylistState.idle;
+      return playlist;
     } on Exception catch (e) {
       lastError = e.toString();
       state.value = PlaylistState.error;
@@ -74,7 +67,13 @@ class PlaylistController extends ChangeNotifier {
   }
 
   Future<SearchItems> searchPlaylists(
-      String query, String market, int offset) async {
-    return await PlaylistService().searchPlaylists(query, market, offset);
+    String query,
+    String market,
+    int offset,
+  ) async {
+    final response =
+        await PlaylistService().searchPlaylists(query, market, offset);
+
+    return SearchItems.fromJson(response.data);
   }
 }

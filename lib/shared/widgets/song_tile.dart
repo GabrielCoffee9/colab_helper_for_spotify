@@ -8,18 +8,22 @@ class SongTile extends StatelessWidget {
     super.key,
     required this.songName,
     required this.artist,
+    this.showImage = true,
     required this.imageUrl,
     required this.playingNow,
     required this.selected,
     required this.invalidTrack,
+    required this.explicit,
     required this.onTap,
   });
   final String? songName;
   final String? artist;
+  final bool showImage;
   final String? imageUrl;
   final bool selected;
   final bool playingNow;
   final bool invalidTrack;
+  final bool explicit;
   final void Function()? onTap;
 
   @override
@@ -45,29 +49,57 @@ class SongTile extends StatelessWidget {
                 'Unavailable song',
                 style: TextStyle(color: Colors.red),
               ),
-        subtitle: artist?.isNotEmpty ?? false
-            ? Text(
+        subtitle: Row(
+          children: [
+            if (explicit)
+              const Icon(
+                Icons.explicit,
+                size: 16,
+                // color: Theme.of(context).colorScheme.tertiary,
+              ),
+            Expanded(
+              child: Text(
                 artist ?? '',
                 overflow: TextOverflow.ellipsis,
-              )
-            : const Text('Unknown artist'),
-        leading: SizedBox(
-          width: 56,
-          height: 56,
-          child: CachedNetworkImage(
-            imageUrl: imageUrl ?? '',
-            memCacheWidth: 147,
-            memCacheHeight: 147,
-            maxWidthDiskCache: 147,
-            maxHeightDiskCache: 147,
-            placeholder: (context, url) => Container(color: Colors.transparent),
-            errorWidget: (context, url, error) => const EmptyPlaylistCover(
-              height: 150,
-              width: 170,
-              size: 60,
+              ),
             ),
-          ),
+          ],
         ),
+        leading: showImage
+            ? SizedBox(
+                width: 56,
+                height: 56,
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl ?? '',
+                  imageBuilder: (context, image) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(4),
+                      ),
+                      image: DecorationImage(
+                        image: image,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  memCacheWidth: 147,
+                  memCacheHeight: 147,
+                  maxWidthDiskCache: 147,
+                  maxHeightDiskCache: 147,
+                  placeholder: (context, url) => const EmptyPlaylistCover(
+                    height: 150,
+                    width: 170,
+                    size: 40,
+                  ),
+                  errorWidget: (context, url, error) =>
+                      const EmptyPlaylistCover(
+                    height: 150,
+                    width: 170,
+                    size: 40,
+                  ),
+                ),
+              )
+            : null,
         trailing: invalidTrack
             ? null
             : playingNow

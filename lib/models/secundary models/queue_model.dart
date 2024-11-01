@@ -2,18 +2,20 @@ import 'track_model.dart';
 
 class Queue {
   Track? currentlyPlaying;
-  List<Track>? items;
+  List<Track> items = <Track>[];
 
-  Queue({this.currentlyPlaying, this.items});
+  Queue({
+    this.currentlyPlaying,
+    this.items = const <Track>[],
+  });
 
   Queue.fromJson(Map<String, dynamic> json) {
     currentlyPlaying = json['currently_playing'] != null
         ? Track.fromJson(json['currently_playing'])
         : null;
     if (json['queue'] != null) {
-      items = <Track>[];
       json['queue'].forEach((v) {
-        items!.add(Track.fromJson(v));
+        items.add(Track.fromJson(v));
       });
     }
   }
@@ -23,9 +25,7 @@ class Queue {
     if (currentlyPlaying != null) {
       data['currently_playing'] = currentlyPlaying!.toJson();
     }
-    if (items != null) {
-      data['queue'] = items!.map((v) => v.toJson()).toList();
-    }
+    data['queue'] = items.map((v) => v.toJson()).toList();
     return data;
   }
 }
