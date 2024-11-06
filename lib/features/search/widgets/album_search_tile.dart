@@ -30,7 +30,7 @@ class AlbumSearchTile extends StatelessWidget {
                 style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: Icon(Icons.circle_rounded,
                     size: 6, color: Theme.of(context).colorScheme.tertiary),
               ),

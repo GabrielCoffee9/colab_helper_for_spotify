@@ -90,8 +90,8 @@ class _AlbumPageState extends State<AlbumPage> {
       });
     });
 
-    if (playerController.playerState != null) {
-      playerController.playerState!.listen((data) {
+    if (playerController.playerStateListener != null) {
+      playerController.playerStateListener!.listen((data) {
         setState(() {
           selectedSongUri = data.track?.uri ?? '';
           isPaused = data.isPaused;
@@ -144,130 +144,114 @@ class _AlbumPageState extends State<AlbumPage> {
               ),
             )
           : Scrollbar(
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
+              child: ListView(
                 controller: _scrollController,
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 220,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: CachedNetworkImage(
                             height: 220,
-                            child: CachedNetworkImage(
-                                imageUrl: album.images.isNotEmpty
-                                    ? album.images.first.url!
-                                    : '',
-                                memCacheWidth: 480,
-                                memCacheHeight: 350,
-                                maxWidthDiskCache: 480,
-                                maxHeightDiskCache: 350,
-                                imageBuilder: (context, image) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(4),
-                                        ),
-                                        image: DecorationImage(
-                                          image: image,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                placeholder: (context, url) =>
-                                    const EmptyPlaylistCover(),
-                                errorWidget: (context, url, error) =>
-                                    const EmptyPlaylistCover()),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 12.0, right: 12.0, top: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isAlbumLoading.value
-                                      ? ''
-                                      : album.name ?? 'Unnamed Album',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    color: colors.onSurface,
-                                  ),
+                            width: 220,
+                            imageUrl: album.images.isNotEmpty
+                                ? album.images.first.url!
+                                : '',
+                            memCacheWidth: 480,
+                            memCacheHeight: 350,
+                            maxWidthDiskCache: 480,
+                            maxHeightDiskCache: 350,
+                            imageBuilder: (context, image) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(4),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 60,
-                                        child: ProfilePicture(
-                                          imageUrl: (album.artists.first.images
-                                                  .isNotEmpty)
-                                              ? album
-                                                  .artists.first.images.last.url
-                                              : '',
-                                          avatar: true,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                album.artists.first.name ?? ''),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .tertiary,
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 4.0,
-                                                          right: 4.0),
-                                                  child: Icon(
-                                                      Icons.circle_rounded,
-                                                      size: 6,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .tertiary),
-                                                ),
-                                                Text(
-                                                  album.releaseDate!
-                                                      .split('-')[0],
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .tertiary),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                image: DecorationImage(
+                                  image: image,
+                                  fit: BoxFit.cover,
+                                  // fit: BoxFit.cover,
                                 ),
-                              ],
+                              ),
                             ),
+                            placeholder: (context, url) =>
+                                const EmptyPlaylistCover(),
+                            errorWidget: (context, url, error) =>
+                                const EmptyPlaylistCover(),
                           ),
-                        ],
-                      ),
+                        ),
+                        Text(
+                          isAlbumLoading.value
+                              ? ''
+                              : album.name ?? 'Unnamed Album',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                child: ProfilePicture(
+                                  imageUrl:
+                                      (album.artists.first.images.isNotEmpty)
+                                          ? album.artists.first.images.last.url
+                                          : '',
+                                  avatar: true,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(album.artists.first.name ?? ''),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0,
+                                          ),
+                                          child: Icon(Icons.circle_rounded,
+                                              size: 6,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary),
+                                        ),
+                                        Text(
+                                          album.releaseDate!.split('-')[0],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SliverList.builder(
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
                     itemCount: album.tracks.length,
                     itemBuilder: (context, index) {
                       if ((index + 1 >= (album.tracks.length)) &&
@@ -284,7 +268,7 @@ class _AlbumPageState extends State<AlbumPage> {
 
                       return Padding(
                         key: Key('$index'),
-                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Container(
                           key: Key('$index'),
                           decoration: BoxDecoration(
@@ -299,7 +283,7 @@ class _AlbumPageState extends State<AlbumPage> {
                             child: SongTile(
                               key: Key('$index'),
                               songName: album.tracks[index].name,
-                              artist: album.tracks[index].allArtists,
+                              artistName: album.tracks[index].allArtists,
                               showImage: false,
                               imageUrl: album.tracks[index].album?.images
                                           .isNotEmpty ??
@@ -335,22 +319,16 @@ class _AlbumPageState extends State<AlbumPage> {
                       );
                     },
                   ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      child: Expanded(
-                        child: Center(
-                          child: Text(album.copyrights.isNotEmpty
-                              ? '${album.copyrights.first.text![0] != '©' ? '©' : ''} ${album.copyrights.first.text!}'
-                              : ''),
-                        ),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Center(
+                      child: Text(album.copyrights.isNotEmpty
+                          ? '${album.copyrights.first.text![0] != '©' ? '©' : ''} ${album.copyrights.first.text!}'
+                          : ''),
                     ),
                   ),
-                  const SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 100,
-                    ),
+                  const SizedBox(
+                    height: 100,
                   ),
                 ],
               ),

@@ -17,7 +17,7 @@ class _QueueDialogState extends State<QueueDialog> {
   Queue userQueue = Queue();
   PlayerController playerController = PlayerController.instance;
 
-  late StreamSubscription? _playerStateListener;
+  late StreamSubscription? _playerStateListenerListener;
 
   final ScrollController _scrollcontroller =
       ScrollController(initialScrollOffset: 0);
@@ -39,7 +39,8 @@ class _QueueDialogState extends State<QueueDialog> {
   void initState() {
     super.initState();
 
-    _playerStateListener = PlayerController.instance.playerState?.listen(
+    _playerStateListenerListener =
+        PlayerController.instance.playerStateListener?.listen(
       (event) {
         if (event.track?.uri != userQueue.currentlyPlaying?.uri) {
           setState(() {
@@ -56,7 +57,7 @@ class _QueueDialogState extends State<QueueDialog> {
 
   @override
   void dispose() {
-    _playerStateListener?.cancel();
+    _playerStateListenerListener?.cancel();
     super.dispose();
   }
 
@@ -87,14 +88,18 @@ class _QueueDialogState extends State<QueueDialog> {
                 !loading
                     ? SongTile(
                         songName: userQueue.currentlyPlaying?.name,
-                        artist: userQueue.currentlyPlaying?.artists.first.name,
+                        artistName: userQueue.currentlyPlaying?.allArtists,
                         imageUrl:
                             userQueue.currentlyPlaying?.album?.images[1].url,
                         playingNow: true,
                         selected: true,
                         invalidTrack: true,
                         explicit: userQueue.currentlyPlaying?.explicit ?? false,
-                        onTap: () {})
+                        showImage: userQueue
+                                .currentlyPlaying?.album?.images.isNotEmpty ==
+                            true,
+                        onTap: () {},
+                      )
                     : const Center(child: CircularProgress(isDone: false)),
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0, left: 8),
@@ -105,38 +110,38 @@ class _QueueDialogState extends State<QueueDialog> {
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                Expanded(
-                  child: loading
-                      ? Container()
-                      : Scrollbar(
-                          controller: _scrollcontroller,
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            controller: _scrollcontroller,
-                            itemCount: userQueue.items.length,
-                            itemBuilder: (context, index) {
-                              return SongTile(
-                                  songName: userQueue.items[index].name,
-                                  artist:
-                                      userQueue.items[index].artists.first.name,
-                                  imageUrl: (userQueue.items[index].album
-                                              ?.images.isNotEmpty ??
-                                          false)
-                                      ? userQueue
-                                          .items[index].album!.images[1].url
-                                      : '',
-                                  playingNow: false,
-                                  selected: false,
-                                  invalidTrack: true,
-                                  explicit:
-                                      userQueue.items[index].explicit ?? false,
-                                  onTap: () {
-                                    // PlayerController.instance.playIndexPlaylist(trackIndex, contextUri);
-                                  });
-                            },
-                          ),
-                        ),
-                ),
+                if (!loading)
+                  Expanded(
+                    child: Scrollbar(
+                      controller: _scrollcontroller,
+                      thumbVisibility: true,
+                      child: ListView.builder(
+                        controller: _scrollcontroller,
+                        itemCount: userQueue.items.length,
+                        itemBuilder: (context, index) {
+                          return SongTile(
+                              songName: userQueue.items[index].name,
+                              artistName: userQueue.items[index].allArtists,
+                              imageUrl: (userQueue.items[index].album?.images
+                                          .isNotEmpty ??
+                                      false)
+                                  ? userQueue.items[index].album!.images[1].url
+                                  : '',
+                              showImage: userQueue
+                                      .items[index].album?.images.isNotEmpty ==
+                                  true,
+                              playingNow: false,
+                              selected: false,
+                              invalidTrack: true,
+                              explicit:
+                                  userQueue.items[index].explicit ?? false,
+                              onTap: () {
+                                // PlayerController.instance.playIndexPlaylist(trackIndex, contextUri);
+                              });
+                        },
+                      ),
+                    ),
+                  ),
               ],
             ),
           )),

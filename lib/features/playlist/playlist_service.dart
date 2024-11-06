@@ -31,13 +31,17 @@ class PlaylistService {
   }
 
   Future<Response<dynamic>> getPlaylistTracks(
-      String playlistId, int offset) async {
+    String playlistId,
+    String market,
+    int offset,
+  ) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
         '/playlists/$playlistId/tracks',
         queryParameters: {
           'limit': 50,
+          'market': market,
           'offset': offset,
         },
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
@@ -50,7 +54,10 @@ class PlaylistService {
   }
 
   Future<Response<dynamic>> searchPlaylists(
-      String query, String market, int offset) async {
+    String query,
+    String market,
+    int offset,
+  ) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
@@ -62,6 +69,21 @@ class PlaylistService {
           'limit': 20,
           'offset': offset
         },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<Response<dynamic>> checkIfCurrentUserFollowsPlaylist(
+      String playlistId) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/playlists/$playlistId/followers/contains',
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 

@@ -7,7 +7,7 @@ class SongTile extends StatelessWidget {
   const SongTile({
     super.key,
     required this.songName,
-    required this.artist,
+    required this.artistName,
     this.showImage = true,
     required this.imageUrl,
     required this.playingNow,
@@ -17,7 +17,7 @@ class SongTile extends StatelessWidget {
     required this.onTap,
   });
   final String? songName;
-  final String? artist;
+  final String? artistName;
   final bool showImage;
   final String? imageUrl;
   final bool selected;
@@ -59,7 +59,7 @@ class SongTile extends StatelessWidget {
               ),
             Expanded(
               child: Text(
-                artist ?? '',
+                artistName ?? '',
                 overflow: TextOverflow.ellipsis,
               ),
             ),

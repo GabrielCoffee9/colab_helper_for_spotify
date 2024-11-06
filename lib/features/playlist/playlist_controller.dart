@@ -8,7 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum PlaylistState { idle, success, error, loading }
 
-class PlaylistController extends ChangeNotifier {
+class PlaylistController {
   PlaylistController();
 
   var state = ValueNotifier(PlaylistState.idle);
@@ -48,13 +48,18 @@ class PlaylistController extends ChangeNotifier {
 
   Future<Playlist> getPlaylistTracks(
     Playlist playlist,
+    String? market,
     int offset,
   ) async {
     try {
+      if (market == null) {
+        throw Exception('The given market is null');
+      }
+
       state.value = PlaylistState.loading;
 
-      final response =
-          await PlaylistService().getPlaylistTracks(playlist.id!, offset);
+      final response = await PlaylistService()
+          .getPlaylistTracks(playlist.id!, market, offset);
 
       playlist.fromInstance(response.data);
       state.value = PlaylistState.idle;
@@ -75,5 +80,22 @@ class PlaylistController extends ChangeNotifier {
         await PlaylistService().searchPlaylists(query, market, offset);
 
     return SearchItems.fromJson(response.data);
+  }
+
+  Future<bool> checkIfCurrentUserFollowsPlaylist(String? playlistId) async {
+    try {
+      if (playlistId == null || playlistId.isEmpty) {
+        throw Exception('The given playlistId is null or empty');
+      }
+
+      final response =
+          await PlaylistService().checkIfCurrentUserFollowsPlaylist(playlistId);
+
+      return response.data[0];
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return false;
+    }
   }
 }

@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
               flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
                   title: StreamBuilder(
-                    stream: PlayerController.instance.playerState,
+                    stream: PlayerController.instance.playerStateListener,
                     builder: (context, snapshot) {
                       isPlayerPaused =
                           snapshot.data?.isPaused ?? isPlayerPaused;
@@ -273,7 +273,7 @@ class _HomePageState extends State<HomePage> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => PlaylistPage(
-                                          playlist:
+                                          initialPlaylistData:
                                               userPlaylists.playlists[index],
                                         ),
                                       ),

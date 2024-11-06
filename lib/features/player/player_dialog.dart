@@ -1,6 +1,8 @@
 import '../../models/primary models/user_profile_model.dart';
+import '../../models/secundary models/artist_model.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import '../../shared/widgets/spotify_free_warning_dialog.dart';
+import '../artist/artist_page.dart';
 import 'widgets/devices_dialog.dart';
 import 'widgets/queue_dialog.dart';
 import 'player_controller.dart';
@@ -12,8 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:spotify_sdk/models/library_state.dart';
 
 class PlayerDialog extends StatefulWidget {
-  const PlayerDialog({super.key, required this.initialPlayerState});
-  final PlayerState? initialPlayerState;
+  const PlayerDialog({super.key, required this.initialPlayerStateData});
+  final PlayerState? initialPlayerStateData;
   @override
   State<PlayerDialog> createState() => _PlayerDialogState();
 }
@@ -48,10 +50,10 @@ class _PlayerDialogState extends State<PlayerDialog> {
 
     if (playerController.playerCurrentPosition.value == 0) {
       playerController.playerCurrentPosition.value =
-          widget.initialPlayerState?.playbackPosition ?? 0;
+          widget.initialPlayerStateData?.playbackPosition ?? 0;
     }
-    if (playerController.playerState != null) {
-      playerController.playerState!.listen((data) {
+    if (playerController.playerStateListener != null) {
+      playerController.playerStateListener!.listen((data) {
         playerController.playerCurrentPosition.value = data.playbackPosition;
         playerController.playertotal.value = data.track?.duration ?? 0;
       });
@@ -66,7 +68,7 @@ class _PlayerDialogState extends State<PlayerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
+    bool currentUserIsFree = UserProfile.instance.isFreeUser;
 
     final ColorScheme colors = Theme.of(context).colorScheme;
     return Dialog(
@@ -103,8 +105,8 @@ class _PlayerDialogState extends State<PlayerDialog> {
           ),
         ),
         body: StreamBuilder<PlayerState>(
-            initialData: widget.initialPlayerState,
-            stream: playerController.playerState,
+            initialData: widget.initialPlayerStateData,
+            stream: playerController.playerStateListener,
             builder: (context, snapshot) {
               // print('teste');
               if (snapshot.data?.isPaused ?? true) {
@@ -197,26 +199,44 @@ class _PlayerDialogState extends State<PlayerDialog> {
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
-                                Text(
-                                  isPodcast
-                                      ? snapshot.data?.track?.album.name ??
-                                          'Loading'
-                                      : snapshot.data?.track?.artist.name ??
-                                          'Loading',
-                                  style: TextStyle(color: colors.outline),
-                                ),
+                                isPodcast
+                                    ? Text(
+                                        snapshot.data?.track?.album.name ??
+                                            'Loading',
+                                        style: TextStyle(color: colors.outline),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => ArtistPage(
+                                                initialArtistData: Artist(
+                                                    id: snapshot
+                                                        .data?.track?.artist.uri
+                                                        ?.split(':')[2]),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                            snapshot.data?.track?.artist.name ??
+                                                'Loading',
+                                            style: TextStyle(
+                                              color: colors.outline,
+                                            )),
+                                      ),
                               ],
                             ),
                           ),
                           IconButton(
                             onPressed: libraryState?.isSaved ?? false
                                 ? () {
-                                    playerController.deslikeSong(
+                                    playerController.addToLibrary(
                                         snapshot.data?.track?.uri ?? '');
                                     _songUri = '';
                                   }
                                 : () {
-                                    playerController.likeSong(
+                                    playerController.removeFromLibrary(
                                         snapshot.data?.track?.uri ?? '');
                                     _songUri = '';
                                   },
@@ -235,10 +255,10 @@ class _PlayerDialogState extends State<PlayerDialog> {
                     width: 355,
                     height: 20,
                     child: IgnorePointer(
-                      ignoring: freeUser,
+                      ignoring: currentUserIsFree,
                       child: ProgressBar(
-                        thumbRadius: freeUser ? 0 : 10.0,
-                        onSeek: freeUser
+                        thumbRadius: currentUserIsFree ? 0 : 10.0,
+                        onSeek: currentUserIsFree
                             ? null
                             : ((value) =>
                                 playerController.seekTo(value.inMilliseconds)),
@@ -381,7 +401,7 @@ class _PlayerDialogState extends State<PlayerDialog> {
                                       },
                               ),
                         IconButton(
-                          onPressed: freeUser
+                          onPressed: currentUserIsFree
                               ? () {
                                   if (context.mounted) {
                                     showDialog(
@@ -399,9 +419,11 @@ class _PlayerDialogState extends State<PlayerDialog> {
                                   }
                                 },
                           icon: Icon(
-                              color:
-                                  freeUser ? Colors.blueGrey : colors.primary,
-                              Icons.queue_music),
+                            color: currentUserIsFree
+                                ? Colors.blueGrey
+                                : colors.primary,
+                            Icons.queue_music,
+                          ),
                         ),
                       ],
                     ),

@@ -2,6 +2,7 @@ import '../../../models/primary models/search_items.dart';
 import '../../../models/primary models/user_profile_model.dart';
 import '../../../shared/widgets/circular_progress.dart';
 import '../album/album_page.dart';
+import '../artist/artist_page.dart';
 import '../player/player_controller.dart';
 import '../playlist/playlist_page.dart';
 import 'search_spotify_controller.dart';
@@ -68,7 +69,8 @@ class SearchPage extends SearchDelegate {
               ),
             );
           } else if (searchSnapshot.hasError || searchSnapshot.data == null) {
-            return const Center(child: Text('Error loading searching.'));
+            return const Center(
+                child: Text('Error loading searching, please try again.'));
           }
 
           searchData = searchSnapshot.data!;
@@ -104,6 +106,7 @@ class SearchPage extends SearchDelegate {
                         isPlaying: contextUri ==
                             searchData.albumsContainer!.items![index].uri,
                         onTap: () {
+                          showResults(context);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => AlbumPage(
@@ -120,7 +123,17 @@ class SearchPage extends SearchDelegate {
                       int localIndex = index - albumItemsCount;
                       return ArtistSearchTile(
                         artist: searchData.artistsContainer!.items![localIndex],
-                        onTap: () {},
+                        onTap: () {
+                          showResults(context);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ArtistPage(
+                                initialArtistData: searchData
+                                    .artistsContainer!.items![localIndex],
+                              ),
+                            ),
+                          );
+                        },
                       );
                     }
 
@@ -137,10 +150,11 @@ class SearchPage extends SearchDelegate {
                             searchData
                                 .playlistContainer?.items?[localIndex].uri,
                         onTap: () {
+                          showResults(context);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PlaylistPage(
-                                playlist: searchData
+                                initialPlaylistData: searchData
                                     .playlistContainer!.items![localIndex],
                               ),
                             ),

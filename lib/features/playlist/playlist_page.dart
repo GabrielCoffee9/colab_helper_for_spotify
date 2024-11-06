@@ -1,3 +1,4 @@
+import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 import '../../models/secundary models/track_model.dart';
 import '../../shared/modules/user/user_controller.dart';
@@ -14,51 +15,65 @@ import 'package:flutter/material.dart';
 class PlaylistPage extends StatefulWidget {
   const PlaylistPage({
     super.key,
-    required this.playlist,
+    required this.initialPlaylistData,
   });
 
-  final Playlist playlist;
+  final Playlist initialPlaylistData;
 
   @override
   State<PlaylistPage> createState() => _PlaylistPageState();
 }
 
 class _PlaylistPageState extends State<PlaylistPage> {
-  PlaylistController playlistController = PlaylistController();
   PlayerController playerController = PlayerController.instance;
 
+  PlaylistController playlistController = PlaylistController();
   UserController userController = UserController();
 
   final ScrollController _scrollController = ScrollController();
 
+  bool isPlaylistLoading = true;
+
+  ValueNotifier<bool> currentUserFollowsPlaylist = ValueNotifier(false);
+
   Playlist playlist = Playlist();
-  ValueNotifier<bool> isplaylistLoading = ValueNotifier(true);
 
   String selectedSongUri = "";
+  String? playlistOwnerImageUrl;
 
-  bool isPaused = false;
+  bool playerIsPaused = false;
 
   bool showScrollToTopButton = false;
 
-  String? urlOwnerPlaylist;
-
   Future<void> getTracks({int offset = 0}) async {
-    playlistController.getPlaylistTracks(playlist, offset).then((value) {
+    playlistController
+        .getPlaylistTracks(playlist, UserProfile.instance.country, offset)
+        .then((value) {
       setState(() {
         playlist = value;
-        isplaylistLoading.value = false;
+        isPlaylistLoading = false;
       });
     });
 
     return;
   }
 
-  void getOwnerPlaylist() {
-    userController.getUserUrlProfileImage(playlist.owner!.id).then((value) {
+  void getOwnerPlaylistImageUrl() {
+    userController.getUserUrlProfileImage(playlist.owner?.id).then((value) {
       setState(() {
-        urlOwnerPlaylist = value;
+        playlistOwnerImageUrl = value;
       });
     });
+  }
+
+  void checkIfUserFollowsPlaylist() {
+    if (playlist.owner!.id != UserProfile.instance.id) {
+      playlistController
+          .checkIfCurrentUserFollowsPlaylist(playlist.id)
+          .then((value) {
+        currentUserFollowsPlaylist.value = value;
+      });
+    }
   }
 
   @override
@@ -72,7 +87,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   void initState() {
     super.initState();
 
-    playlist = widget.playlist;
+    playlist = widget.initialPlaylistData;
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels > 300) {
@@ -91,21 +106,22 @@ class _PlaylistPageState extends State<PlaylistPage> {
     playerController.getPlayerState().then((data) {
       setState(() {
         selectedSongUri = data?.track?.uri ?? '';
-        isPaused = data?.isPaused ?? true;
+        playerIsPaused = data?.isPaused ?? true;
       });
     });
 
-    if (playerController.playerState != null) {
-      playerController.playerState!.listen((data) {
+    if (playerController.playerStateListener != null) {
+      playerController.playerStateListener!.listen((data) {
         setState(() {
           selectedSongUri = data.track?.uri ?? '';
-          isPaused = data.isPaused;
+          playerIsPaused = data.isPaused;
         });
       });
     }
 
     getTracks();
-    getOwnerPlaylist();
+    getOwnerPlaylistImageUrl();
+    checkIfUserFollowsPlaylist();
   }
 
   @override
@@ -161,12 +177,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
-        child: (isplaylistLoading.value)
+        child: (isPlaylistLoading)
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [CircularProgress(isDone: false), Text('Loading')],
+                  children: [
+                    CircularProgress(isDone: false),
+                    Text('Loading'),
+                  ],
                 ),
               )
             : Scrollbar(
@@ -183,28 +202,29 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             width: 220,
                             height: 220,
                             child: CachedNetworkImage(
-                                imageUrl: playlist.images!.isNotEmpty
-                                    ? playlist.images!.first.url!
-                                    : '',
-                                memCacheWidth: 480,
-                                memCacheHeight: 350,
-                                maxWidthDiskCache: 480,
-                                maxHeightDiskCache: 350,
-                                imageBuilder: (context, image) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(4),
-                                        ),
-                                        image: DecorationImage(
-                                          image: image,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                placeholder: (context, url) =>
-                                    const EmptyPlaylistCover(),
-                                errorWidget: (context, url, error) =>
-                                    const EmptyPlaylistCover()),
+                              imageUrl: playlist.images!.isNotEmpty
+                                  ? playlist.images!.first.url!
+                                  : '',
+                              memCacheWidth: 480,
+                              memCacheHeight: 350,
+                              maxWidthDiskCache: 480,
+                              maxHeightDiskCache: 350,
+                              imageBuilder: (context, image) => Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(4),
+                                  ),
+                                  image: DecorationImage(
+                                    image: image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              placeholder: (context, url) =>
+                                  const EmptyPlaylistCover(),
+                              errorWidget: (context, url, error) =>
+                                  const EmptyPlaylistCover(),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
@@ -212,15 +232,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  isplaylistLoading.value
-                                      ? ''
-                                      : playlist.name ?? 'Unnamed Playlist',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    color: colors.onSurface,
-                                  ),
+                                Wrap(
+                                  children: [
+                                    Text(
+                                      isPlaylistLoading
+                                          ? ''
+                                          : playlist.name ?? 'Unnamed Playlist',
+                                      // overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        color: colors.onSurface,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 12.0),
@@ -235,7 +259,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                   width: 60,
                                                   child: ProfilePicture(
                                                     imageUrl:
-                                                        urlOwnerPlaylist ?? '',
+                                                        playlistOwnerImageUrl,
                                                     avatar: true,
                                                   ),
                                                 )
@@ -245,7 +269,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                 ),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 8.0),
+                                              left: 8.0,
+                                            ),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -263,6 +288,43 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                           ),
                                         ],
                                       ),
+                                      Row(
+                                        children: [
+                                          if (playlist.owner?.id !=
+                                              UserProfile.instance.id)
+                                            ListenableBuilder(
+                                                listenable:
+                                                    currentUserFollowsPlaylist,
+                                                builder: (context, snapshot) {
+                                                  return IconButton(
+                                                    onPressed:
+                                                        currentUserFollowsPlaylist
+                                                                .value
+                                                            ? () {
+                                                                playerController
+                                                                    .removeFromLibrary(
+                                                                        playlist
+                                                                            .uri);
+                                                                checkIfUserFollowsPlaylist();
+                                                              }
+                                                            : () {
+                                                                playerController
+                                                                    .addToLibrary(
+                                                                        playlist
+                                                                            .uri);
+                                                                checkIfUserFollowsPlaylist();
+                                                              },
+                                                    icon: Image.asset(
+                                                      currentUserFollowsPlaylist
+                                                              .value
+                                                          ? 'lib/assets/like_icon_liked.png'
+                                                          : 'lib/assets/like_icon_like.png',
+                                                      height: 30,
+                                                    ),
+                                                  );
+                                                }),
+                                        ],
+                                      )
                                     ],
                                   ),
                                 ),
@@ -335,7 +397,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
                         return Padding(
                           key: Key('$index'),
-                          padding: const EdgeInsets.only(left: 8, right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Container(
                             key: Key('$index'),
                             decoration: BoxDecoration(
@@ -350,7 +412,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               child: SongTile(
                                 key: Key('$index'),
                                 songName: playlist.tracks[index].name,
-                                artist: playlist.tracks[index].allArtists,
+                                artistName: playlist.tracks[index].allArtists,
                                 imageUrl: playlist.tracks[index].album?.images
                                             .isNotEmpty ??
                                         false
@@ -361,7 +423,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     playlist.tracks[index].uri,
                                 playingNow: (selectedSongUri ==
                                         playlist.tracks[index].uri) &&
-                                    !isPaused,
+                                    !playerIsPaused,
                                 invalidTrack: playlist.tracks[index].invalid,
                                 explicit:
                                     playlist.tracks[index].explicit ?? false,
@@ -369,7 +431,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   setState(() {
                                     if (selectedSongUri ==
                                         playlist.tracks[index].uri) {
-                                      isPaused
+                                      playerIsPaused
                                           ? playerController.resume()
                                           : playerController.pause();
                                     } else {

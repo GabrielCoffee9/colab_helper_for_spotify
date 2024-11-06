@@ -19,9 +19,15 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
   UserPlaylists userPlaylists = UserPlaylists();
   PlaylistController playlistController = PlaylistController();
 
-  ValueNotifier<bool> isUserPlaylistsLoading = ValueNotifier(true);
+  bool isUserPlaylistsLoading = true;
 
   Future<void> getPlaylists({int offset = 0}) async {
+    if (mounted && !isUserPlaylistsLoading) {
+      setState(() {
+        isUserPlaylistsLoading = true;
+      });
+    }
+
     playlistController
         .getCurrentUserPlaylists(
       limit: 25,
@@ -32,7 +38,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
       if (mounted) {
         setState(() {
           userPlaylists = value;
-          isUserPlaylistsLoading.value = false;
+          isUserPlaylistsLoading = false;
         });
       }
     });
@@ -69,7 +75,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         onRefresh: () => getPlaylists(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: isUserPlaylistsLoading.value
+          child: isUserPlaylistsLoading
               ? const Center(
                   child: Column(
                     children: [
@@ -83,7 +89,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                     crossAxisCount: 2,
                   ),
                   physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   itemCount: userPlaylists.playlists.length,
                   itemBuilder: (context, index) {
                     bool isLastItem =
@@ -114,7 +121,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PlaylistPage(
-                                playlist: userPlaylists.playlists[index],
+                                initialPlaylistData:
+                                    userPlaylists.playlists[index],
                               ),
                             ),
                           );
@@ -153,7 +161,6 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 2),
                             Padding(
                               padding: const EdgeInsets.only(left: 16.0),
                               child: Column(

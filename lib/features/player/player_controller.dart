@@ -23,20 +23,35 @@ class PlayerController {
 
   ValueNotifier<PlayerContext?> playerContext = ValueNotifier(null);
 
+  Stream<PlayerState>? playerStateListener;
+
+  Stream<PlayerContext>? playerContextListener;
+
   //UniqueInstance
   PlayerController._() {
-    SpotifySdk.subscribePlayerContext().listen((event) {
-      playerContext.value = event;
+    playerStateListener = SpotifySdk.subscribePlayerState().asBroadcastStream();
+
+    playerContextListener =
+        SpotifySdk.subscribePlayerContext().asBroadcastStream();
+
+    playerContextListener!.listen((data) {
+      playerContext.value = data;
     });
   }
 
-  Stream<PlayerState>? playerState =
-      SpotifySdk.subscribePlayerState().asBroadcastStream();
-
   restartListeners() {
-    playerState = null;
+    playerStateListener = null;
 
-    playerState = SpotifySdk.subscribePlayerState().asBroadcastStream();
+    playerStateListener = SpotifySdk.subscribePlayerState().asBroadcastStream();
+
+    playerContextListener = null;
+
+    playerContextListener =
+        SpotifySdk.subscribePlayerContext().asBroadcastStream();
+
+    playerContextListener!.listen((data) {
+      playerContext.value = data;
+    });
   }
 
   Future<void> showPlayerDialog(BuildContext context) async {
@@ -57,7 +72,7 @@ class PlayerController {
               ).animate(
                 CurvedAnimation(parent: a1, curve: Curves.ease),
               ),
-              child: PlayerDialog(initialPlayerState: initialPlayerState),
+              child: PlayerDialog(initialPlayerStateData: initialPlayerState),
             ),
           );
         });
@@ -83,6 +98,14 @@ class PlayerController {
     return await appRemoteHandler<dynamic>(
       () => SpotifySdk.skipToIndex(
           spotifyUri: contextUri ?? '', trackIndex: trackIndex ?? 0),
+    );
+  }
+
+  queue(String? contextUri) async {
+    return await appRemoteHandler<dynamic>(
+      () => SpotifySdk.queue(
+        spotifyUri: contextUri ?? '',
+      ),
     );
   }
 
@@ -223,16 +246,32 @@ class PlayerController {
     }
   }
 
-  likeSong(String spotifyUri) async {
-    await appRemoteHandler<dynamic>(
-      () => SpotifySdk.addToLibrary(spotifyUri: spotifyUri),
-    );
+  addToLibrary(String? spotifyUri) async {
+    try {
+      if (spotifyUri != null && spotifyUri.isEmpty) {
+        throw Exception('The given spotifyUri is null or empty');
+      }
+
+      await appRemoteHandler<dynamic>(
+        () => SpotifySdk.addToLibrary(spotifyUri: spotifyUri!),
+      );
+    } on Exception {
+      rethrow;
+    }
   }
 
-  deslikeSong(String spotifyUri) async {
-    await appRemoteHandler<dynamic>(
-      () => SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri),
-    );
+  removeFromLibrary(String? spotifyUri) async {
+    try {
+      if (spotifyUri != null && spotifyUri.isEmpty) {
+        throw Exception('The given spotifyUri is null or empty');
+      }
+
+      await appRemoteHandler<dynamic>(
+        () => SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri!),
+      );
+    } on Exception {
+      rethrow;
+    }
   }
 
   Future<LibraryState?> getLibraryState(String spotifyUri) async {

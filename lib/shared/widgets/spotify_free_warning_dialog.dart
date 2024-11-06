@@ -40,10 +40,7 @@ class _SpotifyFreeWarningDialogState extends State<SpotifyFreeWarningDialog> {
                   children: [
                     AppLogo(iconSize: 50, darkTheme: isDarkMode),
                     const Padding(
-                      padding: EdgeInsets.only(
-                        left: 12.0,
-                        right: 12.0,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 12.0),
                       child: Icon(Icons.favorite),
                     ),
                     Image.asset(

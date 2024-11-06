@@ -2,6 +2,7 @@ import '../../models/primary models/search_items.dart';
 import '../../models/primary models/user_profile_model.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../album/album_page.dart';
+import '../artist/artist_page.dart';
 import '../player/player_controller.dart';
 import '../playlist/playlist_page.dart';
 import 'search_spotify_controller.dart';
@@ -26,15 +27,20 @@ class ResultsPage extends StatefulWidget {
 
 class _ResultsPageState extends State<ResultsPage> {
   late SearchItems searchData;
+  SearchSpotifyController searchSpotifyController = SearchSpotifyController();
   final ScrollController _scrollController =
       ScrollController(initialScrollOffset: 0);
 
-  ValueNotifier<bool> isLoading = ValueNotifier(false);
+  late bool isResultsLoading;
+
+  int albumItemsCount = 0;
+  int artistItemsCount = 0;
+  int playlistItemsCount = 0;
+  int trackItemsCount = 0;
+  int allItemsCount = 0;
 
   searchWithFilter(int offset, String types, {SearchItems? dataToMerge}) {
-    isLoading.value = true;
-
-    SearchSpotifyController()
+    searchSpotifyController
         .searchSpotifyContent(
       widget.query,
       types,
@@ -46,16 +52,45 @@ class _ResultsPageState extends State<ResultsPage> {
         .then((newData) {
       setState(() {
         searchData = newData;
-      });
 
-      isLoading.value = false;
+        isResultsLoading = false;
+      });
     });
+  }
+
+  void updateItemsCounts() {
+    setState(() {
+      albumItemsCount = (searchData.albumsContainer?.items?.length ?? 0);
+      artistItemsCount = (searchData.artistsContainer?.items?.length ?? 0);
+      playlistItemsCount = (searchData.playlistContainer?.items?.length ?? 0);
+      trackItemsCount = (searchData.tracksContainer?.items?.length ?? 0);
+
+      allItemsCount = albumItemsCount +
+          artistItemsCount +
+          playlistItemsCount +
+          trackItemsCount;
+    });
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   void initState() {
     super.initState();
     searchData = widget.initialSearchData;
+    updateItemsCounts();
+
+    if (allItemsCount == 0) {
+      isResultsLoading = true;
+    } else {
+      isResultsLoading = false;
+    }
+
     if (searchData.albumsContainer == null &&
         searchData.artistsContainer == null &&
         searchData.playlistContainer == null &&
@@ -69,17 +104,8 @@ class _ResultsPageState extends State<ResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    int albumItemsCount = (searchData.albumsContainer?.items?.length ?? 0);
-    int artistItemsCount = (searchData.artistsContainer?.items?.length ?? 0);
-    int playlistItemsCount = (searchData.playlistContainer?.items?.length ?? 0);
-    int trackItemsCount = (searchData.tracksContainer?.items?.length ?? 0);
-
-    int allItemsCount = albumItemsCount +
-        artistItemsCount +
-        playlistItemsCount +
-        trackItemsCount;
-
-    if (allItemsCount == 0 && !isLoading.value) {
+    updateItemsCounts();
+    if (allItemsCount == 0 && !isResultsLoading) {
       return const Center(child: Text('No results found.'));
     }
 
@@ -98,10 +124,14 @@ class _ResultsPageState extends State<ResultsPage> {
             ],
             selected: selection,
             onSelectionChanged: (Set<String> newSelection) {
-              if (mounted) {
+              if (!isResultsLoading) {
                 setState(
                   () {
                     selection = newSelection;
+                    _scrollController.animateTo(
+                        _scrollController.position.minScrollExtent,
+                        duration: const Duration(milliseconds: 600),
+                        curve: Curves.fastOutSlowIn);
                     searchWithFilter(0, selection.toString());
                   },
                 );
@@ -109,7 +139,7 @@ class _ResultsPageState extends State<ResultsPage> {
             },
           ),
         ),
-        (isLoading.value)
+        (isResultsLoading)
             ? const Center(
                 child: SizedBox(
                   width: 40,
@@ -130,12 +160,26 @@ class _ResultsPageState extends State<ResultsPage> {
                           itemCount: allItemsCount,
                           itemBuilder: (context, index) {
                             if ((index + 1) == allItemsCount &&
-                                !isLoading.value &&
+                                searchSpotifyController.state.value !=
+                                    SearchSpotifyState.loading &&
                                 selection.isNotEmpty) {
                               searchWithFilter(
                                 index + 1,
                                 selection.toString(),
                                 dataToMerge: searchData,
+                              );
+                            }
+
+                            if ((index + 1) >= allItemsCount &&
+                                searchSpotifyController.state.value ==
+                                    SearchSpotifyState.loading &&
+                                selection.isNotEmpty) {
+                              return const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  LinearProgressIndicator(),
+                                  Text('Loading')
+                                ],
                               );
                             }
 
@@ -165,7 +209,17 @@ class _ResultsPageState extends State<ResultsPage> {
                               return ArtistSearchTile(
                                 artist: searchData
                                     .artistsContainer!.items![localIndex],
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ArtistPage(
+                                        initialArtistData: searchData
+                                            .artistsContainer!
+                                            .items![localIndex],
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                             }
 
@@ -185,7 +239,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => PlaylistPage(
-                                        playlist: searchData.playlistContainer!
+                                        initialPlaylistData: searchData
+                                            .playlistContainer!
                                             .items![localIndex],
                                       ),
                                     ),

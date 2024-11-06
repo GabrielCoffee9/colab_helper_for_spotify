@@ -42,11 +42,12 @@ class _DevicesDialogState extends State<DevicesDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool freeUser = (UserProfile.instance.product ?? 'free') == 'free';
+    bool isFreeUser = UserProfile.instance.isFreeUser;
+
     return SimpleDialog(
       title: const Text('Your devices'),
       children: [
-        if (freeUser)
+        if (isFreeUser)
           Chip(
             shape: RoundedRectangleBorder(
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -69,7 +70,7 @@ class _DevicesDialogState extends State<DevicesDialog> {
                       child: Column(
                         children: [
                           IgnorePointer(
-                            ignoring: freeUser,
+                            ignoring: isFreeUser,
                             child: DeviceTile(
                               deviceName: devicesList[index].name ?? '',
                               deviceType: devicesList[index].type ?? '',

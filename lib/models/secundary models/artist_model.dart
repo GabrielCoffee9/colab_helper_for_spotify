@@ -1,5 +1,6 @@
 import 'external_urls_model.dart';
 import 'images_model.dart';
+import 'track_model.dart';
 
 class Artist {
   ExternalUrls? externalUrls;
@@ -11,6 +12,8 @@ class Artist {
   List<Images> images = <Images>[];
   int? popularity;
   List<String> genres = <String>[];
+  List<Track> topTracks = <Track>[];
+  int? followersCount;
 
   Artist({
     this.externalUrls,
@@ -21,6 +24,7 @@ class Artist {
     this.uri,
     this.images = const <Images>[],
     this.genres = const <String>[],
+    this.topTracks = const <Track>[],
     this.popularity,
   });
 
@@ -35,6 +39,10 @@ class Artist {
     uri = json['uri'];
 
     popularity = json['popularity'];
+
+    if (json['followers'] != null) {
+      followersCount = json['followers']['total'];
+    }
 
     if (json['images'] != null) {
       json['images'].forEach((v) {
@@ -61,6 +69,10 @@ class Artist {
 
     popularity = json['popularity'] ?? popularity;
 
+    if (json['followers'] != null) {
+      followersCount = json['followers']['total'] ?? followersCount;
+    }
+
     if (json['images'] != null) {
       json['images'].forEach((v) {
         images.add(Images.fromJson(v));
@@ -79,11 +91,15 @@ class Artist {
     if (externalUrls != null) {
       data['external_urls'] = externalUrls!.toJson();
     }
+
+    data['genres'] = genres;
     data['href'] = href;
     data['id'] = id;
     data['name'] = name;
     data['type'] = type;
     data['uri'] = uri;
+    data['popularity'] = popularity;
+
     return data;
   }
 }

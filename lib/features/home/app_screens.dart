@@ -20,7 +20,6 @@ class _AppScreensState extends State<AppScreens> {
 
     AuthController.instance.connectionStatus.listen((data) {
       if (!data.connected && !showingSync && mounted) {
-        showingSync = true;
         showDialog(
           barrierDismissible: false,
           context: context,
@@ -28,9 +27,11 @@ class _AppScreensState extends State<AppScreens> {
             return const SyncingSpotify();
           },
         );
+        showingSync = true;
       } else {
         if (showingSync && mounted) {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop();
+          showingSync = false;
         }
       }
     });

@@ -21,6 +21,7 @@ class UserProfile extends ChangeNotifier {
   String? id;
   List<Images> images = <Images>[];
   String? product;
+  bool isFreeUser = true;
   String? type;
   String? uri;
 
@@ -59,6 +60,11 @@ class UserProfile extends ChangeNotifier {
       });
     }
     product = json['product'];
+
+    if (product != null && product == 'premium') {
+      isFreeUser = false;
+    }
+
     type = json['type'];
     uri = json['uri'];
   }

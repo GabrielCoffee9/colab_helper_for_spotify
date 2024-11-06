@@ -88,7 +88,7 @@ class SearchPlaylistsPage extends SearchDelegate {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => PlaylistPage(
-                    playlist: searchPlaylistItems[index],
+                    initialPlaylistData: searchPlaylistItems[index],
                   ),
                 ),
               );

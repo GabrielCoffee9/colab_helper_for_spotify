@@ -54,12 +54,13 @@ class Track {
 
   Track.fromJson(Map<String, dynamic> json) {
     album = json['album'] != null ? Album.fromJson(json['album']) : null;
+
     if (json['artists'] != null) {
       json['artists'].forEach((v) {
-        allArtists = '${allArtists ?? ''}${v['name']}, ';
         artists.add(Artist.fromJson(v));
       });
-      allArtists = allArtists!.substring(0, allArtists!.lastIndexOf(','));
+
+      allArtists = artists.map((obj) => obj.name).toList().join(', ');
     }
 
     if (json['available_markets'] != null) {
