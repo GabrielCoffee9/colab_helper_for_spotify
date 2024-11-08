@@ -2,11 +2,14 @@ import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/artist_model.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
+import '../../shared/widgets/empty_playlist_cover.dart';
 import '../../shared/widgets/song_tile.dart';
+import '../album/album_page.dart';
 import '../player/player_controller.dart';
 import 'artist_controller.dart';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 
 class ArtistPage extends StatefulWidget {
@@ -34,17 +37,15 @@ class _ArtistPageState extends State<ArtistPage> {
   ValueNotifier<double> flexibleSpaceTitleOpacity = ValueNotifier(1);
 
   String selectedSongUri = "";
-
-  bool isPaused = false;
-
-  bool showScrollToTopButton = false;
-
-  final numberFormat = NumberFormat.compact();
-
   String? urlOwnerPlaylist;
 
-  Future<void> getArtist({int offset = 0}) async {
-    ArtistController().getArtist(artist.id).then((value) {
+  bool playerIsPaused = false;
+  bool showScrollToTopButton = false;
+
+  Future<void> getArtist() async {
+    ArtistController()
+        .getArtist(artist.id, UserProfile.instance.country)
+        .then((value) {
       setState(() {
         artist = value;
       });
@@ -53,18 +54,19 @@ class _ArtistPageState extends State<ArtistPage> {
     return;
   }
 
-  Future<void> getTopTracks() async {
+  Future<void> getAlbums(Artist artist, {int offset = 0}) async {
     ArtistController()
-        .getTopTracks(artist.id, UserProfile.instance.country)
+        .getAlbums(artist, UserProfile.instance.country, offset: offset)
         .then((value) {
       setState(() {
-        artist.topTracks = value;
+        artist = value;
       });
     });
   }
 
   String formatFollowersCount(int? followers) {
     if (followers != null) {
+      final numberFormat = NumberFormat.compact();
       return numberFormat.format(followers);
     }
 
@@ -89,9 +91,13 @@ class _ArtistPageState extends State<ArtistPage> {
           _scrollController.position.pixels >= 0) {
         flexibleSpaceTitleOpacity.value =
             ((130 - _scrollController.position.pixels) / 130);
-        if (flexibleSpaceTitleOpacity.value < 0.2) {
-          flexibleSpaceTitleOpacity.value = 0;
-        }
+      }
+
+      if (_scrollController.position.pixels > 210 &&
+          (flexibleSpaceTitleOpacity.value > 0 ||
+              appBarTitleOpacity.value < 1)) {
+        flexibleSpaceTitleOpacity.value = 0;
+        appBarTitleOpacity.value = 1;
       }
 
       if (_scrollController.position.pixels <= 150 &&
@@ -103,7 +109,7 @@ class _ArtistPageState extends State<ArtistPage> {
     playerController.getPlayerState().then((data) {
       setState(() {
         selectedSongUri = data?.track?.uri ?? '';
-        isPaused = data?.isPaused ?? true;
+        playerIsPaused = data?.isPaused ?? true;
       });
     });
 
@@ -111,13 +117,12 @@ class _ArtistPageState extends State<ArtistPage> {
       playerController.playerStateListener!.listen((data) {
         setState(() {
           selectedSongUri = data.track?.uri ?? '';
-          isPaused = data.isPaused;
+          playerIsPaused = data.isPaused;
         });
       });
     }
 
     getArtist();
-    getTopTracks();
   }
 
   @override
@@ -138,9 +143,10 @@ class _ArtistPageState extends State<ArtistPage> {
               child: const Icon(Icons.keyboard_double_arrow_up),
               onPressed: () {
                 _scrollController.animateTo(
-                    _scrollController.position.minScrollExtent,
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.fastOutSlowIn);
+                  _scrollController.position.minScrollExtent,
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.fastOutSlowIn,
+                );
               })
           : null,
       body: artist.topTracks.isEmpty
@@ -156,15 +162,16 @@ class _ArtistPageState extends State<ArtistPage> {
               slivers: [
                 SliverAppBar(
                   pinned: true,
-                  floating: true,
+                  floating: false,
                   expandedHeight: 250,
                   title: ListenableBuilder(
                       listenable: appBarTitleOpacity,
                       builder: (context, snapshot) {
                         return AnimatedOpacity(
-                            opacity: appBarTitleOpacity.value,
-                            duration: Durations.short1,
-                            child: Text(artist.name ?? ''));
+                          opacity: appBarTitleOpacity.value,
+                          duration: Durations.short1,
+                          child: Text(artist.name ?? ''),
+                        );
                       }),
                   flexibleSpace: FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.all(8),
@@ -207,14 +214,18 @@ class _ArtistPageState extends State<ArtistPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          padding: EdgeInsets.only(top: 8.0),
                           child: Text(
                             'Top songs',
                             style: TextStyle(fontSize: 24),
                           ),
                         ),
                         ListView.builder(
-                          padding: const EdgeInsets.all(0),
+                          padding: const EdgeInsets.only(
+                            bottom: 12.0,
+                            left: 12.0,
+                            right: 12.0,
+                          ),
                           shrinkWrap: true,
                           physics: const ClampingScrollPhysics(),
                           itemCount: artist.topTracks.length,
@@ -227,7 +238,7 @@ class _ArtistPageState extends State<ArtistPage> {
                                   artist.topTracks[index].uri,
                               playingNow: (selectedSongUri ==
                                       artist.topTracks[index].uri) &&
-                                  !isPaused,
+                                  !playerIsPaused,
                               invalidTrack: false,
                               explicit:
                                   artist.topTracks[index].explicit ?? false,
@@ -236,7 +247,7 @@ class _ArtistPageState extends State<ArtistPage> {
                                 setState(() {
                                   if (selectedSongUri ==
                                       artist.topTracks[index].uri) {
-                                    isPaused
+                                    playerIsPaused
                                         ? playerController.resume()
                                         : playerController.pause();
                                   } else {
@@ -252,6 +263,159 @@ class _ArtistPageState extends State<ArtistPage> {
                     ),
                   ),
                 ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            'Albums',
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                        ListView.builder(
+                          padding: const EdgeInsets.all(0),
+                          shrinkWrap: true,
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: artist.albums.length,
+                          itemBuilder: (context, index) {
+                            if (index + 1 == artist.albums.length) {
+                              if (artist.totalAlbumsCount >
+                                  artist.albums.length) {
+                                return TextButton(
+                                    onPressed: () {
+                                      getAlbums(artist, offset: index + 1);
+                                    },
+                                    child: const Text('Load more albums'));
+                              } else {
+                                return null;
+                              }
+                            }
+
+                            return ListTile(
+                              title: Text(
+                                  artist.albums[index].name ?? 'Loading...'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      artist.albums[index].artists.first.name ??
+                                          ''),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        ('${artist.albums[index].albumType?[0].toUpperCase() ?? 'Album'}${artist.albums[index].albumType?.substring(1)}'),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        child: Icon(
+                                          Icons.circle_rounded,
+                                          size: 6,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Text(
+                                        index != 0
+                                            ? artist.albums[index].releaseDate!
+                                                .split('-')[0]
+                                            : 'Latest Release',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        child: Icon(
+                                          Icons.circle_rounded,
+                                          size: 6,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${artist.albums[index].totalTracks!.toString()} ${artist.albums[index].totalTracks! > 1 ? 'songs' : 'song'}',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              leading: SizedBox(
+                                width: 56,
+                                height: 56,
+                                child: CachedNetworkImage(
+                                  imageUrl: artist
+                                          .albums[index].images.isNotEmpty
+                                      ? artist.albums[index].images.last.url!
+                                      : '',
+                                  imageBuilder: (context, image) => Container(
+                                    width: 56,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(2),
+                                      ),
+                                      image: DecorationImage(
+                                        image: image,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  memCacheWidth: 147,
+                                  memCacheHeight: 147,
+                                  maxWidthDiskCache: 147,
+                                  maxHeightDiskCache: 147,
+                                  placeholder: (context, url) =>
+                                      const EmptyPlaylistCover(
+                                    height: 150,
+                                    width: 170,
+                                    size: 40,
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const EmptyPlaylistCover(
+                                    height: 150,
+                                    width: 170,
+                                    size: 40,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => AlbumPage(
+                                      initialAlbumData: artist.albums[index],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
     );

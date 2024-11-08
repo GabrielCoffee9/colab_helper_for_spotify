@@ -118,8 +118,7 @@ class Album {
     if (json['items'] != null) {
       json['items'].forEach((v) {
         var newTrack = Track.fromJson(v);
-        if (((newTrack.name?.isEmpty ?? true) && (newTrack.durationMs == 0)) ||
-            newTrack.previewUrl == null) {
+        if ((newTrack.name?.isEmpty ?? true) && (newTrack.durationMs == 0)) {
           newTrack.invalid = true;
           previousInvalidTracks++;
         }

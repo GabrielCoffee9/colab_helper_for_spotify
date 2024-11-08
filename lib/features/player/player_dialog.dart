@@ -231,12 +231,12 @@ class _PlayerDialogState extends State<PlayerDialog> {
                           IconButton(
                             onPressed: libraryState?.isSaved ?? false
                                 ? () {
-                                    playerController.addToLibrary(
+                                    playerController.removeFromLibrary(
                                         snapshot.data?.track?.uri ?? '');
                                     _songUri = '';
                                   }
                                 : () {
-                                    playerController.removeFromLibrary(
+                                    playerController.addToLibrary(
                                         snapshot.data?.track?.uri ?? '');
                                     _songUri = '';
                                   },

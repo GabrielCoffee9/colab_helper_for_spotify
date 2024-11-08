@@ -36,7 +36,8 @@ class TrackSearchTile extends StatelessWidget {
                   Text(
                     'Track',
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
                   ),
                 ],
               ),

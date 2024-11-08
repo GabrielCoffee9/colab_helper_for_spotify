@@ -19,15 +19,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
   UserPlaylists userPlaylists = UserPlaylists();
   PlaylistController playlistController = PlaylistController();
 
-  bool isUserPlaylistsLoading = true;
+  bool userPlaylistsIsLoading = true;
 
   Future<void> getPlaylists({int offset = 0}) async {
-    if (mounted && !isUserPlaylistsLoading) {
-      setState(() {
-        isUserPlaylistsLoading = true;
-      });
-    }
-
     playlistController
         .getCurrentUserPlaylists(
       limit: 25,
@@ -38,10 +32,11 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
       if (mounted) {
         setState(() {
           userPlaylists = value;
-          isUserPlaylistsLoading = false;
+          userPlaylistsIsLoading = false;
         });
       }
     });
+
     return;
   }
 
@@ -60,13 +55,13 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
       appBar: AppBar(
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
                 delegate: SearchPlaylistsPage(userPlaylists),
               );
             },
-            icon: const Icon(Icons.search),
           )
         ],
         title: const Text('All Playlists'),
@@ -75,7 +70,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
         onRefresh: () => getPlaylists(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: isUserPlaylistsLoading
+          child: userPlaylistsIsLoading
               ? const Center(
                   child: Column(
                     children: [
@@ -85,11 +80,11 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                   ),
                 )
               : GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
                   ),
                   itemCount: userPlaylists.playlists.length,
                   itemBuilder: (context, index) {

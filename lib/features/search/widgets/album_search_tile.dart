@@ -31,12 +31,17 @@ class AlbumSearchTile extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Icon(Icons.circle_rounded,
-                    size: 6, color: Theme.of(context).colorScheme.tertiary),
+                child: Icon(
+                  Icons.circle_rounded,
+                  size: 6,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
               ),
               Text(
                 album.releaseDate!.split('-')[0],
-                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
               ),
               if (isPlaying)
                 const Padding(

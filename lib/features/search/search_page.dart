@@ -22,7 +22,7 @@ class SearchPage extends SearchDelegate {
     return await SearchSpotifyController().searchSpotifyContent(
       query,
       '{}',
-      UserProfile.instance.country ?? 'US',
+      UserProfile.instance.country,
       5,
       0,
     );
@@ -70,7 +70,8 @@ class SearchPage extends SearchDelegate {
             );
           } else if (searchSnapshot.hasError || searchSnapshot.data == null) {
             return const Center(
-                child: Text('Error loading searching, please try again.'));
+              child: Text('Error loading searching, please try again.'),
+            );
           }
 
           searchData = searchSnapshot.data!;

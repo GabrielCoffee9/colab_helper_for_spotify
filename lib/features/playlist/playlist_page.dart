@@ -18,6 +18,7 @@ class PlaylistPage extends StatefulWidget {
     required this.initialPlaylistData,
   });
 
+  /// A playlist data given from the previous context
   final Playlist initialPlaylistData;
 
   @override
@@ -32,8 +33,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   final ScrollController _scrollController = ScrollController();
 
-  bool isPlaylistLoading = true;
-
   ValueNotifier<bool> currentUserFollowsPlaylist = ValueNotifier(false);
 
   Playlist playlist = Playlist();
@@ -41,17 +40,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
   String selectedSongUri = "";
   String? playlistOwnerImageUrl;
 
+  bool playlistIsLoading = true;
   bool playerIsPaused = false;
-
   bool showScrollToTopButton = false;
 
   Future<void> getTracks({int offset = 0}) async {
+    if (playlist.tracks.isNotEmpty && offset == 0) {
+      playlistIsLoading = false;
+      return;
+    }
     playlistController
         .getPlaylistTracks(playlist, UserProfile.instance.country, offset)
         .then((value) {
       setState(() {
         playlist = value;
-        isPlaylistLoading = false;
+        playlistIsLoading = false;
       });
     });
 
@@ -145,39 +148,39 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     _scrollController.position.minScrollExtent,
                     duration: const Duration(milliseconds: 800),
                     curve: Curves.fastOutSlowIn);
-              })
+              },
+            )
           : null,
       appBar: AppBar(
-        primary: true,
-        //Disabled for now.
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       showDialog(
-        //         context: context,
-        //         builder: (context) {
-        //           return AlertDialog(
-        //             backgroundColor: colors.surface,
-        //             title: const Text('Edit playlist details'),
-        //             actions: [
-        //               TextButton(onPressed: () {}, child: const Text('Cancel')),
-        //               TextButton(onPressed: () {}, child: const Text('Save'))
-        //             ],
-        //           );
-        //         },
-        //       );
-        //     },
-        //     icon: const Icon(Icons.edit),
-        //   ),
-        //   IconButton(
-        //     onPressed: () {},
-        //     icon: const Icon(Icons.search),
-        //   )
-        // ],
-      ),
+          //Disabled for now.
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       showDialog(
+          //         context: context,
+          //         builder: (context) {
+          //           return AlertDialog(
+          //             backgroundColor: colors.surface,
+          //             title: const Text('Edit playlist details'),
+          //             actions: [
+          //               TextButton(onPressed: () {}, child: const Text('Cancel')),
+          //               TextButton(onPressed: () {}, child: const Text('Save'))
+          //             ],
+          //           );
+          //         },
+          //       );
+          //     },
+          //     icon: const Icon(Icons.edit),
+          //   ),
+          //   IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(Icons.search),
+          //   )
+          // ],
+          ),
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
-        child: (isPlaylistLoading)
+        child: (playlistIsLoading)
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -190,9 +193,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               )
             : Scrollbar(
                 child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
+                  physics: const BouncingScrollPhysics(),
                   controller: _scrollController,
                   slivers: [
                     SliverToBoxAdapter(
@@ -228,17 +229,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 12.0, right: 12.0, top: 10),
+                              left: 12.0,
+                              right: 12.0,
+                              top: 10,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Wrap(
                                   children: [
                                     Text(
-                                      isPlaylistLoading
+                                      playlistIsLoading
                                           ? ''
                                           : playlist.name ?? 'Unnamed Playlist',
-                                      // overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 22,
                                         color: colors.onSurface,
@@ -281,7 +284,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                 Text(
                                                   "Playlist",
                                                   style: TextStyle(
-                                                      color: colors.tertiary),
+                                                    color: colors.tertiary,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -324,7 +328,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                   );
                                                 }),
                                         ],
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -338,14 +342,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       child: SizedBox.square(
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 12, left: 12, right: 12),
+                            top: 12,
+                            left: 12,
+                            right: 12,
+                          ),
                           child: (playlist.tracks.isNotEmpty)
                               ? Wrap(
                                   children: [
                                     Text(
                                       playlist.description ?? '',
                                       style: TextStyle(
-                                          color: colors.onSurfaceVariant),
+                                        color: colors.onSurfaceVariant,
+                                      ),
                                     )
                                   ],
                                 )
@@ -356,7 +364,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     Text(
                                       'Empty Playlist !!! ',
                                       style: TextStyle(
-                                          fontSize: 22, color: colors.primary),
+                                        fontSize: 22,
+                                        color: colors.primary,
+                                      ),
                                     )
                                   ],
                                 ),
@@ -398,60 +408,48 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         return Padding(
                           key: Key('$index'),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Container(
-                            key: Key('$index'),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                    color: colors.outline, width: 0.5),
-                              ),
-                            ),
-                            child: ReorderableDelayedDragStartListener(
-                              enabled: false,
-                              index: index,
-                              child: SongTile(
-                                key: Key('$index'),
-                                songName: playlist.tracks[index].name,
-                                artistName: playlist.tracks[index].allArtists,
-                                imageUrl: playlist.tracks[index].album?.images
-                                            .isNotEmpty ??
-                                        false
-                                    ? playlist
-                                        .tracks[index].album!.images[1].url
-                                    : '',
-                                selected: selectedSongUri ==
-                                    playlist.tracks[index].uri,
-                                playingNow: (selectedSongUri ==
-                                        playlist.tracks[index].uri) &&
-                                    !playerIsPaused,
-                                invalidTrack: playlist.tracks[index].invalid,
-                                explicit:
-                                    playlist.tracks[index].explicit ?? false,
-                                onTap: () {
-                                  setState(() {
-                                    if (selectedSongUri ==
-                                        playlist.tracks[index].uri) {
-                                      playerIsPaused
-                                          ? playerController.resume()
-                                          : playerController.pause();
-                                    } else {
-                                      playerController.skipToIndex(
-                                          index -
-                                              (playlist.tracks[index]
-                                                  .previousInvalidTracks),
-                                          playlist.uri);
-                                    }
-                                  });
-                                },
-                              ),
+                          child: ReorderableDelayedDragStartListener(
+                            enabled: false,
+                            index: index,
+                            child: SongTile(
+                              key: Key('$index'),
+                              songName: playlist.tracks[index].name,
+                              artistName: playlist.tracks[index].allArtists,
+                              imageUrl: playlist.tracks[index].album?.images
+                                          .isNotEmpty ??
+                                      false
+                                  ? playlist.tracks[index].album!.images[1].url
+                                  : '',
+                              selected:
+                                  selectedSongUri == playlist.tracks[index].uri,
+                              playingNow: (selectedSongUri ==
+                                      playlist.tracks[index].uri) &&
+                                  !playerIsPaused,
+                              invalidTrack: playlist.tracks[index].invalid,
+                              explicit:
+                                  playlist.tracks[index].explicit ?? false,
+                              onTap: () {
+                                setState(() {
+                                  if (selectedSongUri ==
+                                      playlist.tracks[index].uri) {
+                                    playerIsPaused
+                                        ? playerController.resume()
+                                        : playerController.pause();
+                                  } else {
+                                    playerController.skipToIndex(
+                                        index -
+                                            (playlist.tracks[index]
+                                                .previousInvalidTracks),
+                                        playlist.uri);
+                                  }
+                                });
+                              },
                             ),
                           ),
                         );
                       },
                     ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 80),
-                    )
+                    const SliverToBoxAdapter(child: SizedBox(height: 80))
                   ],
                 ),
               ),

@@ -38,4 +38,28 @@ class ArtistService {
       rethrow;
     }
   }
+
+  Future<Response<dynamic>> getAlbums(
+    String artistId,
+    String market,
+    int offset,
+  ) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/artists/$artistId/albums',
+        queryParameters: {
+          'market': market,
+          'include_groups': 'album,single',
+          'limit': 10,
+          'offset': offset,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

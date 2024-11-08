@@ -11,7 +11,7 @@ class SearchSpotifyController {
   Future<SearchItems> searchSpotifyContent(
     String query,
     String types,
-    String market,
+    String? market,
     int limit,
     int offset, {
     SearchItems? mergeItems,
@@ -27,7 +27,7 @@ class SearchSpotifyController {
       state.value = SearchSpotifyState.loading;
 
       final response = await SearchSpotifyService()
-          .searchSpotifyContent(query, types, market, limit, offset);
+          .searchSpotifyContent(query, types, market ?? 'us', limit, offset);
 
       if (offset == 0) {
         state.value = SearchSpotifyState.idle;

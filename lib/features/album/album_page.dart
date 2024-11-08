@@ -33,23 +33,26 @@ class _AlbumPageState extends State<AlbumPage> {
 
   Album album = Album();
 
-  ValueNotifier<bool> isAlbumLoading = ValueNotifier(true);
-
   String selectedSongUri = "";
-
-  bool isPaused = false;
-
-  bool showScrollToTopButton = false;
-
   String? urlOwnerPlaylist;
 
+  bool albumIsLoading = true;
+  bool playerIsPaused = false;
+  bool showScrollToTopButton = false;
+
   Future<void> getAlbum({int offset = 0}) async {
+    if (album.tracks.isNotEmpty) {
+      setState(() {
+        albumIsLoading = false;
+      });
+      return;
+    }
     albumController
         .getAlbum(album, UserProfile.instance.country, offset)
         .then((value) {
       setState(() {
         album = value;
-        isAlbumLoading.value = false;
+        albumIsLoading = false;
       });
     });
 
@@ -86,7 +89,7 @@ class _AlbumPageState extends State<AlbumPage> {
     playerController.getPlayerState().then((data) {
       setState(() {
         selectedSongUri = data?.track?.uri ?? '';
-        isPaused = data?.isPaused ?? true;
+        playerIsPaused = data?.isPaused ?? true;
       });
     });
 
@@ -94,7 +97,7 @@ class _AlbumPageState extends State<AlbumPage> {
       playerController.playerStateListener!.listen((data) {
         setState(() {
           selectedSongUri = data.track?.uri ?? '';
-          isPaused = data.isPaused;
+          playerIsPaused = data.isPaused;
         });
       });
     }
@@ -120,9 +123,10 @@ class _AlbumPageState extends State<AlbumPage> {
               child: const Icon(Icons.keyboard_double_arrow_up),
               onPressed: () {
                 _scrollController.animateTo(
-                    _scrollController.position.minScrollExtent,
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.fastOutSlowIn);
+                  _scrollController.position.minScrollExtent,
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.fastOutSlowIn,
+                );
               })
           : null,
       appBar: AppBar(
@@ -135,7 +139,7 @@ class _AlbumPageState extends State<AlbumPage> {
         //   )
         // ],
       ),
-      body: (isAlbumLoading.value)
+      body: (albumIsLoading)
           ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -146,6 +150,7 @@ class _AlbumPageState extends State<AlbumPage> {
           : Scrollbar(
               child: ListView(
                 controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -181,143 +186,157 @@ class _AlbumPageState extends State<AlbumPage> {
                                 const EmptyPlaylistCover(),
                           ),
                         ),
-                        Text(
-                          isAlbumLoading.value
-                              ? ''
-                              : album.name ?? 'Unnamed Album',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: colors.onSurface,
-                          ),
-                        ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: Row(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: Wrap(
                             children: [
-                              SizedBox(
-                                width: 60,
-                                child: ProfilePicture(
-                                  imageUrl:
-                                      (album.artists.first.images.isNotEmpty)
-                                          ? album.artists.first.images.last.url
-                                          : '',
-                                  avatar: true,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(album.artists.first.name ?? ''),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .tertiary,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4.0,
-                                          ),
-                                          child: Icon(Icons.circle_rounded,
-                                              size: 6,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .tertiary),
-                                        ),
-                                        Text(
-                                          album.releaseDate!.split('-')[0],
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .tertiary),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              Text(
+                                albumIsLoading
+                                    ? ''
+                                    : album.name ?? 'Unnamed Album',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  color: colors.onSurface,
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: ProfilePicture(
+                                imageUrl:
+                                    (album.artists.first.images.isNotEmpty)
+                                        ? album.artists.first.images.last.url
+                                        : '',
+                                avatar: true,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(album.artists.first.name ?? ''),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        child: Icon(
+                                          Icons.circle_rounded,
+                                          size: 6,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Text(
+                                        album.releaseDate!.split('-')[0],
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: Icon(
+                                          Icons.circle_rounded,
+                                          size: 6,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${album.totalTracks!.toString()} ${album.totalTracks! > 1 ? 'songs' : 'song'}',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: album.tracks.length,
-                    itemBuilder: (context, index) {
-                      if ((index + 1 >= (album.tracks.length)) &&
-                          albumController.state.value == AlbumState.loading) {
-                        return Column(
-                          key: Key('$index'),
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            LinearProgressIndicator(),
-                            Text('Loading')
-                          ],
-                        );
-                      }
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: ListView.builder(
+                      physics: const ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: album.tracks.length,
+                      itemBuilder: (context, index) {
+                        if ((index + 1 > (album.tracks.length)) &&
+                            albumController.state.value == AlbumState.loading) {
+                          return Column(
+                            key: Key('$index'),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              LinearProgressIndicator(),
+                              Text('Loading')
+                            ],
+                          );
+                        }
 
-                      return Padding(
-                        key: Key('$index'),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Container(
+                        return Padding(
                           key: Key('$index'),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom:
-                                  BorderSide(color: colors.outline, width: 0.5),
-                            ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: SongTile(
+                            songName: album.tracks[index].name,
+                            artistName: album.tracks[index].allArtists,
+                            showImage: false,
+                            imageUrl:
+                                album.tracks[index].album?.images.isNotEmpty ??
+                                        false
+                                    ? album.tracks[index].album!.images[1].url
+                                    : '',
+                            selected:
+                                selectedSongUri == album.tracks[index].uri,
+                            playingNow:
+                                (selectedSongUri == album.tracks[index].uri) &&
+                                    !playerIsPaused,
+                            invalidTrack: album.tracks[index].invalid,
+                            explicit: album.tracks[index].explicit ?? false,
+                            onTap: () {
+                              setState(() {
+                                if (selectedSongUri ==
+                                    album.tracks[index].uri) {
+                                  playerIsPaused
+                                      ? playerController.resume()
+                                      : playerController.pause();
+                                } else {
+                                  playerController.skipToIndex(
+                                      index -
+                                          (album.tracks[index]
+                                              .previousInvalidTracks),
+                                      album.uri);
+                                }
+                              });
+                            },
                           ),
-                          child: ReorderableDelayedDragStartListener(
-                            enabled: false,
-                            index: index,
-                            child: SongTile(
-                              key: Key('$index'),
-                              songName: album.tracks[index].name,
-                              artistName: album.tracks[index].allArtists,
-                              showImage: false,
-                              imageUrl: album.tracks[index].album?.images
-                                          .isNotEmpty ??
-                                      false
-                                  ? album.tracks[index].album!.images[1].url
-                                  : '',
-                              selected:
-                                  selectedSongUri == album.tracks[index].uri,
-                              playingNow: (selectedSongUri ==
-                                      album.tracks[index].uri) &&
-                                  !isPaused,
-                              invalidTrack: album.tracks[index].invalid,
-                              explicit: album.tracks[index].explicit ?? false,
-                              onTap: () {
-                                setState(() {
-                                  if (selectedSongUri ==
-                                      album.tracks[index].uri) {
-                                    isPaused
-                                        ? playerController.resume()
-                                        : playerController.pause();
-                                  } else {
-                                    playerController.skipToIndex(
-                                        index -
-                                            (album.tracks[index]
-                                                .previousInvalidTracks),
-                                        album.uri);
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0),
@@ -327,9 +346,7 @@ class _AlbumPageState extends State<AlbumPage> {
                           : ''),
                     ),
                   ),
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),

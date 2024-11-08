@@ -10,27 +10,27 @@ import 'package:flutter/material.dart';
 class SearchPlaylistsPage extends SearchDelegate {
   final UserPlaylists initialPlaylists;
 
-  ValueNotifier<UserPlaylists> searchData = ValueNotifier(UserPlaylists());
+  UserPlaylists searchData = UserPlaylists();
 
-  bool isloadingData = false;
+  bool dataIsLoading = false;
 
   SearchPlaylistsPage(this.initialPlaylists) {
-    searchData.value = initialPlaylists;
+    searchData = initialPlaylists;
     searchPlaylists();
   }
 
   searchPlaylists() {
-    if (!isloadingData &&
-        (searchData.value.total! > searchData.value.playlists.length)) {
-      isloadingData = true;
+    if (!dataIsLoading && (searchData.total! > searchData.playlists.length)) {
+      dataIsLoading = true;
       PlaylistController()
           .getCurrentUserPlaylists(
-              limit: 25,
-              offset: searchData.value.playlists.length,
-              currentUserPlaylists: searchData.value)
+        limit: 25,
+        offset: searchData.playlists.length,
+        currentUserPlaylists: searchData,
+      )
           .then((value) {
-        searchData.value = value;
-        isloadingData = false;
+        searchData = value;
+        dataIsLoading = false;
         searchPlaylists();
       });
     }
@@ -65,7 +65,7 @@ class SearchPlaylistsPage extends SearchDelegate {
     if (query.isNotEmpty) {
       List<Playlist> searchPlaylistItems = [];
 
-      for (var element in searchData.value.playlists) {
+      for (var element in searchData.playlists) {
         if ((element.name?.toLowerCase().contains(query.toLowerCase()) ??
                 false) ||
             (element.owner?.displayName

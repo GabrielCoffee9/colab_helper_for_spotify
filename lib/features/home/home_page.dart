@@ -31,9 +31,9 @@ class _HomePageState extends State<HomePage> {
 
   UserPlaylists userPlaylists = UserPlaylists();
 
-  bool userPlaylistsLoading = true;
+  bool userPlaylistsIsLoading = true;
 
-  bool isPlayerPaused = true;
+  bool playerIsPaused = true;
 
   void getUserProfile() {
     UserController().getUserProfile().then((_) {
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
       (value) {
         setState(() {
           userPlaylists = value;
-          userPlaylistsLoading = false;
+          userPlaylistsIsLoading = false;
         });
       },
     );
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   getPlayerPausedState() {
     PlayerController.instance
         .getPlayerState()
-        .then((data) => isPlayerPaused = data?.isPaused ?? true);
+        .then((data) => playerIsPaused = data?.isPaused ?? true);
   }
 
   @override
@@ -93,8 +93,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     UserProfile userProfile = UserProfile.instance;
     final ColorScheme colors = Theme.of(context).colorScheme;
-    int playlistCount = userPlaylists.playlists.length;
-    int maxDisplayedPlaylists = playlistCount > 5 ? 5 : playlistCount;
+    int playlistItemsLength = userPlaylists.playlists.length;
+    int maxDisplayedPlaylists =
+        playlistItemsLength > 5 ? 5 : playlistItemsLength;
     return Scaffold(
       key: _key,
       drawer: const Drawer(),
@@ -116,13 +117,13 @@ class _HomePageState extends State<HomePage> {
               ),
               actions: [
                 IconButton(
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     showSearch(
                       context: context,
                       delegate: SearchPage(),
                     );
                   },
-                  icon: const Icon(Icons.search),
                 )
               ],
               expandedHeight: 80,
@@ -131,15 +132,15 @@ class _HomePageState extends State<HomePage> {
                   title: StreamBuilder(
                     stream: PlayerController.instance.playerStateListener,
                     builder: (context, snapshot) {
-                      isPlayerPaused =
-                          snapshot.data?.isPaused ?? isPlayerPaused;
+                      playerIsPaused =
+                          snapshot.data?.isPaused ?? playerIsPaused;
                       return AnimatedSwitcher(
                         duration: const Duration(milliseconds: 1400),
                         switchInCurve: Curves.bounceIn,
                         switchOutCurve: Curves.bounceOut,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: isPlayerPaused
+                          child: playerIsPaused
                               ? GestureDetector(
                                   onTap: (() => PlayerController.instance
                                       .showPlayerDialog(context)),
@@ -160,10 +161,8 @@ class _HomePageState extends State<HomePage> {
                     },
                   )),
             ),
-            userPlaylistsLoading
-                ? const SliverToBoxAdapter(
-                    child: Material(),
-                  )
+            userPlaylistsIsLoading
+                ? const SliverToBoxAdapter(child: Material())
                 : SliverToBoxAdapter(
                     child: Column(
                       children: [
@@ -201,19 +200,19 @@ class _HomePageState extends State<HomePage> {
                               Row(
                                 children: [
                                   HomeInteractiveButton(
-                                      notificationCounter: 0,
-                                      onPressed: () {},
-                                      colors: colors,
-                                      iconButton:
-                                          Icons.notifications_none_outlined),
-                                  const SizedBox(
-                                    width: 8,
+                                    notificationCounter: 0,
+                                    colors: colors,
+                                    iconButton:
+                                        Icons.notifications_none_outlined,
+                                    onPressed: () {},
                                   ),
+                                  const SizedBox(width: 8),
                                   HomeInteractiveButton(
-                                      notificationCounter: 0,
-                                      onPressed: () {},
-                                      colors: colors,
-                                      iconButton: Icons.message_outlined),
+                                    notificationCounter: 0,
+                                    colors: colors,
+                                    iconButton: Icons.message_outlined,
+                                    onPressed: () {},
+                                  ),
                                   const SizedBox(width: 2),
                                 ],
                               ),
@@ -268,6 +267,15 @@ class _HomePageState extends State<HomePage> {
                             cacheExtent: maxDisplayedPlaylists.toDouble(),
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
+                                playlistName:
+                                    userPlaylists.playlists[index].name ??
+                                        'Loading',
+                                urlImage: userPlaylists.playlists[index].images
+                                            ?.isNotEmpty ??
+                                        false
+                                    ? userPlaylists
+                                        .playlists[index].images?.first.url
+                                    : null,
                                 onTap: () {
                                   if (userPlaylists.playlists.isNotEmpty) {
                                     Navigator.of(context).push(
@@ -280,22 +288,13 @@ class _HomePageState extends State<HomePage> {
                                     );
                                   }
                                 },
-                                playlistName:
-                                    userPlaylists.playlists[index].name ??
-                                        'Loading',
-                                urlImage: userPlaylists.playlists[index].images
-                                            ?.isNotEmpty ??
-                                        false
-                                    ? userPlaylists
-                                        .playlists[index].images?.first.url
-                                    : null,
                               );
                             },
                           ),
                         ),
                       ],
                     ),
-                  )
+                  ),
           ],
         ),
       ),

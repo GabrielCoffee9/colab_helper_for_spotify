@@ -16,7 +16,9 @@ class ArtistSearchTile extends StatelessWidget {
       title: Text(artist.name ?? 'Loading...'),
       subtitle: Text(
         'Artist',
-        style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
       ),
       leading: SizedBox(
         height: 56,

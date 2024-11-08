@@ -1,3 +1,4 @@
+import 'album_model.dart';
 import 'external_urls_model.dart';
 import 'images_model.dart';
 import 'track_model.dart';
@@ -13,6 +14,8 @@ class Artist {
   int? popularity;
   List<String> genres = <String>[];
   List<Track> topTracks = <Track>[];
+  List<Album> albums = <Album>[];
+  int totalAlbumsCount = 0;
   int? followersCount;
 
   Artist({
@@ -50,6 +53,12 @@ class Artist {
       });
     }
 
+    if (json['items'] != null) {
+      json['items'].forEach((v) {
+        albums.add(Album.fromJson(v));
+      });
+    }
+
     if (json['genres'] != null) {
       json['genres'].forEach((v) {
         genres.add(v);
@@ -76,6 +85,12 @@ class Artist {
     if (json['images'] != null) {
       json['images'].forEach((v) {
         images.add(Images.fromJson(v));
+      });
+    }
+
+    if (json['items'] != null) {
+      json['items'].forEach((v) {
+        albums.add(Album.fromJson(v));
       });
     }
 
