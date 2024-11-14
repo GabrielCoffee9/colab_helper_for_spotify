@@ -1,7 +1,7 @@
 import 'artist_model.dart';
 import 'copyright_model.dart';
 import 'external_urls_model.dart';
-import 'images_model.dart';
+import 'image_model.dart';
 import 'track_model.dart';
 
 class Album {
@@ -12,7 +12,7 @@ class Album {
   ExternalUrls? externalUrls;
   String? href;
   String? id;
-  List<Images> images = <Images>[];
+  List<Image> images = <Image>[];
   List<Copyright> copyrights = <Copyright>[];
   String? name;
   String? releaseDate;
@@ -29,7 +29,7 @@ class Album {
       this.externalUrls,
       this.href,
       this.id,
-      this.images = const <Images>[],
+      this.images = const <Image>[],
       this.copyrights = const <Copyright>[],
       this.name,
       this.releaseDate,
@@ -77,7 +77,7 @@ class Album {
     id = json['id'];
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images.add(Images.fromJson(v));
+        images.add(Image.fromJson(v));
       });
     }
     name = json['name'];
@@ -133,7 +133,7 @@ class Album {
     id = json['id'] ?? id;
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images.add(Images.fromJson(v));
+        images.add(Image.fromJson(v));
       });
     }
     name = json['name'] ?? name;

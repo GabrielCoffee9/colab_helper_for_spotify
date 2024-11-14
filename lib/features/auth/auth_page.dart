@@ -34,9 +34,15 @@ class _AuthPageState extends State<AuthPage> {
       buttonState = ButtonState.loading;
     });
 
-    checkSpotifyApp().then((result) {
+    checkSpotifyApp().then((result) async {
       if (result) {
-        widget.authController.syncSpotifyRemote();
+        final syncResponse = await widget.authController.syncSpotifyRemote();
+        if (!syncResponse) {
+          setState(() {
+            buttonState = ButtonState.idle;
+            buildSnackBar(context);
+          });
+        }
       } else {
         if (mounted) {
           setState(() {

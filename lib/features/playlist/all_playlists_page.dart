@@ -80,11 +80,13 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                   ),
                 )
               : GridView.builder(
+                  shrinkWrap: true,
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
+                    mainAxisSpacing: 14,
                   ),
                   itemCount: userPlaylists.playlists.length,
                   itemBuilder: (context, index) {
@@ -110,83 +112,80 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                       );
                     }
 
-                    return SizedBox(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PlaylistPage(
-                                initialPlaylistData:
-                                    userPlaylists.playlists[index],
-                              ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PlaylistPage(
+                              initialPlaylistData:
+                                  userPlaylists.playlists[index],
                             ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              child: SizedBox(
-                                height: 162,
-                                width: 170,
-                                child: CachedNetworkImage(
-                                  memCacheWidth: 446,
-                                  memCacheHeight: 393,
-                                  maxWidthDiskCache: 446,
-                                  maxHeightDiskCache: 393,
-                                  placeholder: (context, url) =>
-                                      const EmptyPlaylistCover(),
-                                  errorWidget: (context, url, error) =>
-                                      const EmptyPlaylistCover(),
-                                  imageUrl: userPlaylists
-                                          .playlists[index].images!.isNotEmpty
-                                      ? userPlaylists
-                                          .playlists[index].images!.first.url!
-                                      : '',
-                                  imageBuilder: (context, image) => Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(4),
-                                      ),
-                                      image: DecorationImage(
-                                        image: image,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 162,
+                            width: 170,
+                            child: CachedNetworkImage(
+                              memCacheWidth: 446,
+                              memCacheHeight: 393,
+                              maxWidthDiskCache: 446,
+                              maxHeightDiskCache: 393,
+                              placeholder: (context, url) =>
+                                  const EmptyPlaylistCover(),
+                              errorWidget: (context, url, error) =>
+                                  const EmptyPlaylistCover(),
+                              imageUrl: userPlaylists.playlists[index].images
+                                          ?.isNotEmpty ??
+                                      false
+                                  ? userPlaylists
+                                      .playlists[index].images!.first.url!
+                                  : '',
+                              imageBuilder: (context, image) => Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(4),
+                                  ),
+                                  image: DecorationImage(
+                                    image: image,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                textDirection: TextDirection.ltr,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          userPlaylists.playlists[index].name ??
-                                              'Unnamed Playlist',
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              textDirection: TextDirection.ltr,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        userPlaylists.playlists[index].name ??
+                                            'Unnamed Playlist',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
-                                    ],
-                                  ),
-                                  Text(
-                                    userPlaylists.playlists[index].owner
-                                            ?.displayName ??
-                                        'Unknown',
-                                    style: const TextStyle(color: Colors.grey),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  userPlaylists.playlists[index].owner
+                                          ?.displayName ??
+                                      'Unknown',
+                                  style: const TextStyle(color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },

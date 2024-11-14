@@ -1,11 +1,11 @@
-class Images {
+class Image {
   String? url;
   int? height;
   int? width;
 
-  Images({this.url, this.height, this.width});
+  Image({this.url, this.height, this.width});
 
-  Images.fromJson(Map<String, dynamic> json) {
+  Image.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     height = json['height'];
     width = json['width'];

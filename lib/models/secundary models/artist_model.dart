@@ -1,6 +1,6 @@
 import 'album_model.dart';
 import 'external_urls_model.dart';
-import 'images_model.dart';
+import 'image_model.dart';
 import 'track_model.dart';
 
 class Artist {
@@ -10,7 +10,7 @@ class Artist {
   String? name;
   String? type;
   String? uri;
-  List<Images> images = <Images>[];
+  List<Image> images = <Image>[];
   int? popularity;
   List<String> genres = <String>[];
   List<Track> topTracks = <Track>[];
@@ -25,7 +25,7 @@ class Artist {
     this.name,
     this.type,
     this.uri,
-    this.images = const <Images>[],
+    this.images = const <Image>[],
     this.genres = const <String>[],
     this.topTracks = const <Track>[],
     this.popularity,
@@ -49,7 +49,7 @@ class Artist {
 
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images.add(Images.fromJson(v));
+        images.add(Image.fromJson(v));
       });
     }
 
@@ -84,7 +84,7 @@ class Artist {
 
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images.add(Images.fromJson(v));
+        images.add(Image.fromJson(v));
       });
     }
 

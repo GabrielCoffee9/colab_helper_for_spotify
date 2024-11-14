@@ -4,6 +4,7 @@ import '../../models/secundary models/track_model.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
+import '../../shared/widgets/play_and_pause_button.dart';
 import '../../shared/widgets/profile_picture.dart';
 import '../../shared/widgets/song_tile.dart';
 import '../player/player_controller.dart';
@@ -151,33 +152,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               },
             )
           : null,
-      appBar: AppBar(
-          //Disabled for now.
-          // actions: [
-          //   IconButton(
-          //     onPressed: () {
-          //       showDialog(
-          //         context: context,
-          //         builder: (context) {
-          //           return AlertDialog(
-          //             backgroundColor: colors.surface,
-          //             title: const Text('Edit playlist details'),
-          //             actions: [
-          //               TextButton(onPressed: () {}, child: const Text('Cancel')),
-          //               TextButton(onPressed: () {}, child: const Text('Save'))
-          //             ],
-          //           );
-          //         },
-          //       );
-          //     },
-          //     icon: const Icon(Icons.edit),
-          //   ),
-          //   IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(Icons.search),
-          //   )
-          // ],
-          ),
+      appBar: AppBar(),
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
         child: (playlistIsLoading)
@@ -199,32 +174,39 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          SizedBox(
-                            width: 220,
-                            height: 220,
-                            child: CachedNetworkImage(
-                              imageUrl: playlist.images!.isNotEmpty
-                                  ? playlist.images!.first.url!
-                                  : '',
-                              memCacheWidth: 480,
-                              memCacheHeight: 350,
-                              maxWidthDiskCache: 480,
-                              maxHeightDiskCache: 350,
-                              imageBuilder: (context, image) => Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(4),
-                                  ),
-                                  image: DecorationImage(
-                                    image: image,
-                                    fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () {
+                              if (playlist.owner?.id ==
+                                      UserProfile.instance.id &&
+                                  !playlist.isUserSavedTracksPlaylist) {}
+                            },
+                            child: SizedBox(
+                              width: 220,
+                              height: 220,
+                              child: CachedNetworkImage(
+                                imageUrl: playlist.images!.isNotEmpty
+                                    ? playlist.images!.first.url!
+                                    : '',
+                                memCacheWidth: 480,
+                                memCacheHeight: 350,
+                                maxWidthDiskCache: 480,
+                                maxHeightDiskCache: 350,
+                                imageBuilder: (context, image) => Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(4),
+                                    ),
+                                    image: DecorationImage(
+                                      image: image,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
+                                placeholder: (context, url) =>
+                                    const EmptyPlaylistCover(),
+                                errorWidget: (context, url, error) =>
+                                    const EmptyPlaylistCover(),
                               ),
-                              placeholder: (context, url) =>
-                                  const EmptyPlaylistCover(),
-                              errorWidget: (context, url, error) =>
-                                  const EmptyPlaylistCover(),
                             ),
                           ),
                           Padding(
@@ -281,11 +263,39 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                 Text(playlist
                                                         .owner?.displayName ??
                                                     ''),
-                                                Text(
-                                                  "Playlist",
-                                                  style: TextStyle(
-                                                    color: colors.tertiary,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Playlist",
+                                                      style: TextStyle(
+                                                        color: colors.tertiary,
+                                                      ),
+                                                    ),
+                                                    if (playlist.total > 0)
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    4.0),
+                                                        child: Icon(
+                                                          Icons.circle_rounded,
+                                                          size: 6,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .tertiary,
+                                                        ),
+                                                      ),
+                                                    if (playlist.total > 0)
+                                                      Text(
+                                                        '${playlist.total.toString()} ${playlist.total > 1 ? 'songs' : 'song'}',
+                                                        style: TextStyle(
+                                                          color:
+                                                              colors.tertiary,
+                                                        ),
+                                                      )
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -327,6 +337,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                     ),
                                                   );
                                                 }),
+                                          PlayAndPauseButton(
+                                            playing: (PlayerController
+                                                        .instance
+                                                        .playerContext
+                                                        .value
+                                                        ?.uri ==
+                                                    playlist.uri) &&
+                                                !playerIsPaused,
+                                            onPressed: () {
+                                              if (PlayerController
+                                                      .instance
+                                                      .playerContext
+                                                      .value
+                                                      ?.uri ==
+                                                  playlist.uri) {
+                                                playerIsPaused
+                                                    ? playerController.resume()
+                                                    : playerController.pause();
+                                              } else {
+                                                playerController
+                                                    .play(playlist.uri);
+                                              }
+                                            },
+                                          )
                                         ],
                                       ),
                                     ],
@@ -374,7 +408,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       ),
                     ),
                     SliverReorderableList(
-                      onReorder: (oldIndex, newIndex) {
+                      onReorder: (oldIndex, newIndex) async {
                         setState(() {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
@@ -382,6 +416,37 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           final Track item = playlist.tracks.removeAt(oldIndex);
                           playlist.tracks.insert(newIndex, item);
                         });
+                        final responseReorder =
+                            await playlistController.reorderTrack(oldIndex,
+                                newIndex, playlist.id, playlist.snapshotId);
+
+                        if (!responseReorder.$1) {
+                          setState(() {
+                            final Track item =
+                                playlist.tracks.removeAt(newIndex);
+                            playlist.tracks.insert(oldIndex, item);
+                          });
+
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                duration: const Duration(seconds: 10),
+                                content: const Text(
+                                  ('Error when trying to reorder the track, please try again.'),
+                                ),
+                                action: SnackBarAction(
+                                  label: 'Ok',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          setState(() {
+                            playlist.snapshotId = responseReorder.$2;
+                          });
+                        }
                       },
                       itemCount: playlist.tracks.length,
                       itemBuilder: (context, index) {
@@ -409,7 +474,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           key: Key('$index'),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: ReorderableDelayedDragStartListener(
-                            enabled: false,
+                            enabled: (playlist.owner?.id ==
+                                    UserProfile.instance.id &&
+                                !playlist.isUserSavedTracksPlaylist),
                             index: index,
                             child: SongTile(
                               key: Key('$index'),
@@ -425,24 +492,24 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               playingNow: (selectedSongUri ==
                                       playlist.tracks[index].uri) &&
                                   !playerIsPaused,
-                              invalidTrack: playlist.tracks[index].invalid,
+                              invalidTrack: playlist.isUserSavedTracksPlaylist
+                                  ? true
+                                  : playlist.tracks[index].invalid,
                               explicit:
                                   playlist.tracks[index].explicit ?? false,
                               onTap: () {
-                                setState(() {
-                                  if (selectedSongUri ==
-                                      playlist.tracks[index].uri) {
-                                    playerIsPaused
-                                        ? playerController.resume()
-                                        : playerController.pause();
-                                  } else {
-                                    playerController.skipToIndex(
-                                        index -
-                                            (playlist.tracks[index]
-                                                .previousInvalidTracks),
-                                        playlist.uri);
-                                  }
-                                });
+                                if (selectedSongUri ==
+                                    playlist.tracks[index].uri) {
+                                  playerIsPaused
+                                      ? playerController.resume()
+                                      : playerController.pause();
+                                } else {
+                                  playerController.skipToIndex(
+                                      index -
+                                          (playlist.tracks[index]
+                                              .previousInvalidTracks),
+                                      playlist.uri);
+                                }
                               },
                             ),
                           ),

@@ -46,6 +46,7 @@ class AuthController {
       }
     } on Exception catch (error) {
       lastError = error.toString();
+      state.value = AuthState.error;
       return false;
     }
   }

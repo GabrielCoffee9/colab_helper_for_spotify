@@ -99,4 +99,54 @@ class ArtistController {
       rethrow;
     }
   }
+
+  Future<bool> chechIfUserFollowsArtist(String? artistId) async {
+    try {
+      if (artistId == null) {
+        throw Exception('The given artistId is null.');
+      }
+
+      final response = await ArtistService().chechIfUserFollowsArtist(artistId);
+
+      return response.data[0];
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<bool> followArtist(String? artistId) async {
+    try {
+      if (artistId == null) {
+        throw Exception('The given artistId is null.');
+      }
+
+      final response = await ArtistService().followArtist(artistId);
+
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        return false;
+      }
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<bool> unfollowArtist(String? artistId) async {
+    try {
+      if (artistId == null) {
+        throw Exception('The given artistId is null.');
+      }
+
+      final response = await ArtistService().unfollowArtist(artistId);
+
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        return false;
+      }
+    } on Exception {
+      rethrow;
+    }
+  }
 }

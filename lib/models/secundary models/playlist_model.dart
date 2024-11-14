@@ -1,5 +1,5 @@
 import 'external_urls_model.dart';
-import 'images_model.dart';
+import 'image_model.dart';
 import 'owner_model.dart';
 import 'track_model.dart';
 
@@ -11,7 +11,7 @@ class Playlist {
   ExternalUrls? externalUrls;
   String? href;
   String? id;
-  List<Images>? images = <Images>[];
+  List<Image>? images = <Image>[];
   String? name;
   Owner? owner;
   String? primaryColor;
@@ -23,22 +23,26 @@ class Playlist {
   String? uri;
   bool haveImage = false;
   int total = 0;
+  bool isUserSavedTracksPlaylist = false;
 
-  Playlist(
-      {this.collaborative,
-      this.description,
-      this.externalUrls,
-      this.href,
-      this.id,
-      this.images,
-      this.name,
-      this.owner,
-      this.primaryColor,
-      this.public,
-      this.snapshotId,
-      this.tracks = const <Track>[],
-      this.type,
-      this.uri});
+  Playlist({
+    this.collaborative,
+    this.description,
+    this.externalUrls,
+    this.href,
+    this.id,
+    this.images,
+    this.name,
+    this.owner,
+    this.primaryColor,
+    this.public,
+    this.snapshotId,
+    this.tracks = const <Track>[],
+    this.type,
+    this.uri,
+    this.isUserSavedTracksPlaylist = false,
+    this.total = 0,
+  });
 
   Playlist.fromJson(Map<String, dynamic> json) {
     collaborative = json['collaborative'] ?? collaborative;
@@ -55,7 +59,7 @@ class Playlist {
     id = json['id'] ?? id;
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images!.add(Images.fromJson(v));
+        images!.add(Image.fromJson(v));
       });
     }
 
@@ -111,7 +115,7 @@ class Playlist {
     id = json['id'] ?? id;
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images!.add(Images.fromJson(v));
+        images!.add(Image.fromJson(v));
       });
     }
 
@@ -123,7 +127,7 @@ class Playlist {
     owner = json['owner'] != null ? Owner.fromJson(json['owner']) : owner;
     primaryColor = json['primary_color'] ?? '';
     public = json['public'];
-    snapshotId = json['snapshot_id'];
+    snapshotId = json['snapshot_id'] ?? snapshotId;
 
     if (json['items'] != null) {
       json['items'].forEach((v) {

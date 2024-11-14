@@ -1,9 +1,9 @@
 import '../secundary models/explicit_content_model.dart';
 import '../secundary models/external_urls_model.dart';
 import '../secundary models/followers_model.dart';
-import '../secundary models/images_model.dart';
+import '../secundary models/image_model.dart';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
 
 class UserProfile extends ChangeNotifier {
   static final UserProfile _instance = UserProfile._();
@@ -19,7 +19,7 @@ class UserProfile extends ChangeNotifier {
   Followers? followers;
   String? href;
   String? id;
-  List<Images> images = <Images>[];
+  List<Image> images = <Image>[];
   String? product;
   bool isFreeUser = true;
   String? type;
@@ -34,7 +34,7 @@ class UserProfile extends ChangeNotifier {
       this.followers,
       this.href,
       this.id,
-      this.images = const <Images>[],
+      this.images = const <Image>[],
       this.product,
       this.type,
       this.uri});
@@ -56,7 +56,7 @@ class UserProfile extends ChangeNotifier {
     id = json['id'];
     if (json['images'] != null) {
       json['images'].forEach((v) {
-        images.add(Images.fromJson(v));
+        images.add(Image.fromJson(v));
       });
     }
     product = json['product'];

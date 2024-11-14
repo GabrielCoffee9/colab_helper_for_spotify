@@ -92,4 +92,50 @@ class PlaylistService {
       rethrow;
     }
   }
+
+  Future<Response<dynamic>> getSavedTracks(
+    String market,
+    int offset,
+  ) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/me/tracks',
+        queryParameters: {'market': market, 'limit': 20, 'offset': offset},
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<Response<dynamic>> reorderTrack(
+    int rangeStart,
+    int insertBefore,
+    String playlistId,
+    String snapshotId,
+  ) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.put(
+        '/playlists/$playlistId/tracks',
+        data: {
+          "range_start": rangeStart,
+          "insert_before": insertBefore,
+          "range_length": 1,
+          "snapshot_id": snapshotId,
+        },
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json'
+        }),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

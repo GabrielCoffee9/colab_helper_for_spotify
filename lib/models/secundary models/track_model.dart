@@ -2,7 +2,7 @@ import 'album_model.dart';
 import 'artist_model.dart';
 import 'external_ids_model.dart';
 import 'external_urls_model.dart';
-import 'images_model.dart';
+import 'image_model.dart';
 
 class Track {
   Album? album;
@@ -24,7 +24,7 @@ class Track {
   int? trackNumber;
   String? type;
   String? uri;
-  List<Images>? images;
+  List<Image>? images;
   String? allArtists;
   bool invalid = false;
   int previousInvalidTracks = 0;

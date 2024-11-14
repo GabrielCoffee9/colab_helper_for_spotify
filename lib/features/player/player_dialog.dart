@@ -80,17 +80,24 @@ class _PlayerDialogState extends State<PlayerDialog> {
             titlePadding: const EdgeInsets.only(top: 36.0),
             centerTitle: true,
             title: FittedBox(
-              child: Column(
-                children: [
-                  Text(
-                    playerController.playerContext.value?.subtitle ?? '',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    playerController.playerContext.value?.title ?? 'Loading',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ],
+              fit: BoxFit.fitHeight,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: 1,
+                  minWidth: 1,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      playerController.playerContext.value?.subtitle ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      playerController.playerContext.value?.title ?? 'Loading',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -170,7 +177,10 @@ class _PlayerDialogState extends State<PlayerDialog> {
                             decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(4)),
-                              image: DecorationImage(image: image),
+                              image: DecorationImage(
+                                image: image,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),

@@ -3,6 +3,7 @@ import '../../models/secundary models/artist_model.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
+import '../../shared/widgets/play_and_pause_button.dart';
 import '../../shared/widgets/song_tile.dart';
 import '../album/album_page.dart';
 import '../player/player_controller.dart';
@@ -42,6 +43,8 @@ class _ArtistPageState extends State<ArtistPage> {
   bool playerIsPaused = false;
   bool showScrollToTopButton = false;
 
+  bool isFollowingArtist = false;
+
   Future<void> getArtist() async {
     ArtistController()
         .getArtist(artist.id, UserProfile.instance.country)
@@ -71,6 +74,40 @@ class _ArtistPageState extends State<ArtistPage> {
     }
 
     return '';
+  }
+
+  getFollowStatus() {
+    ArtistController().chechIfUserFollowsArtist(artist.id).then(
+      (value) {
+        setState(() {
+          isFollowingArtist = value;
+        });
+      },
+    );
+  }
+
+  followArtist() {
+    ArtistController().followArtist(artist.id).then(
+      (value) {
+        if (value) {
+          setState(() {
+            isFollowingArtist = value;
+          });
+        }
+      },
+    );
+  }
+
+  unfollowArtist() {
+    ArtistController().unfollowArtist(artist.id).then(
+      (value) {
+        if (value) {
+          setState(() {
+            isFollowingArtist = !value;
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -123,6 +160,7 @@ class _ArtistPageState extends State<ArtistPage> {
     }
 
     getArtist();
+    getFollowStatus();
   }
 
   @override
@@ -213,6 +251,39 @@ class _ArtistPageState extends State<ArtistPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FilledButton(
+                              onPressed: isFollowingArtist
+                                  ? () => unfollowArtist()
+                                  : () => followArtist(),
+                              child: isFollowingArtist
+                                  ? const Text('Following')
+                                  : const Text('Follow'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: PlayAndPauseButton(
+                                playing: (PlayerController.instance
+                                            .playerContext.value?.uri ==
+                                        artist.uri) &&
+                                    !playerIsPaused,
+                                onPressed: () {
+                                  if (PlayerController
+                                          .instance.playerContext.value?.uri ==
+                                      artist.uri) {
+                                    playerIsPaused
+                                        ? playerController.resume()
+                                        : playerController.pause();
+                                  } else {
+                                    playerController.play(artist.uri);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                         const Padding(
                           padding: EdgeInsets.only(top: 8.0),
                           child: Text(

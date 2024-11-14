@@ -224,6 +224,14 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             children: [
                               Row(
+                                children: [
+                                  Image.asset(
+                                    "lib/assets/Spotify_Logo_RGB_Green.png",
+                                    height: 35,
+                                  ),
+                                ],
+                              ),
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [

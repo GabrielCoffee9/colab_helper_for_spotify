@@ -62,4 +62,58 @@ class ArtistService {
       rethrow;
     }
   }
+
+  Future<Response<dynamic>> chechIfUserFollowsArtist(String artistId) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.get(
+        '/me/following/contains',
+        queryParameters: {
+          'type': 'artist',
+          'ids': artistId,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<Response<dynamic>> followArtist(String artistId) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.put(
+        '/me/following',
+        queryParameters: {
+          'type': 'artist',
+          'ids': artistId,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<Response<dynamic>> unfollowArtist(String artistId) async {
+    try {
+      var accessToken = await storage.read(key: 'accessToken');
+      final response = await dio.delete(
+        '/me/following',
+        queryParameters: {
+          'type': 'artist',
+          'ids': artistId,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      );
+
+      return response;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

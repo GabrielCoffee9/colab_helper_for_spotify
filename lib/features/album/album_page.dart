@@ -3,8 +3,10 @@ import '../../models/secundary models/album_model.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
+import '../../shared/widgets/play_and_pause_button.dart';
 import '../../shared/widgets/profile_picture.dart';
 import '../../shared/widgets/song_tile.dart';
+import '../artist/artist_page.dart';
 import '../player/player_controller.dart';
 import 'album_controller.dart';
 
@@ -129,16 +131,7 @@ class _AlbumPageState extends State<AlbumPage> {
                 );
               })
           : null,
-      appBar: AppBar(
-        primary: true,
-        // Disabled for now.
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {},
-        //     icon: const Icon(Icons.search),
-        //   )
-        // ],
-      ),
+      appBar: AppBar(primary: true),
       body: (albumIsLoading)
           ? const Center(
               child: Column(
@@ -203,77 +196,113 @@ class _AlbumPageState extends State<AlbumPage> {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(
-                              width: 60,
-                              child: ProfilePicture(
-                                imageUrl:
-                                    (album.artists.first.images.isNotEmpty)
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 60,
+                                  child: ProfilePicture(
+                                    imageUrl: (album
+                                            .artists.first.images.isNotEmpty)
                                         ? album.artists.first.images.last.url
                                         : '',
-                                avatar: true,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(album.artists.first.name ?? ''),
-                                  Row(
+                                    avatar: true,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4.0,
-                                        ),
-                                        child: Icon(
-                                          Icons.circle_rounded,
-                                          size: 6,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
-                                      ),
-                                      Text(
-                                        album.releaseDate!.split('-')[0],
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4.0),
-                                        child: Icon(
-                                          Icons.circle_rounded,
-                                          size: 6,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${album.totalTracks!.toString()} ${album.totalTracks! > 1 ? 'songs' : 'song'}',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ArtistPage(
+                                                  initialArtistData:
+                                                      album.artists.first,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                              album.artists.first.name ?? '')),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 4.0,
+                                            ),
+                                            child: Icon(
+                                              Icons.circle_rounded,
+                                              size: 6,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                          ),
+                                          Text(
+                                            album.releaseDate!.split('-')[0],
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 4.0),
+                                            child: Icon(
+                                              Icons.circle_rounded,
+                                              size: 6,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${album.totalTracks!.toString()} ${album.totalTracks! > 1 ? 'songs' : 'song'}',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
+                            PlayAndPauseButton(
+                              playing: (PlayerController
+                                          .instance.playerContext.value?.uri ==
+                                      album.uri) &&
+                                  !playerIsPaused,
+                              onPressed: () {
+                                if (PlayerController
+                                        .instance.playerContext.value?.uri ==
+                                    album.uri) {
+                                  playerIsPaused
+                                      ? playerController.resume()
+                                      : playerController.pause();
+                                } else {
+                                  playerController.play(album.uri);
+                                }
+                              },
+                            )
                           ],
                         ),
                       ],

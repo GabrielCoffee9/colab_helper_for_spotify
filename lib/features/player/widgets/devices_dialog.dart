@@ -1,6 +1,6 @@
 import '../../../models/primary models/user_profile_model.dart';
-import '../player_controller.dart';
 import '../../../models/secundary models/devices_model.dart';
+import '../player_controller.dart';
 
 import 'package:flutter/material.dart';
 
@@ -78,8 +78,15 @@ class _DevicesDialogState extends State<DevicesDialog> {
                               onTap: () {
                                 playlistController
                                     .transferPlayback(devicesList[index].id)
-                                    .then((_) {
-                                  getCurrentDevices();
+                                    .then((value) {
+                                  if (value) {
+                                    setState(() {
+                                      for (var element in devicesList) {
+                                        element.isActive = false;
+                                      }
+                                      devicesList[index].isActive = true;
+                                    });
+                                  }
                                 });
                               },
                             ),
