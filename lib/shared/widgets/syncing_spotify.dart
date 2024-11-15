@@ -1,5 +1,6 @@
 import '../../features/auth/auth_controller.dart';
 import '../../features/player/player_controller.dart';
+import '../modules/appLocalizations/localizations_controller.dart';
 import 'circular_progress.dart';
 
 import 'package:flutter/material.dart';
@@ -29,8 +30,8 @@ class _SyncingSpotifyState extends State<SyncingSpotify> {
 
   @override
   Widget build(BuildContext context) {
-    return const SimpleDialog(
-      title: Text('Spotify sync connection was lost'),
+    return SimpleDialog(
+      title: Text(LocalizationsController.of(context)!.syncLost),
       children: [
         SizedBox(
           height: 150,
@@ -38,8 +39,8 @@ class _SyncingSpotifyState extends State<SyncingSpotify> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgress(isDone: false),
-              Text('Syncing to spotify, please wait.')
+              const CircularProgress(isDone: false),
+              Text(LocalizationsController.of(context)!.syncPlsWait)
             ],
           ),
         ),

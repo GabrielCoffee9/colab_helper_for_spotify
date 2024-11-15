@@ -1,4 +1,5 @@
 import '../../../models/secundary models/artist_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,9 @@ class ArtistSearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(artist.name ?? 'Loading...'),
+      title: Text(artist.name ?? LocalizationsController.of(context)!.loading),
       subtitle: Text(
-        'Artist',
+        LocalizationsController.of(context)!.artist,
         style: TextStyle(
           color: Theme.of(context).colorScheme.tertiary,
         ),

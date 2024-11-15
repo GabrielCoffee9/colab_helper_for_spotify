@@ -1,4 +1,5 @@
 import '../../models/primary models/user_playlists_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import 'widgets/search_playlists_page.dart';
@@ -59,23 +60,24 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchPlaylistsPage(userPlaylists),
+                delegate: SearchPlaylistsPage(userPlaylists,
+                    LocalizationsController.of(context)!.searchYourPlaylists),
               );
             },
           )
         ],
-        title: const Text('All Playlists'),
+        title: Text(LocalizationsController.of(context)!.allPlaylists),
       ),
       body: RefreshIndicator(
         onRefresh: () => getPlaylists(),
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: userPlaylistsIsLoading
-              ? const Center(
+              ? Center(
                   child: Column(
                     children: [
-                      LinearProgressIndicator(),
-                      Text('Loading'),
+                      const LinearProgressIndicator(),
+                      Text(LocalizationsController.of(context)!.loading),
                     ],
                   ),
                 )
@@ -103,11 +105,11 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                     if (isLastItem &&
                         playlistController.state.value ==
                             PlaylistState.loading) {
-                      return const Column(
+                      return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircularProgress(isDone: false),
-                          Text('Loading')
+                          const CircularProgress(isDone: false),
+                          Text(LocalizationsController.of(context)!.loading)
                         ],
                       );
                     }
@@ -167,8 +169,16 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        userPlaylists.playlists[index].name ??
-                                            'Unnamed Playlist',
+                                        userPlaylists.playlists[index]
+                                                .isUserSavedTracksPlaylist
+                                            ? LocalizationsController.of(
+                                                    context)!
+                                                .likedSongs
+                                            : userPlaylists
+                                                    .playlists[index].name ??
+                                                LocalizationsController.of(
+                                                        context)!
+                                                    .unnamedPlaylist,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
@@ -178,7 +188,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                                 Text(
                                   userPlaylists.playlists[index].owner
                                           ?.displayName ??
-                                      'Unknown',
+                                      LocalizationsController.of(context)!
+                                          .unknown,
                                   style: const TextStyle(color: Colors.grey),
                                   overflow: TextOverflow.ellipsis,
                                 ),

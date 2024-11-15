@@ -1,5 +1,6 @@
 import '../../../models/secundary models/playlist_model.dart';
 import '../../../models/primary models/user_playlists_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../player/player_controller.dart';
 import '../../search/widgets/playlist_search_tile.dart';
 import '../playlist_controller.dart';
@@ -14,10 +15,12 @@ class SearchPlaylistsPage extends SearchDelegate {
 
   bool dataIsLoading = false;
 
-  SearchPlaylistsPage(this.initialPlaylists) {
+  SearchPlaylistsPage(this.initialPlaylists, this.localizedSearchFieldLabel) {
     searchData = initialPlaylists;
     searchPlaylists();
   }
+
+  String localizedSearchFieldLabel;
 
   searchPlaylists() {
     if (!dataIsLoading && (searchData.total! > searchData.playlists.length)) {
@@ -37,7 +40,7 @@ class SearchPlaylistsPage extends SearchDelegate {
   }
 
   @override
-  String? get searchFieldLabel => 'Search Your Playlists';
+  String? get searchFieldLabel => localizedSearchFieldLabel;
 
   @override
   List<Widget>? buildActions(BuildContext context) => [
@@ -56,12 +59,14 @@ class SearchPlaylistsPage extends SearchDelegate {
       );
 
   @override
-  Widget buildResults(BuildContext context) => buildPlaylistsSuggestions();
+  Widget buildResults(BuildContext context) =>
+      buildPlaylistsSuggestions(context);
 
   @override
-  Widget buildSuggestions(BuildContext context) => buildPlaylistsSuggestions();
+  Widget buildSuggestions(BuildContext context) =>
+      buildPlaylistsSuggestions(context);
 
-  Widget buildPlaylistsSuggestions() {
+  Widget buildPlaylistsSuggestions(BuildContext context) {
     if (query.isNotEmpty) {
       List<Playlist> searchPlaylistItems = [];
 
@@ -98,6 +103,7 @@ class SearchPlaylistsPage extends SearchDelegate {
       );
     }
 
-    return const Center(child: Text('Type to search'));
+    return Center(
+        child: Text(LocalizationsController.of(context)!.typeToSearch));
   }
 }

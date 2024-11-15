@@ -1,3 +1,5 @@
+import '../modules/appLocalizations/localizations_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,7 +19,7 @@ class _GetSpotifyDialogState extends State<GetSpotifyDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: const Text("Your device doesn't have the Spotify app installed"),
+      title: Text(LocalizationsController.of(context)!.spotifyNotInstalled),
       contentPadding: const EdgeInsets.all(20),
       children: [
         SizedBox(
@@ -26,8 +28,7 @@ class _GetSpotifyDialogState extends State<GetSpotifyDialog> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                  'Colab Helper uses the Spotify app to sync and play tracks, please install Spotify before use this app.'),
+              Text(LocalizationsController.of(context)!.colabHelperUsesSpotify),
               Padding(
                 padding: const EdgeInsets.only(top: 12.0),
                 child: OutlinedButton(
@@ -39,7 +40,8 @@ class _GetSpotifyDialogState extends State<GetSpotifyDialog> {
                       mode: LaunchMode.externalApplication,
                     );
                   },
-                  child: const Text('GET SPOTIFY FREE'),
+                  child:
+                      Text(LocalizationsController.of(context)!.getSpotifyFree),
                 ),
               )
             ],

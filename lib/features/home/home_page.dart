@@ -1,5 +1,6 @@
 import '../../models/primary models/user_playlists_model.dart';
 import '../../models/primary models/user_profile_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/colab_playlist_card.dart';
@@ -11,6 +12,7 @@ import '../playlist/all_playlists_page.dart';
 import '../playlist/playlist_controller.dart';
 import '../playlist/playlist_page.dart';
 import '../search/search_page.dart';
+import 'settings_page.dart';
 import 'widgets/home_interactive_button.dart';
 
 import 'package:flutter/material.dart';
@@ -98,7 +100,25 @@ class _HomePageState extends State<HomePage> {
         playlistItemsLength > 5 ? 5 : playlistItemsLength;
     return Scaffold(
       key: _key,
-      drawer: const Drawer(),
+      drawer: Drawer(
+        child: ListView(
+          // padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 24.0),
+              child: ListTile(
+                leading: const Icon(Icons.settings),
+                title: Text(LocalizationsController.of(context)!.settings),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ));
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       backgroundColor: colors.surface,
       body: RefreshIndicator(
         onRefresh: () => getPlaylists(),
@@ -236,7 +256,8 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Your Playlists',
+                                    LocalizationsController.of(context)!
+                                        .yourPlaylists,
                                     style:
                                         Theme.of(context).textTheme.titleLarge,
                                   ),
@@ -253,7 +274,10 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                             );
                                           },
-                                          label: const Text('View all'),
+                                          label: Text(
+                                            LocalizationsController.of(context)!
+                                                .viewAll,
+                                          ),
                                           icon: const Icon(
                                             Icons.navigate_before_outlined,
                                           ),
@@ -275,9 +299,13 @@ class _HomePageState extends State<HomePage> {
                             cacheExtent: maxDisplayedPlaylists.toDouble(),
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
-                                playlistName:
-                                    userPlaylists.playlists[index].name ??
-                                        'Loading',
+                                playlistName: userPlaylists.playlists[index]
+                                        .isUserSavedTracksPlaylist
+                                    ? LocalizationsController.of(context)!
+                                        .likedSongs
+                                    : userPlaylists.playlists[index].name ??
+                                        LocalizationsController.of(context)!
+                                            .loading,
                                 urlImage: userPlaylists.playlists[index].images
                                             ?.isNotEmpty ??
                                         false

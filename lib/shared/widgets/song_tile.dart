@@ -1,3 +1,4 @@
+import '../modules/appLocalizations/localizations_controller.dart';
 import 'empty_playlist_cover.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -41,13 +42,13 @@ class SongTile extends StatelessWidget {
         selectedTileColor: colors.secondaryContainer,
         title: songName?.isNotEmpty ?? false
             ? Text(
-                songName ?? 'Error',
+                songName ?? '',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )
-            : const Text(
-                'Unavailable song',
-                style: TextStyle(color: Colors.red),
+            : Text(
+                LocalizationsController.of(context)!.unavailableSong,
+                style: const TextStyle(color: Colors.red),
               ),
         subtitle: Row(
           children: [

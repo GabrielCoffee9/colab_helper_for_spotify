@@ -1,4 +1,5 @@
 import '../../../models/secundary models/track_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../../shared/widgets/empty_playlist_cover.dart';
 import '../../../shared/widgets/music_visualizer.dart';
 
@@ -18,7 +19,7 @@ class TrackSearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(track.name ?? 'Loading...'),
+      title: Text(track.name ?? LocalizationsController.of(context)!.loading),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -34,7 +35,7 @@ class TrackSearchTile extends StatelessWidget {
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                   Text(
-                    'Track',
+                    LocalizationsController.of(context)!.track,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.tertiary,
                     ),

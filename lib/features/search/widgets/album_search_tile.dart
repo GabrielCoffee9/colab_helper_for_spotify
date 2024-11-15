@@ -1,4 +1,5 @@
 import '../../../models/secundary models/album_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../../shared/widgets/empty_playlist_cover.dart';
 import '../../../shared/widgets/music_visualizer.dart';
 
@@ -18,7 +19,7 @@ class AlbumSearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(album.name ?? 'Loading...'),
+      title: Text(album.name ?? LocalizationsController.of(context)!.loading),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,7 +27,8 @@ class AlbumSearchTile extends StatelessWidget {
           Row(
             children: [
               Text(
-                ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
+                (LocalizationsController.of(context)!
+                    .albumType(album.albumType ?? 'album')),
                 style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
               ),
               Padding(

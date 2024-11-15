@@ -1,5 +1,6 @@
 import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/album_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
@@ -133,11 +134,14 @@ class _AlbumPageState extends State<AlbumPage> {
           : null,
       appBar: AppBar(primary: true),
       body: (albumIsLoading)
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [CircularProgress(isDone: false), Text('Loading')],
+                children: [
+                  const CircularProgress(isDone: false),
+                  Text(LocalizationsController.of(context)!.loading)
+                ],
               ),
             )
           : Scrollbar(
@@ -186,7 +190,9 @@ class _AlbumPageState extends State<AlbumPage> {
                               Text(
                                 albumIsLoading
                                     ? ''
-                                    : album.name ?? 'Unnamed Album',
+                                    : album.name ??
+                                        LocalizationsController.of(context)!
+                                            .unnamedAlbum,
                                 style: TextStyle(
                                   fontSize: 22,
                                   color: colors.onSurface,
@@ -233,7 +239,10 @@ class _AlbumPageState extends State<AlbumPage> {
                                       Row(
                                         children: [
                                           Text(
-                                            ('${album.albumType?[0].toUpperCase() ?? 'Album'}${album.albumType?.substring(1)}'),
+                                            (LocalizationsController.of(
+                                                    context)!
+                                                .albumType(album.albumType ??
+                                                    'album')),
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                   .colorScheme
@@ -272,7 +281,8 @@ class _AlbumPageState extends State<AlbumPage> {
                                             ),
                                           ),
                                           Text(
-                                            '${album.totalTracks!.toString()} ${album.totalTracks! > 1 ? 'songs' : 'song'}',
+                                            LocalizationsController.of(context)!
+                                                .nSongs(album.totalTracks ?? 0),
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                   .colorScheme
@@ -320,9 +330,9 @@ class _AlbumPageState extends State<AlbumPage> {
                           return Column(
                             key: Key('$index'),
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              LinearProgressIndicator(),
-                              Text('Loading')
+                            children: [
+                              const LinearProgressIndicator(),
+                              Text(LocalizationsController.of(context)!.loading)
                             ],
                           );
                         }

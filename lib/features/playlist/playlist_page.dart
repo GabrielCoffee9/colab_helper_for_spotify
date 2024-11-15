@@ -1,6 +1,7 @@
 import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/playlist_model.dart';
 import '../../models/secundary models/track_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
@@ -156,13 +157,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: RefreshIndicator(
         onRefresh: () => getTracks(),
         child: (playlistIsLoading)
-            ? const Center(
+            ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircularProgress(isDone: false),
-                    Text('Loading'),
+                    const CircularProgress(isDone: false),
+                    Text(LocalizationsController.of(context)!.loading),
                   ],
                 ),
               )
@@ -220,15 +221,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               children: [
                                 Wrap(
                                   children: [
-                                    Text(
-                                      playlistIsLoading
-                                          ? ''
-                                          : playlist.name ?? 'Unnamed Playlist',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        color: colors.onSurface,
+                                    if (!playlistIsLoading)
+                                      Text(
+                                        playlist.isUserSavedTracksPlaylist
+                                            ? LocalizationsController.of(
+                                                    context)!
+                                                .likedSongs
+                                            : playlist.name ??
+                                                LocalizationsController.of(
+                                                        context)!
+                                                    .unnamedPlaylist,
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          color: colors.onSurface,
+                                        ),
                                       ),
-                                    ),
                                   ],
                                 ),
                                 Padding(
@@ -289,7 +296,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                       ),
                                                     if (playlist.total > 0)
                                                       Text(
-                                                        '${playlist.total.toString()} ${playlist.total > 1 ? 'songs' : 'song'}',
+                                                        LocalizationsController
+                                                                .of(context)!
+                                                            .nSongs(
+                                                                playlist.total),
                                                         style: TextStyle(
                                                           color:
                                                               colors.tertiary,
@@ -396,7 +406,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Empty Playlist !!! ',
+                                      LocalizationsController.of(context)!
+                                          .emptyPlaylist,
                                       style: TextStyle(
                                         fontSize: 22,
                                         color: colors.primary,
@@ -432,8 +443,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 duration: const Duration(seconds: 10),
-                                content: const Text(
-                                  ('Error when trying to reorder the track, please try again.'),
+                                content: Text(
+                                  LocalizationsController.of(context)!
+                                      .errorReorder,
                                 ),
                                 action: SnackBarAction(
                                   label: 'Ok',
@@ -463,9 +475,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           return Column(
                             key: Key('$index'),
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              LinearProgressIndicator(),
-                              Text('Loading')
+                            children: [
+                              const LinearProgressIndicator(),
+                              Text(LocalizationsController.of(context)!.loading)
                             ],
                           );
                         }

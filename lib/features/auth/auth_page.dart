@@ -1,3 +1,4 @@
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/circular_progress.dart';
@@ -7,6 +8,7 @@ import 'auth_controller.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:appcheck/appcheck.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum ButtonState { idle, loading, done }
 
@@ -126,7 +128,8 @@ class _AuthPageState extends State<AuthPage> {
                           onPressed: () {
                             syncSpotify();
                           },
-                          child: const Text('Sync account'),
+                          child:
+                              Text(AppLocalizations.of(context)!.syncAccount),
                         )
                       : CircularProgress(
                           isDone: buttonState == ButtonState.done),
@@ -147,7 +150,7 @@ void buildSnackBar(BuildContext context, {String? error}) {
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 10),
         content: Text(
-          error ?? ('Error! Check your connection and try again later.'),
+          error ?? (LocalizationsController.of(context)!.errorCheckConnection),
         ),
         action: SnackBarAction(
           label: 'Ok',

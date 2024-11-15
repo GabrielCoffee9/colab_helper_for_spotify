@@ -1,5 +1,6 @@
 import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/artist_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import '../../shared/widgets/spotify_free_warning_dialog.dart';
 import '../artist/artist_page.dart';
@@ -93,7 +94,8 @@ class _PlayerDialogState extends State<PlayerDialog> {
                       style: const TextStyle(fontSize: 16),
                     ),
                     Text(
-                      playerController.playerContext.value?.title ?? 'Loading',
+                      playerController.playerContext.value?.title ??
+                          LocalizationsController.of(context)!.loading,
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
@@ -204,7 +206,9 @@ class _PlayerDialogState extends State<PlayerDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  snapshot.data?.track?.name ?? 'Loading',
+                                  snapshot.data?.track?.name ??
+                                      LocalizationsController.of(context)!
+                                          .loading,
                                   maxLines: isPodcast ? 2 : 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleLarge,
@@ -212,7 +216,8 @@ class _PlayerDialogState extends State<PlayerDialog> {
                                 isPodcast
                                     ? Text(
                                         snapshot.data?.track?.album.name ??
-                                            'Loading',
+                                            LocalizationsController.of(context)!
+                                                .loading,
                                         style: TextStyle(color: colors.outline),
                                       )
                                     : GestureDetector(
@@ -230,7 +235,9 @@ class _PlayerDialogState extends State<PlayerDialog> {
                                         },
                                         child: Text(
                                             snapshot.data?.track?.artist.name ??
-                                                'Loading',
+                                                LocalizationsController.of(
+                                                        context)!
+                                                    .loading,
                                             style: TextStyle(
                                               color: colors.outline,
                                             )),

@@ -1,4 +1,5 @@
 import '../../../models/secundary models/queue_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../../shared/widgets/circular_progress.dart';
 import '../../../shared/widgets/song_tile.dart';
 import '../player_controller.dart';
@@ -67,7 +68,7 @@ class _QueueDialogState extends State<QueueDialog> {
       insetPadding: EdgeInsets.zero,
       child: Scaffold(
           appBar: AppBar(
-            title: const Text("Queue"),
+            title: Text(LocalizationsController.of(context)!.queue),
             leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(
@@ -81,9 +82,9 @@ class _QueueDialogState extends State<QueueDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Now playing',
-                  style: TextStyle(fontSize: 18),
+                Text(
+                  LocalizationsController.of(context)!.nowPlaying,
+                  style: const TextStyle(fontSize: 18),
                 ),
                 !loading
                     ? SongTile(
@@ -105,7 +106,7 @@ class _QueueDialogState extends State<QueueDialog> {
                   padding: const EdgeInsets.only(top: 12.0, left: 8),
                   child: Text(
                     playerController.playerContext.value?.title != ''
-                        ? 'Next from: ${playerController.playerContext.value?.title}'
+                        ? '${LocalizationsController.of(context)!.nextFrom} ${playerController.playerContext.value?.title}'
                         : '${playerController.playerContext.value?.subtitle}',
                     style: const TextStyle(fontSize: 18),
                   ),

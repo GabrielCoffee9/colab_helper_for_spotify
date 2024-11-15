@@ -53,7 +53,6 @@ class PlaylistController {
         }
 
         Playlist savedPlaylistTracks = Playlist(
-          name: 'Liked Songs',
           uri: 'spotify:user:${UserProfile.instance.id}:collection',
           description: '',
           collaborative: false,

@@ -42,14 +42,14 @@ class _AppScreensState extends State<AppScreens> {
     const HomePage(),
     Scaffold(
         appBar: AppBar(
-          title: const Text('Add Page'),
+          title: const Text('Add'),
         ),
-        body: const SizedBox(child: Text('Page 2'))),
+        body: const SizedBox()),
     Scaffold(
         appBar: AppBar(
-          title: const Text('Social Page'),
+          title: const Text('Social'),
         ),
-        body: const SizedBox(child: Text('Page 3'))),
+        body: const SizedBox()),
   ];
   @override
   Widget build(BuildContext context) {

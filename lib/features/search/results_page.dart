@@ -1,5 +1,6 @@
 import '../../models/primary models/search_items.dart';
 import '../../models/primary models/user_profile_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../album/album_page.dart';
 import '../artist/artist_page.dart';
@@ -106,7 +107,8 @@ class _ResultsPageState extends State<ResultsPage> {
   Widget build(BuildContext context) {
     updateItemsCounts();
     if (allItemsCount == 0 && !isResultsLoading) {
-      return const Center(child: Text('No results found.'));
+      return Center(
+          child: Text(LocalizationsController.of(context)!.noResultsFound));
     }
 
     return Column(
@@ -117,10 +119,16 @@ class _ResultsPageState extends State<ResultsPage> {
             emptySelectionAllowed: true,
             showSelectedIcon: false,
             segments: <ButtonSegment<String>>[
-              const ButtonSegment(value: 'album', label: Text('Album')),
-              const ButtonSegment(value: 'artist', label: Text('Artist')),
+              ButtonSegment(
+                  value: 'album',
+                  label: Text(LocalizationsController.of(context)!.album)),
+              ButtonSegment(
+                  value: 'artist',
+                  label: Text(LocalizationsController.of(context)!.artist)),
               const ButtonSegment(value: 'playlist', label: Text('Playlist')),
-              const ButtonSegment(value: 'track', label: Text('Track')),
+              ButtonSegment(
+                  value: 'track',
+                  label: Text(LocalizationsController.of(context)!.track)),
             ],
             selected: selection,
             onSelectionChanged: (Set<String> newSelection) {
@@ -174,11 +182,12 @@ class _ResultsPageState extends State<ResultsPage> {
                                 searchSpotifyController.state.value ==
                                     SearchSpotifyState.loading &&
                                 selection.isNotEmpty) {
-                              return const Column(
+                              return Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  LinearProgressIndicator(),
-                                  Text('Loading')
+                                  const LinearProgressIndicator(),
+                                  Text(LocalizationsController.of(context)!
+                                      .loading)
                                 ],
                               );
                             }

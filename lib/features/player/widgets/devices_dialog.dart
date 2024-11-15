@@ -1,5 +1,6 @@
 import '../../../models/primary models/user_profile_model.dart';
 import '../../../models/secundary models/devices_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../player_controller.dart';
 
 import 'package:flutter/material.dart';
@@ -42,12 +43,12 @@ class _DevicesDialogState extends State<DevicesDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool isFreeUser = UserProfile.instance.isFreeUser;
+    bool currentUserIsFree = UserProfile.instance.isFreeUser;
 
     return SimpleDialog(
-      title: const Text('Your devices'),
+      title: Text(LocalizationsController.of(context)!.yourDevices),
       children: [
-        if (isFreeUser)
+        if (currentUserIsFree)
           Chip(
             shape: RoundedRectangleBorder(
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -55,7 +56,8 @@ class _DevicesDialogState extends State<DevicesDialog> {
                     BorderSide(color: Theme.of(context).colorScheme.tertiary)),
             avatar:
                 Icon(Icons.info, color: Theme.of(context).colorScheme.tertiary),
-            label: const Text('Spotify Free - Visualization only'),
+            label: Text(
+                'Spotify Free - ${LocalizationsController.of(context)!.visualizationOnly}'),
             labelStyle:
                 TextStyle(color: Theme.of(context).colorScheme.tertiary),
           ),
@@ -70,7 +72,7 @@ class _DevicesDialogState extends State<DevicesDialog> {
                       child: Column(
                         children: [
                           IgnorePointer(
-                            ignoring: isFreeUser,
+                            ignoring: currentUserIsFree,
                             child: DeviceTile(
                               deviceName: devicesList[index].name ?? '',
                               deviceType: devicesList[index].type ?? '',
@@ -96,7 +98,10 @@ class _DevicesDialogState extends State<DevicesDialog> {
                     );
                   },
                 )
-              : const Center(child: Text('No compatible devices were found')),
+              : Center(
+                  child: Text(
+                  LocalizationsController.of(context)!.noCompatibleDevices,
+                )),
         ),
       ],
     );
@@ -130,8 +135,9 @@ class DeviceTile extends StatelessWidget {
         contentPadding: const EdgeInsets.all(0),
         leading: Icon(devicesIconList[deviceType]),
         title: Text(deviceName),
-        subtitle:
-            active ? const Text('Current device') : const Text('Not playing'),
+        subtitle: active
+            ? Text(LocalizationsController.of(context)!.currentDevice)
+            : Text(LocalizationsController.of(context)!.onStandby),
         selected: active,
         onTap: onTap,
       ),

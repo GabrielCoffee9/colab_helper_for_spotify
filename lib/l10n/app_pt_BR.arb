@@ -1,0 +1,82 @@
+{
+    "loading": "Carregando",
+    "syncAccount": "Sincronizar conta",
+    "yourPlaylists": "Suas Playlists",
+    "language": "Idiomas",
+    "system": "Sistema",
+    "english": "Inglês",
+    "portugueseBrazilian": "Português Brasil",
+    "settings": "Configurações",
+
+    "viewAll": "Ver todas",
+    "allPlaylists": "Todas as Playlists",
+    "unnamedPlaylist": "Playlist sem nome", 
+    "unnamedAlbum": "Álbum sem nome",
+    "unavailableSong": "Música indisponível",
+    "unknown": "Desconhecido",
+
+    "nSongs": "{count, plural, =0{sem músicas} =1{1 música} other{{count} músicas}}",
+    "@nSongs": {
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+  },
+
+  "searchYourPlaylists": "Pesquise suas Playlists",
+  "typeToSearch": "Digite algo para pesquisar",
+  "errorLoadingSearch": "Error loading searching, please try again.",
+  "noResultsFound": "Nenhum resultado encontrado.",
+
+  "emptyPlaylist": "Playlist vazia !!!",
+  "errorReorder": "Erro ao tentar reordenar a música, tente novamente.",
+
+  "album": "Álbum",  
+  "artist": "Artista",
+  "track": "Música",
+
+  "albumType": "{type, select, single{Single} album{Álbum} other{ }}",
+  "@albumType": {
+    "placeholders": {
+        "type": {
+          "type": "String"
+        }
+    }
+  },
+
+  "followers": "Seguidores",
+  "follow": "Seguir",
+  "following": "Seguindo",
+  "topSongs": "Mais tocadas",
+  "albums": "Álbuns",
+  "loadMoreAlbums": "Carregar mais álbuns",
+  "likedSongs": "Músicas curtidas",
+
+  "queue": "Fila",
+  "nowPlaying": "Tocando agora",
+  "nextFrom": "Próximo de:",
+
+  "yourDevices": "Seus dispositivos",
+  "onStandby": "Em espera",
+  "currentDevice": "Dispositivo atual",
+  "visualizationOnly": "Só visualização",
+  "noCompatibleDevices": "Nenhum dispositivo compátivel encontrado",
+
+  "latestRelease":"Último lançamento",
+  "enjoyThisFeature": "Aproveite esse recurso no Spotify Premium",
+  "colabFollowsPlansRules": "O Colab Helper segue as regras dos planos do Spotify.",
+  "thisActionIsPremium": "Esta ação está disponível apenas para usuários premium do Spotify.",
+  "spotifyPremiumLets": "O Spotify Premium permite que você reproduza qualquer faixa, episódio de podcast ou audiolivro, sem anúncios e com melhor qualidade de áudio. Acesse ",
+  "toTryit" : " para experimentar gratuitamente.",
+
+  "syncLost": "a Sincronização com Spotify foi perdida",
+  "syncPlsWait": "Sincronizando com Spotify, por favor aguarde.",
+  "errorCheckConnection" : "Erro! Verifique sua conexão e tente novamente mais tarde.",
+  "errorCrash": "Se você estiver vendo esta tela, seu aplicativo/página travou 😥",
+
+  "spotifyNotInstalled": "Seu dispositivo não tem o aplicativo Spotify instalado",
+  "colabHelperUsesSpotify":"O Colab Helper usa o aplicativo Spotify para sincronizar e reproduzir faixas. Instale o Spotify antes de usar este aplicativo.",
+  "getSpotifyFree": "OBTER SPOTIFY GRATUITAMENTE"
+}

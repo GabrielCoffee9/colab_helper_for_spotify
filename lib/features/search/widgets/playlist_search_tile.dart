@@ -1,4 +1,5 @@
 import '../../../models/secundary models/playlist_model.dart';
+import '../../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../../shared/widgets/empty_playlist_cover.dart';
 import '../../../shared/widgets/music_visualizer.dart';
 
@@ -18,7 +19,8 @@ class PlaylistSearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(playlist.name ?? 'Loading...'),
+      title:
+          Text(playlist.name ?? LocalizationsController.of(context)!.loading),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

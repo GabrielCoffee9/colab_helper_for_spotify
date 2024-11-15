@@ -1,5 +1,6 @@
 import '../../models/primary models/user_profile_model.dart';
 import '../../models/secundary models/artist_model.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
@@ -232,7 +233,7 @@ class _ArtistPageState extends State<ArtistPage> {
                               }),
                         ),
                         Text(
-                          '${formatFollowersCount(artist.followersCount)} Followers',
+                          '${formatFollowersCount(artist.followersCount)} ${LocalizationsController.of(context)!.followers}',
                           style: const TextStyle(fontSize: 8),
                         )
                       ],
@@ -259,8 +260,10 @@ class _ArtistPageState extends State<ArtistPage> {
                                   ? () => unfollowArtist()
                                   : () => followArtist(),
                               child: isFollowingArtist
-                                  ? const Text('Following')
-                                  : const Text('Follow'),
+                                  ? Text(LocalizationsController.of(context)!
+                                      .following)
+                                  : Text(LocalizationsController.of(context)!
+                                      .follow),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(right: 12.0),
@@ -284,11 +287,11 @@ class _ArtistPageState extends State<ArtistPage> {
                             ),
                           ],
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8.0),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            'Top songs',
-                            style: TextStyle(fontSize: 24),
+                            LocalizationsController.of(context)!.topSongs,
+                            style: const TextStyle(fontSize: 24),
                           ),
                         ),
                         ListView.builder(
@@ -340,11 +343,11 @@ class _ArtistPageState extends State<ArtistPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
-                            'Albums',
-                            style: TextStyle(fontSize: 24),
+                            LocalizationsController.of(context)!.albums,
+                            style: const TextStyle(fontSize: 24),
                           ),
                         ),
                         ListView.builder(
@@ -360,15 +363,17 @@ class _ArtistPageState extends State<ArtistPage> {
                                     onPressed: () {
                                       getAlbums(artist, offset: index + 1);
                                     },
-                                    child: const Text('Load more albums'));
+                                    child: Text(
+                                        LocalizationsController.of(context)!
+                                            .loadMoreAlbums));
                               } else {
                                 return null;
                               }
                             }
 
                             return ListTile(
-                              title: Text(
-                                  artist.albums[index].name ?? 'Loading...'),
+                              title: Text(artist.albums[index].name ??
+                                  LocalizationsController.of(context)!.loading),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -378,7 +383,10 @@ class _ArtistPageState extends State<ArtistPage> {
                                   Row(
                                     children: [
                                       Text(
-                                        ('${artist.albums[index].albumType?[0].toUpperCase() ?? 'Album'}${artist.albums[index].albumType?.substring(1)}'),
+                                        (LocalizationsController.of(context)!
+                                            .albumType(artist
+                                                    .albums[index].albumType ??
+                                                'album')),
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -401,7 +409,9 @@ class _ArtistPageState extends State<ArtistPage> {
                                         index != 0
                                             ? artist.albums[index].releaseDate!
                                                 .split('-')[0]
-                                            : 'Latest Release',
+                                            : LocalizationsController.of(
+                                                    context)!
+                                                .latestRelease,
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -421,7 +431,10 @@ class _ArtistPageState extends State<ArtistPage> {
                                         ),
                                       ),
                                       Text(
-                                        '${artist.albums[index].totalTracks!.toString()} ${artist.albums[index].totalTracks! > 1 ? 'songs' : 'song'}',
+                                        LocalizationsController.of(context)!
+                                            .nSongs(artist.albums[index]
+                                                    .totalTracks ??
+                                                0),
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme

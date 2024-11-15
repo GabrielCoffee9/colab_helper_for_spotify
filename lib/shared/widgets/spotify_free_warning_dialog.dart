@@ -1,3 +1,4 @@
+import '../modules/appLocalizations/localizations_controller.dart';
 import 'app_logo.dart';
 
 import 'package:flutter/gestures.dart';
@@ -24,15 +25,15 @@ class _SpotifyFreeWarningDialogState extends State<SpotifyFreeWarningDialog> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     return SimpleDialog(
-      title: const Text("Enjoy this feature on Spotify premium"),
+      title: Text(LocalizationsController.of(context)!.enjoyThisFeature),
       contentPadding: const EdgeInsets.all(20),
       children: [
         SizedBox(
-          height: 210,
+          height: 250,
           width: 300,
           child: Column(
             children: [
-              const Text('Colab Helper follows Spotify plans rules.'),
+              Text(LocalizationsController.of(context)!.colabFollowsPlansRules),
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -50,15 +51,14 @@ class _SpotifyFreeWarningDialogState extends State<SpotifyFreeWarningDialog> {
                   ],
                 ),
               ),
-              const Text(
-                  'This action is only available for Spotify premium users.'),
+              Text(LocalizationsController.of(context)!.thisActionIsPremium),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text:
-                          'Spotify Premium lets you play any track, podcast episode or audiobook, ad-free and with better audio quality. Go to ',
+                      text: LocalizationsController.of(context)!
+                          .spotifyPremiumLets,
                       style: TextStyle(color: colors.onSurface),
                     ),
                     TextSpan(
@@ -78,7 +78,7 @@ class _SpotifyFreeWarningDialogState extends State<SpotifyFreeWarningDialog> {
                         },
                     ),
                     TextSpan(
-                      text: ' to try it for free.',
+                      text: LocalizationsController.of(context)!.toTryit,
                       style: TextStyle(color: colors.onSurface),
                     )
                   ]),

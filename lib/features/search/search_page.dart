@@ -1,6 +1,7 @@
 import '../../../models/primary models/search_items.dart';
 import '../../../models/primary models/user_profile_model.dart';
 import '../../../shared/widgets/circular_progress.dart';
+import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../album/album_page.dart';
 import '../artist/artist_page.dart';
 import '../player/player_controller.dart';
@@ -69,8 +70,9 @@ class SearchPage extends SearchDelegate {
               ),
             );
           } else if (searchSnapshot.hasError || searchSnapshot.data == null) {
-            return const Center(
-              child: Text('Error loading searching, please try again.'),
+            return Center(
+              child:
+                  Text(LocalizationsController.of(context)!.errorLoadingSearch),
             );
           }
 
@@ -90,7 +92,9 @@ class SearchPage extends SearchDelegate {
               trackItemsCount;
 
           if (allItemsCount == 0) {
-            return const Center(child: Text('No results found.'));
+            return Center(
+                child:
+                    Text(LocalizationsController.of(context)!.noResultsFound));
           }
 
           return ListenableBuilder(
@@ -186,7 +190,8 @@ class SearchPage extends SearchDelegate {
         },
       );
     } else {
-      return const Center(child: Text('Type to search'));
+      return Center(
+          child: Text(LocalizationsController.of(context)!.typeToSearch));
     }
   }
 }

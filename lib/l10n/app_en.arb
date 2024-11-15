@@ -1,0 +1,90 @@
+{
+  "loading": "Loading",
+  "syncAccount": "Sync account",
+  "@syncAccount": {
+    "description": "Auth sync account button text"
+  },
+
+  "yourPlaylists": "Your Playlists",
+
+  "language": "Languages",
+  "system": "System",
+  "english": "English",
+  "portugueseBrazilian": "Portuguese Brazilian",
+  "settings": "Settings",
+
+  "viewAll": "View all",
+  "allPlaylists": "All Playlists",
+  "unnamedPlaylist": "Unnamed Playlist",
+  "unnamedAlbum": "Unnamed album",
+  "unavailableSong": "Unavailable song",
+  "unknown": "Unknown",
+
+  "nSongs": "{count, plural, =0{no songs} =1{1 song} other{{count} songs}}",
+  "@nSongs": {
+    "placeholders": {
+        "count": {
+          "type": "num",
+          "format": "compact"
+        }
+    }
+  },
+
+  "searchYourPlaylists": "Search Your Playlists",
+  "typeToSearch": "Type to search",
+  "errorLoadingSearch": "Error loading searching, please try again.",
+  "noResultsFound": "No results found.",
+
+  "emptyPlaylist": "Empty Playlist !!!",
+  "errorReorder": "Error when trying to reorder the track, please try again.",
+
+  "album": "Album",
+  "artist": "Artist",
+  "track": "Track",
+
+  "albumType": "{type, select, single{Single} album{Album} other{ }}",
+  "@albumType": {
+    "placeholders": {
+        "type": {
+          "type": "String"
+        }
+    }
+  },
+
+  "followers": "Followers",
+  "follow": "Follow",
+  "following": "Following",
+  "topSongs": "Top songs",
+  "albums": "Albums",
+  "loadMoreAlbums": "Load more albums",
+  "likedSongs": "Liked Songs",
+
+  "queue": "Queue",
+  "nowPlaying": "Now playing",
+  "nextFrom": "Next from:",
+  "yourDevices": "Your devices",
+  "onStandby": "On standby",
+  "currentDevice": "Current device",
+  "visualizationOnly": "Visualization only",
+  "noCompatibleDevices": "No compatible devices were found",
+
+  "latestRelease":"Latest Release",
+
+  "enjoyThisFeature": "Enjoy this feature on Spotify premium",
+  "colabFollowsPlansRules": "Colab Helper follows Spotify plans rules.",
+  "thisActionIsPremium": "This action is only available for Spotify premium users.",
+  "spotifyPremiumLets": "Spotify Premium lets you play any track, podcast episode or audiobook, ad-free and with better audio quality. Go to ",
+  "toTryit" : " to try it for free.",
+
+  "syncLost": "Spotify sync connection was lost",
+  "syncPlsWait": "Syncing to Spotify, please wait.",
+  "errorCheckConnection" : "Error! Check your connection and try again later.",
+  "errorCrash": "If you are seeing this screen, your app/page crashed 😥",
+
+  "spotifyNotInstalled": "Your device doesn't have the Spotify app installed",
+  "colabHelperUsesSpotify":"Colab Helper uses the Spotify app to sync and play tracks, please install Spotify before use this app.",
+  "getSpotifyFree": "GET SPOTIFY FREE"
+
+
+
+}
