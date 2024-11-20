@@ -3,12 +3,14 @@ import '../../models/secundary models/playlist_model.dart';
 import '../../models/secundary models/track_model.dart';
 import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
+import '../../shared/widgets/build_snackbar.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/empty_playlist_cover.dart';
 import '../../shared/widgets/play_and_pause_button.dart';
 import '../../shared/widgets/profile_picture.dart';
 import '../../shared/widgets/song_tile.dart';
 import '../player/player_controller.dart';
+import 'widgets/edit_playlist_dialog.dart';
 import 'playlist_controller.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -63,6 +65,22 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return;
   }
 
+  updateAllPlaylist() async {
+    await getPlaylistHeaders().then((_) async {
+      await getTracks();
+    });
+  }
+
+  Future<void> getPlaylistHeaders() async {
+    await playlistController
+        .getPlaylistHeaders(playlist, UserProfile.instance.country)
+        .then((response) {
+      setState(() {
+        playlist = response;
+      });
+    });
+  }
+
   void getOwnerPlaylistImageUrl() {
     userController.getUserUrlProfileImage(playlist.owner?.id).then((value) {
       setState(() {
@@ -78,6 +96,27 @@ class _PlaylistPageState extends State<PlaylistPage> {
           .then((value) {
         currentUserFollowsPlaylist.value = value;
       });
+    }
+  }
+
+  Future<void> openEditPage() async {
+    final response = await showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) {
+        return EditPlaylistDialog(
+          targetPlaylist: playlist,
+        );
+      },
+    );
+    if (response != null && response) {
+      Future.delayed(const Duration(seconds: 2)).then((_) {
+        updateAllPlaylist();
+      });
+      if (mounted) {
+        buildSnackBar(context,
+            error: LocalizationsController.of(context)!.sometimesTakesTime);
+      }
     }
   }
 
@@ -142,20 +181,34 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return Scaffold(
       backgroundColor: colors.surface,
       floatingActionButton: showScrollToTopButton
-          ? FloatingActionButton(
-              mini: true,
-              child: const Icon(Icons.keyboard_double_arrow_up),
-              onPressed: () {
-                _scrollController.animateTo(
-                    _scrollController.position.minScrollExtent,
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.fastOutSlowIn);
-              },
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 60.0),
+              child: FloatingActionButton(
+                mini: true,
+                child: const Icon(Icons.keyboard_double_arrow_up),
+                onPressed: () {
+                  _scrollController.animateTo(
+                      _scrollController.position.minScrollExtent,
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.fastOutSlowIn);
+                },
+              ),
             )
           : null,
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          if (playlist.owner?.id == UserProfile.instance.id &&
+              !playlist.isUserSavedTracksPlaylist)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                openEditPage();
+              },
+            )
+        ],
+      ),
       body: RefreshIndicator(
-        onRefresh: () => getTracks(),
+        onRefresh: () => updateAllPlaylist(),
         child: (playlistIsLoading)
             ? Center(
                 child: Column(
@@ -169,17 +222,20 @@ class _PlaylistPageState extends State<PlaylistPage> {
               )
             : Scrollbar(
                 child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   controller: _scrollController,
                   slivers: [
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               if (playlist.owner?.id ==
                                       UserProfile.instance.id &&
-                                  !playlist.isUserSavedTracksPlaylist) {}
+                                  !playlist.isUserSavedTracksPlaylist) {
+                                openEditPage();
+                              }
                             },
                             child: SizedBox(
                               width: 220,
@@ -390,34 +446,45 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             left: 12,
                             right: 12,
                           ),
-                          child: (playlist.tracks.isNotEmpty)
-                              ? Wrap(
-                                  children: [
-                                    Text(
-                                      playlist.description ?? '',
-                                      style: TextStyle(
-                                        color: colors.onSurfaceVariant,
-                                      ),
-                                    )
-                                  ],
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      LocalizationsController.of(context)!
-                                          .emptyPlaylist,
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        color: colors.primary,
-                                      ),
-                                    )
-                                  ],
+                          child: Wrap(
+                            children: [
+                              Text(
+                                playlist.description ?? '',
+                                style: TextStyle(
+                                  color: colors.onSurfaceVariant,
                                 ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                    if (playlist.tracks.isEmpty)
+                      SliverToBoxAdapter(
+                        child: SizedBox.square(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 12,
+                              left: 12,
+                              right: 12,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  LocalizationsController.of(context)!
+                                      .emptyPlaylist,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: colors.primary,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     SliverReorderableList(
                       onReorder: (oldIndex, newIndex) async {
                         setState(() {
@@ -528,7 +595,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         );
                       },
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 80))
+                    const SliverToBoxAdapter(child: SizedBox(height: 120))
                   ],
                 ),
               ),

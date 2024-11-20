@@ -121,16 +121,19 @@ class _AlbumPageState extends State<AlbumPage> {
     return Scaffold(
       backgroundColor: colors.surface,
       floatingActionButton: showScrollToTopButton
-          ? FloatingActionButton(
-              mini: true,
-              child: const Icon(Icons.keyboard_double_arrow_up),
-              onPressed: () {
-                _scrollController.animateTo(
-                  _scrollController.position.minScrollExtent,
-                  duration: const Duration(milliseconds: 800),
-                  curve: Curves.fastOutSlowIn,
-                );
-              })
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 60.0),
+              child: FloatingActionButton(
+                  mini: true,
+                  child: const Icon(Icons.keyboard_double_arrow_up),
+                  onPressed: () {
+                    _scrollController.animateTo(
+                      _scrollController.position.minScrollExtent,
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.fastOutSlowIn,
+                    );
+                  }),
+            )
           : null,
       appBar: AppBar(primary: true),
       body: (albumIsLoading)

@@ -83,8 +83,33 @@
 
   "spotifyNotInstalled": "Your device doesn't have the Spotify app installed",
   "colabHelperUsesSpotify":"Colab Helper uses the Spotify app to sync and play tracks, please install Spotify before use this app.",
-  "getSpotifyFree": "GET SPOTIFY FREE"
+  "getSpotifyFree": "GET SPOTIFY FREE",
 
+  "userType": "{type, select, premium{Premium} free{Free} other{ }}",
+  "@albumType": {
+    "placeholders": {
+        "type": {
+          "type": "String"
+        }
+    }
+  },
+
+  "editPlaylist" :"Edit playlist",
+  "errorTryingToLoadImage": "Error trying to load image, please select another image.",
+  "changeImage": "Change Image",
+  "chooseFromCamera": "Choose from camera",
+  "chooseFromGallery": "Choose from gallery", 
+  "imageTooBig": "The selected Image is too big. please select another image.",
+  "imageUploadWarningOne": "By proceeding, you agree to give Spotify access to the image you choose to upload.",
+  "imageUploadWarningTwo": "Please make sure you have the right to upload the image.",
+  "title": "Title",
+  "description": "Description",
+  "cancelChanges": "Cancel changes",
+  "discardChangesConfirmation": "Are you sure you want to discard all the changes you made ?",
+  "cancel": "Cancel",
+  "yes": "Yes",
+  "save": "Save",
+  "sometimesTakesTime": "Sometimes when saving playlist details, changes may take up to 1 minute to update on the page. You can manually refresh the playlist by pulling down to refresh."
 
 
 }

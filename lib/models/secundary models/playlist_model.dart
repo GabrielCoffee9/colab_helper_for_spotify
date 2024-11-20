@@ -113,7 +113,9 @@ class Playlist {
     href = json['href'];
     total = json['total'] ?? 0;
     id = json['id'] ?? id;
+
     if (json['images'] != null) {
+      images!.clear();
       json['images'].forEach((v) {
         images!.add(Image.fromJson(v));
       });
@@ -126,7 +128,7 @@ class Playlist {
     name = json['name'] ?? name;
     owner = json['owner'] != null ? Owner.fromJson(json['owner']) : owner;
     primaryColor = json['primary_color'] ?? '';
-    public = json['public'];
+    public = json['public'] ?? public;
     snapshotId = json['snapshot_id'] ?? snapshotId;
 
     if (json['items'] != null) {

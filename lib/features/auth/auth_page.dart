@@ -1,6 +1,6 @@
-import '../../shared/modules/appLocalizations/localizations_controller.dart';
 import '../../shared/modules/user/user_controller.dart';
 import '../../shared/widgets/app_logo.dart';
+import '../../shared/widgets/build_snackbar.dart';
 import '../../shared/widgets/circular_progress.dart';
 import '../../shared/widgets/get_spotify_dialog.dart';
 import 'auth_controller.dart';
@@ -141,22 +141,4 @@ class _AuthPageState extends State<AuthPage> {
       ),
     );
   }
-}
-
-void buildSnackBar(BuildContext context, {String? error}) {
-  return WidgetsBinding.instance.addPostFrameCallback(
-    (_) => ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 10),
-        content: Text(
-          error ?? (LocalizationsController.of(context)!.errorCheckConnection),
-        ),
-        action: SnackBarAction(
-          label: 'Ok',
-          onPressed: () {},
-        ),
-      ),
-    ),
-  );
 }

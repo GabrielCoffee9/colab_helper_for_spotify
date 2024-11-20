@@ -78,5 +78,31 @@
 
   "spotifyNotInstalled": "Seu dispositivo não tem o aplicativo Spotify instalado",
   "colabHelperUsesSpotify":"O Colab Helper usa o aplicativo Spotify para sincronizar e reproduzir faixas. Instale o Spotify antes de usar este aplicativo.",
-  "getSpotifyFree": "OBTER SPOTIFY GRATUITAMENTE"
+  "getSpotifyFree": "OBTER SPOTIFY GRATUITAMENTE",
+
+  "userType": "{type, select, premium{Premium} free{Free} other{ }}",
+  "@albumType": {
+    "placeholders": {
+        "type": {
+          "type": "String"
+        }
+    }
+  },
+
+  "editPlaylist" :"Editar playlist",
+  "errorTryingToLoadImage": "Ocorreu um erro ao tentar carregar a imagem, selecione outra imagem.",
+  "changeImage": "Mudar Imagem",
+  "chooseFromCamera": "Escolher da camera",
+  "chooseFromGallery": "Escolher da galeria", 
+  "imageTooBig": "A imagem selecionada é muito grande. Selecione outra imagem.",
+  "imageUploadWarningOne": "Ao prosseguir, você concorda em dar ao Spotify acesso à imagem que você escolher enviar.",
+  "imageUploadWarningTwo": "Certifique-se de que você tem o direito de enviar a imagem.",
+  "title": "Título",
+  "description": "Descrição",
+  "cancelChanges": "Cancelar alterações",
+  "discardChangesConfirmation": "Tem certeza de que deseja descartar todas as alterações feitas?",
+  "cancel": "Cancelar",
+  "yes": "Sim",
+  "save": "Salvar",
+  "sometimesTakesTime": "Às vezes, ao salvar detalhes da playlist, as alterações podem levar até 1 minuto para atualizar na página. Você pode atualizar a playlist manualmente puxando para baixo para atualizar."
 }

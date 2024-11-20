@@ -103,6 +103,7 @@ class SearchPage extends SearchDelegate {
                 String contextUri =
                     PlayerController.instance.playerContext.value?.uri ?? '';
                 return ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 40.0),
                   itemCount: allItemsCount,
                   itemBuilder: (context, index) {
                     if ((index + 1) <= albumItemsCount) {

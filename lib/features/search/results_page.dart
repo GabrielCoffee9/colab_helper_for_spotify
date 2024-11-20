@@ -157,128 +157,133 @@ class _ResultsPageState extends State<ResultsPage> {
               )
             : Expanded(
                 child: Scrollbar(
-                  child: ListenableBuilder(
-                      listenable: PlayerController.instance.playerContext,
-                      builder: (context, snapshot) {
-                        String contextUri = PlayerController
-                                .instance.playerContext.value?.uri ??
-                            '';
-                        return ListView.builder(
-                          controller: _scrollController,
-                          itemCount: allItemsCount,
-                          itemBuilder: (context, index) {
-                            if ((index + 1) == allItemsCount &&
-                                searchSpotifyController.state.value !=
-                                    SearchSpotifyState.loading &&
-                                selection.isNotEmpty) {
-                              searchWithFilter(
-                                index + 1,
-                                selection.toString(),
-                                dataToMerge: searchData,
-                              );
-                            }
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 60.0),
+                    child: ListenableBuilder(
+                        listenable: PlayerController.instance.playerContext,
+                        builder: (context, snapshot) {
+                          String contextUri = PlayerController
+                                  .instance.playerContext.value?.uri ??
+                              '';
+                          return ListView.builder(
+                            controller: _scrollController,
+                            itemCount: allItemsCount,
+                            itemBuilder: (context, index) {
+                              if ((index + 1) == allItemsCount &&
+                                  searchSpotifyController.state.value !=
+                                      SearchSpotifyState.loading &&
+                                  selection.isNotEmpty) {
+                                searchWithFilter(
+                                  index + 1,
+                                  selection.toString(),
+                                  dataToMerge: searchData,
+                                );
+                              }
 
-                            if ((index + 1) >= allItemsCount &&
-                                searchSpotifyController.state.value ==
-                                    SearchSpotifyState.loading &&
-                                selection.isNotEmpty) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const LinearProgressIndicator(),
-                                  Text(LocalizationsController.of(context)!
-                                      .loading)
-                                ],
-                              );
-                            }
+                              if ((index + 1) >= allItemsCount &&
+                                  searchSpotifyController.state.value ==
+                                      SearchSpotifyState.loading &&
+                                  selection.isNotEmpty) {
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const LinearProgressIndicator(),
+                                    Text(LocalizationsController.of(context)!
+                                        .loading)
+                                  ],
+                                );
+                              }
 
-                            if ((index + 1) <= albumItemsCount) {
-                              return AlbumSearchTile(
-                                album:
-                                    searchData.albumsContainer!.items![index],
-                                isPlaying: contextUri ==
-                                    searchData
-                                        .albumsContainer!.items![index].uri,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => AlbumPage(
-                                        initialAlbumData: searchData
-                                            .albumsContainer!.items![index],
+                              if ((index + 1) <= albumItemsCount) {
+                                return AlbumSearchTile(
+                                  album:
+                                      searchData.albumsContainer!.items![index],
+                                  isPlaying: contextUri ==
+                                      searchData
+                                          .albumsContainer!.items![index].uri,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => AlbumPage(
+                                          initialAlbumData: searchData
+                                              .albumsContainer!.items![index],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }
+                                    );
+                                  },
+                                );
+                              }
 
-                            if ((index + 1) <=
-                                albumItemsCount + artistItemsCount) {
-                              int localIndex = index - albumItemsCount;
-                              return ArtistSearchTile(
-                                artist: searchData
-                                    .artistsContainer!.items![localIndex],
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => ArtistPage(
-                                        initialArtistData: searchData
-                                            .artistsContainer!
-                                            .items![localIndex],
+                              if ((index + 1) <=
+                                  albumItemsCount + artistItemsCount) {
+                                int localIndex = index - albumItemsCount;
+                                return ArtistSearchTile(
+                                  artist: searchData
+                                      .artistsContainer!.items![localIndex],
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ArtistPage(
+                                          initialArtistData: searchData
+                                              .artistsContainer!
+                                              .items![localIndex],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }
+                                    );
+                                  },
+                                );
+                              }
 
-                            if ((index + 1) <=
-                                albumItemsCount +
-                                    artistItemsCount +
-                                    playlistItemsCount) {
-                              int localIndex =
-                                  index - (albumItemsCount + artistItemsCount);
-                              return PlaylistSearchTile(
-                                playlist: searchData
-                                    .playlistContainer!.items![localIndex],
-                                isPlaying: contextUri ==
-                                    searchData.playlistContainer
-                                        ?.items?[localIndex].uri,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => PlaylistPage(
-                                        initialPlaylistData: searchData
-                                            .playlistContainer!
-                                            .items![localIndex],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }
-
-                            if ((index + 1) <= allItemsCount) {
-                              int localIndex = index -
-                                  (albumItemsCount +
+                              if ((index + 1) <=
+                                  albumItemsCount +
                                       artistItemsCount +
-                                      playlistItemsCount);
-                              return TrackSearchTile(
-                                track: searchData
-                                    .tracksContainer!.items![localIndex],
-                                isPlaying: contextUri ==
-                                    searchData.tracksContainer!
-                                        .items![localIndex].uri,
-                                onTap: () {
-                                  PlayerController.instance.play(searchData
-                                      .tracksContainer!.items![localIndex].uri);
-                                },
-                              );
-                            }
-                            return null;
-                          },
-                        );
-                      }),
+                                      playlistItemsCount) {
+                                int localIndex = index -
+                                    (albumItemsCount + artistItemsCount);
+                                return PlaylistSearchTile(
+                                  playlist: searchData
+                                      .playlistContainer!.items![localIndex],
+                                  isPlaying: contextUri ==
+                                      searchData.playlistContainer
+                                          ?.items?[localIndex].uri,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => PlaylistPage(
+                                          initialPlaylistData: searchData
+                                              .playlistContainer!
+                                              .items![localIndex],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+
+                              if ((index + 1) <= allItemsCount) {
+                                int localIndex = index -
+                                    (albumItemsCount +
+                                        artistItemsCount +
+                                        playlistItemsCount);
+                                return TrackSearchTile(
+                                  track: searchData
+                                      .tracksContainer!.items![localIndex],
+                                  isPlaying: contextUri ==
+                                      searchData.tracksContainer!
+                                          .items![localIndex].uri,
+                                  onTap: () {
+                                    PlayerController.instance.play(searchData
+                                        .tracksContainer!
+                                        .items![localIndex]
+                                        .uri);
+                                  },
+                                );
+                              }
+                              return null;
+                            },
+                          );
+                        }),
+                  ),
                 ),
               ),
       ],

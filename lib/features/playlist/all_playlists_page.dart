@@ -81,125 +81,129 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                     ],
                   ),
                 )
-              : GridView.builder(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                  ),
-                  itemCount: userPlaylists.playlists.length,
-                  itemBuilder: (context, index) {
-                    bool isLastItem =
-                        index + 1 == (userPlaylists.playlists.length);
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 55.0),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 14,
+                    ),
+                    itemCount: userPlaylists.playlists.length,
+                    itemBuilder: (context, index) {
+                      bool isLastItem =
+                          index + 1 == (userPlaylists.playlists.length);
 
-                    if (isLastItem &&
-                        ((userPlaylists.total ?? 0) > (index + 1)) &&
-                        playlistController.state.value !=
-                            PlaylistState.loading) {
-                      getPlaylists(offset: index + 1);
-                    }
+                      if (isLastItem &&
+                          ((userPlaylists.total ?? 0) > (index + 1)) &&
+                          playlistController.state.value !=
+                              PlaylistState.loading) {
+                        getPlaylists(offset: index + 1);
+                      }
 
-                    if (isLastItem &&
-                        playlistController.state.value ==
-                            PlaylistState.loading) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgress(isDone: false),
-                          Text(LocalizationsController.of(context)!.loading)
-                        ],
-                      );
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => PlaylistPage(
-                              initialPlaylistData:
-                                  userPlaylists.playlists[index],
-                            ),
-                          ),
+                      if (isLastItem &&
+                          playlistController.state.value ==
+                              PlaylistState.loading) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgress(isDone: false),
+                            Text(LocalizationsController.of(context)!.loading)
+                          ],
                         );
-                      },
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 162,
-                            width: 170,
-                            child: CachedNetworkImage(
-                              memCacheWidth: 446,
-                              memCacheHeight: 393,
-                              maxWidthDiskCache: 446,
-                              maxHeightDiskCache: 393,
-                              placeholder: (context, url) =>
-                                  const EmptyPlaylistCover(),
-                              errorWidget: (context, url, error) =>
-                                  const EmptyPlaylistCover(),
-                              imageUrl: userPlaylists.playlists[index].images
-                                          ?.isNotEmpty ??
-                                      false
-                                  ? userPlaylists
-                                      .playlists[index].images!.first.url!
-                                  : '',
-                              imageBuilder: (context, image) => Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(4),
-                                  ),
-                                  image: DecorationImage(
-                                    image: image,
-                                    fit: BoxFit.cover,
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PlaylistPage(
+                                initialPlaylistData:
+                                    userPlaylists.playlists[index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 162,
+                              width: 170,
+                              child: CachedNetworkImage(
+                                memCacheWidth: 446,
+                                memCacheHeight: 393,
+                                maxWidthDiskCache: 446,
+                                maxHeightDiskCache: 393,
+                                placeholder: (context, url) =>
+                                    const EmptyPlaylistCover(),
+                                errorWidget: (context, url, error) =>
+                                    const EmptyPlaylistCover(),
+                                imageUrl: userPlaylists.playlists[index].images
+                                            ?.isNotEmpty ??
+                                        false
+                                    ? userPlaylists
+                                        .playlists[index].images!.first.url!
+                                    : '',
+                                imageBuilder: (context, image) => Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(4),
+                                    ),
+                                    image: DecorationImage(
+                                      image: image,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              textDirection: TextDirection.ltr,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        userPlaylists.playlists[index]
-                                                .isUserSavedTracksPlaylist
-                                            ? LocalizationsController.of(
-                                                    context)!
-                                                .likedSongs
-                                            : userPlaylists
-                                                    .playlists[index].name ??
-                                                LocalizationsController.of(
-                                                        context)!
-                                                    .unnamedPlaylist,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                textDirection: TextDirection.ltr,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          userPlaylists.playlists[index]
+                                                  .isUserSavedTracksPlaylist
+                                              ? LocalizationsController.of(
+                                                      context)!
+                                                  .likedSongs
+                                              : userPlaylists
+                                                      .playlists[index].name ??
+                                                  LocalizationsController.of(
+                                                          context)!
+                                                      .unnamedPlaylist,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  userPlaylists.playlists[index].owner
-                                          ?.displayName ??
-                                      LocalizationsController.of(context)!
-                                          .unknown,
-                                  style: const TextStyle(color: Colors.grey),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  Text(
+                                    userPlaylists.playlists[index].owner
+                                            ?.displayName ??
+                                        LocalizationsController.of(context)!
+                                            .unknown,
+                                    style: const TextStyle(color: Colors.grey),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
         ),
       ),

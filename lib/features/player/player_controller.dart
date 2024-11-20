@@ -2,7 +2,6 @@ import '../../models/secundary models/devices_model.dart';
 import '../../models/secundary models/queue_model.dart';
 import '../../shared/modules/app_remote/app_remote_handler.dart';
 import 'player_service.dart';
-import 'player_dialog.dart';
 
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -26,6 +25,8 @@ class PlayerController {
   Stream<PlayerState>? playerStateListener;
 
   Stream<PlayerContext>? playerContextListener;
+
+  ValueNotifier<double> miniPlayerDisplay = ValueNotifier(0);
 
   //UniqueInstance
   PlayerController._() {
@@ -54,33 +55,33 @@ class PlayerController {
     });
   }
 
-  Future<void> showPlayerDialog(BuildContext context) async {
-    try {
-      if (context.mounted) {
-        getPlayerState().then((initialPlayerState) {
-          return showGeneralDialog(
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return Container();
-            },
-            // ignore: use_build_context_synchronously
-            context: context,
-            transitionBuilder: (BuildContext context, a1, a2, widget) =>
-                SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.5),
-                end: const Offset(0, 0),
-              ).animate(
-                CurvedAnimation(parent: a1, curve: Curves.ease),
-              ),
-              child: PlayerDialog(initialPlayerStateData: initialPlayerState),
-            ),
-          );
-        });
-      }
-    } on Exception {
-      rethrow;
-    }
-  }
+  // Future<void> showPlayerDialog(BuildContext context) async {
+  //   try {
+  //     if (context.mounted) {
+  //       getPlayerState().then((initialPlayerState) {
+  //         return showGeneralDialog(
+  //           pageBuilder: (context, animation, secondaryAnimation) {
+  //             return Container();
+  //           },
+  //           // ignore: use_build_context_synchronously
+  //           context: context,
+  //           transitionBuilder: (BuildContext context, a1, a2, widget) =>
+  //               SlideTransition(
+  //             position: Tween<Offset>(
+  //               begin: const Offset(0, 0.5),
+  //               end: const Offset(0, 0),
+  //             ).animate(
+  //               CurvedAnimation(parent: a1, curve: Curves.ease),
+  //             ),
+  //             child: PlayerBottomSheet(initialPlayerStateData: initialPlayerState),
+  //           ),
+  //         );
+  //       });
+  //     }
+  //   } on Exception {
+  //     rethrow;
+  //   }
+  // }
 
   Future<PlayerState?> getPlayerState() async {
     return await appRemoteHandler<PlayerState?>(

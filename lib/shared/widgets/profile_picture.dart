@@ -10,6 +10,10 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
+      memCacheHeight: 210,
+      memCacheWidth: 210,
+      maxWidthDiskCache: 210,
+      maxHeightDiskCache: 210,
       height: 60,
       placeholder: (context, _) => Container(color: Colors.transparent),
       errorWidget: (context, url, error) => Container(

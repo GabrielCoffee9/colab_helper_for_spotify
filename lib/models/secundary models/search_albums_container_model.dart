@@ -23,7 +23,9 @@ class SearchAlbumsContainer {
     href = json['href'];
     if (json['items'] != null) {
       json['items'].forEach((v) {
-        items!.add(Album.fromJson(v));
+        if (v != null) {
+          items!.add(Album.fromJson(v));
+        }
       });
     }
     limit = json['limit'];

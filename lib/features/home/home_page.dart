@@ -161,14 +161,10 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: playerIsPaused
-                              ? GestureDetector(
-                                  onTap: (() => PlayerController.instance
-                                      .showPlayerDialog(context)),
-                                  child: AppLogo(
-                                    iconSize: 36,
-                                    darkTheme:
-                                        colors.brightness == Brightness.dark,
-                                  ),
+                              ? AppLogo(
+                                  iconSize: 36,
+                                  darkTheme:
+                                      colors.brightness == Brightness.dark,
                                 )
                               : const MusicVisualizer(
                                   unitAudioWavecount: 8,
@@ -209,7 +205,9 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       Text(userProfile.displayName ?? ''),
                                       Text(
-                                        '${userProfile.product}',
+                                        LocalizationsController.of(context)!
+                                            .userType(
+                                                userProfile.product ?? ''),
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -248,6 +246,8 @@ class _HomePageState extends State<HomePage> {
                                   Image.asset(
                                     "lib/assets/Spotify_Logo_RGB_Green.png",
                                     height: 35,
+                                    cacheWidth: 408,
+                                    cacheHeight: 122,
                                   ),
                                 ],
                               ),

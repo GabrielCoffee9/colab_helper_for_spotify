@@ -10,6 +10,7 @@ import 'playlist_service.dart';
 import 'package:flutter/widgets.dart' hide Image;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'dart:typed_data';
 
 enum PlaylistState { idle, success, error, loading }
 
@@ -179,6 +180,78 @@ class PlaylistController {
       lastError = e.toString();
       state.value = PlaylistState.error;
       return (false, null);
+    }
+  }
+
+  Future<Playlist> getPlaylistHeaders(
+      Playlist targetPlaylist, String? market) async {
+    try {
+      if (targetPlaylist.id == null || targetPlaylist.id!.isEmpty) {
+        throw Exception('The given playlistId is null or empty');
+      }
+
+      if (market == null) {
+        throw Exception('The given market is null');
+      }
+
+      final response = await PlaylistService()
+          .getPlaylistHeaders(targetPlaylist.id!, market);
+      targetPlaylist.fromInstance(response.data);
+      return targetPlaylist;
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return Playlist();
+    }
+  }
+
+  Future<bool> uploadCustomCoverImage(
+      String? playlistId, Uint8List imageData) async {
+    try {
+      if (playlistId == null || playlistId.isEmpty) {
+        throw Exception('The given playlistId is null or empty');
+      }
+
+      final response =
+          await PlaylistService().uploadCustomCoverImage(playlistId, imageData);
+
+      if (response.statusCode == 202) {
+        return true;
+      }
+      return false;
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return false;
+    }
+  }
+
+  Future<bool> updatePlaylistDetails(
+    String? playlistId,
+    String? name,
+    String? description,
+    bool? private,
+    bool? collaborative,
+  ) async {
+    try {
+      if (playlistId == null || playlistId.isEmpty) {
+        throw Exception('The given playlistId is null or empty');
+      }
+      if (private != null) {
+        private = !private;
+      }
+
+      final response = await PlaylistService().updatePlaylistDetails(
+          playlistId, name, description, private, collaborative);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } on Exception catch (e) {
+      lastError = e.toString();
+      state.value = PlaylistState.error;
+      return false;
     }
   }
 }

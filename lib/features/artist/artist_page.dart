@@ -177,16 +177,19 @@ class _ArtistPageState extends State<ArtistPage> {
     return Scaffold(
       backgroundColor: colors.surface,
       floatingActionButton: showScrollToTopButton
-          ? FloatingActionButton(
-              mini: true,
-              child: const Icon(Icons.keyboard_double_arrow_up),
-              onPressed: () {
-                _scrollController.animateTo(
-                  _scrollController.position.minScrollExtent,
-                  duration: const Duration(milliseconds: 800),
-                  curve: Curves.fastOutSlowIn,
-                );
-              })
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 60.0),
+              child: FloatingActionButton(
+                  mini: true,
+                  child: const Icon(Icons.keyboard_double_arrow_up),
+                  onPressed: () {
+                    _scrollController.animateTo(
+                      _scrollController.position.minScrollExtent,
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.fastOutSlowIn,
+                    );
+                  }),
+            )
           : null,
       body: artist.topTracks.isEmpty
           ? const Center(
@@ -203,11 +206,11 @@ class _ArtistPageState extends State<ArtistPage> {
                   pinned: true,
                   floating: false,
                   expandedHeight: 250,
-                  title: ListenableBuilder(
-                      listenable: appBarTitleOpacity,
-                      builder: (context, snapshot) {
+                  title: ValueListenableBuilder(
+                      valueListenable: appBarTitleOpacity,
+                      builder: (context, value, child) {
                         return AnimatedOpacity(
-                          opacity: appBarTitleOpacity.value,
+                          opacity: value,
                           duration: Durations.short1,
                           child: Text(artist.name ?? ''),
                         );
@@ -351,7 +354,7 @@ class _ArtistPageState extends State<ArtistPage> {
                           ),
                         ),
                         ListView.builder(
-                          padding: const EdgeInsets.all(0),
+                          padding: const EdgeInsets.only(bottom: 60),
                           shrinkWrap: true,
                           physics: const ClampingScrollPhysics(),
                           itemCount: artist.albums.length,
