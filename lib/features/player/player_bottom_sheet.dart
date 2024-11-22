@@ -27,7 +27,7 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet> {
   int _playerCurrentPosition = 0;
   LibraryState? libraryState;
   String? _songUri = '';
-  final double bottomSheetMinSize = 0.07;
+  final double bottomSheetMinSize = 0.085;
   final double bottomSheetMaxSize = 0.15;
 
   DraggableScrollableController draggableScrollableController =
@@ -93,11 +93,11 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet> {
         playerController.miniPlayerDisplay.value = 0;
       } else if (size > 0.15) {
         miniPlayerOpacity.value = 0;
-        playerController.miniPlayerDisplay.value = 60;
+        playerController.miniPlayerDisplay.value = 80;
       } else {
         miniPlayerOpacity.value = (0.15 - size) / (0.15 - bottomSheetMinSize);
         playerController.miniPlayerDisplay.value =
-            ((size - bottomSheetMinSize) / (0.15 - bottomSheetMinSize) * 50);
+            ((size - bottomSheetMinSize) / (0.15 - bottomSheetMinSize) * 65);
       }
     });
   }

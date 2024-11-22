@@ -82,7 +82,7 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.only(bottom: 55.0),
+                  padding: const EdgeInsets.only(bottom: 70.0),
                   child: GridView.builder(
                     shrinkWrap: true,
                     physics: const BouncingScrollPhysics(

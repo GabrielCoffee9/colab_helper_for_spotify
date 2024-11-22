@@ -71,7 +71,7 @@ class _AppScreensState extends State<AppScreens> {
         valueListenable: playerController.miniPlayerDisplay,
         builder: (context, value, child) {
           return NavigationBar(
-            height: (60 - value),
+            height: (80 - value),
             selectedIndex: pageIndex,
             onDestinationSelected: (value) {
               setState(() {

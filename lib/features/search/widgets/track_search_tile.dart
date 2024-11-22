@@ -87,10 +87,10 @@ class TrackSearchTile extends StatelessWidget {
           ),
         ),
       ),
-      trailing: GestureDetector(
-        child: const Icon(Icons.more_vert),
-        onTap: () {},
-      ),
+      // trailing: GestureDetector(
+      //   child: const Icon(Icons.more_vert),
+      //   onTap: () {},
+      // ),
       onTap: onTap,
     );
   }

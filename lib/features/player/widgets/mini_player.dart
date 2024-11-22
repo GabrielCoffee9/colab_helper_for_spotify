@@ -38,7 +38,7 @@ class MiniPlayer extends StatelessWidget {
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondaryContainer,
             borderRadius: const BorderRadius.all(Radius.circular(4))),
-        height: 50,
+        height: 65,
         child: Column(
           children: [
             Expanded(
@@ -55,8 +55,8 @@ class MiniPlayer extends StatelessWidget {
                     ),
                     if (trackImageUri != null)
                       SizedBox(
-                        height: 40,
-                        width: 40,
+                        height: 50,
+                        width: 50,
                         child: CachedNetworkImage(
                           memCacheHeight: 140,
                           memCacheWidth: 140,

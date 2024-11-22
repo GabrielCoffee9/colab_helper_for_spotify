@@ -178,7 +178,7 @@ class _ArtistPageState extends State<ArtistPage> {
       backgroundColor: colors.surface,
       floatingActionButton: showScrollToTopButton
           ? Padding(
-              padding: const EdgeInsets.only(bottom: 60.0),
+              padding: const EdgeInsets.only(bottom: 70.0),
               child: FloatingActionButton(
                   mini: true,
                   child: const Icon(Icons.keyboard_double_arrow_up),

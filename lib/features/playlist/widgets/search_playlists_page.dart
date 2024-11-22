@@ -81,25 +81,28 @@ class SearchPlaylistsPage extends SearchDelegate {
         }
       }
 
-      return ListView.builder(
-        itemCount: searchPlaylistItems.length,
-        itemBuilder: (context, index) {
-          String contextUri =
-              PlayerController.instance.playerContext.value?.uri ?? '';
-          return PlaylistSearchTile(
-            playlist: searchPlaylistItems[index],
-            isPlaying: contextUri == searchPlaylistItems[index].uri,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PlaylistPage(
-                    initialPlaylistData: searchPlaylistItems[index],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 70.0),
+        child: ListView.builder(
+          itemCount: searchPlaylistItems.length,
+          itemBuilder: (context, index) {
+            String contextUri =
+                PlayerController.instance.playerContext.value?.uri ?? '';
+            return PlaylistSearchTile(
+              playlist: searchPlaylistItems[index],
+              isPlaying: contextUri == searchPlaylistItems[index].uri,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlaylistPage(
+                      initialPlaylistData: searchPlaylistItems[index],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       );
     }
 

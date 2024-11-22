@@ -19,8 +19,9 @@ class PlaylistSearchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title:
-          Text(playlist.name ?? LocalizationsController.of(context)!.loading),
+      title: Text(playlist.isUserSavedTracksPlaylist
+          ? LocalizationsController.of(context)!.likedSongs
+          : playlist.name ?? LocalizationsController.of(context)!.loading),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
