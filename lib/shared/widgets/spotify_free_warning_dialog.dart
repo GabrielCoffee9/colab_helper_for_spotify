@@ -22,7 +22,7 @@ class _SpotifyFreeWarningDialogState extends State<SpotifyFreeWarningDialog> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
-    var brightness = MediaQuery.of(context).platformBrightness;
+    var brightness = Theme.of(context).brightness;
     bool isDarkMode = brightness == Brightness.dark;
     return SimpleDialog(
       title: Text(LocalizationsController.of(context)!.enjoyThisFeature),

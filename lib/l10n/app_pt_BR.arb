@@ -104,5 +104,8 @@
   "cancel": "Cancelar",
   "yes": "Sim",
   "save": "Salvar",
-  "sometimesTakesTime": "Às vezes, ao salvar detalhes da playlist, as alterações podem levar até 1 minuto para atualizar na página. Você pode atualizar a playlist manualmente puxando para baixo para atualizar."
+  "sometimesTakesTime": "Às vezes, ao salvar detalhes da playlist, as alterações podem levar até 1 minuto para atualizar na página. Você pode atualizar a playlist manualmente puxando para baixo para atualizar.",
+  "theme": "Tema",
+  "lightMode": "Modo claro",
+  "darkMode": "Modo escuro"
 }
