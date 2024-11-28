@@ -22,7 +22,9 @@ class UserPlaylists {
     href = json['href'];
     if (json['items'] != null) {
       json['items'].forEach((v) {
-        playlists.add(Playlist.fromJson(v));
+        if (v != null) {
+          playlists.add(Playlist.fromJson(v));
+        }
       });
     }
     limit = json['limit'];
@@ -36,7 +38,9 @@ class UserPlaylists {
     href = json['href'] ?? href;
     if (json['items'] != null) {
       json['items'].forEach((v) {
-        playlists.add(Playlist.fromJson(v));
+        if (v != null) {
+          playlists.add(Playlist.fromJson(v));
+        }
       });
     }
     limit = json['limit'] ?? limit;

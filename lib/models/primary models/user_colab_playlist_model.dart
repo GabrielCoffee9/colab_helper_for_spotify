@@ -22,7 +22,7 @@ class UserColabPlaylist {
     href = json['href'];
     if (json['items'] != null) {
       json['items'].forEach((v) {
-        if (v['collaborative'] == true) {
+        if (v != null && v['collaborative'] == true) {
           items.add(Playlist.fromJson(v));
         }
       });
