@@ -16,6 +16,7 @@ import 'settings_page.dart';
 import 'widgets/home_interactive_button.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -296,7 +297,9 @@ class _HomePageState extends State<HomePage> {
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: maxDisplayedPlaylists,
-                            cacheExtent: maxDisplayedPlaylists.toDouble(),
+                            scrollCacheExtent: ScrollCacheExtent.pixels(
+                              maxDisplayedPlaylists.toDouble(),
+                            ),
                             itemBuilder: (context, index) {
                               return ColabPlaylistCard(
                                 playlistName: userPlaylists.playlists[index]
