@@ -3,10 +3,7 @@ import '../../models/secundary models/queue_model.dart';
 import '../../shared/modules/app_remote/app_remote_handler.dart';
 import 'player_service.dart';
 
-import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:spotify_sdk/models/library_state.dart';
-import 'package:spotify_sdk/models/player_context.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';

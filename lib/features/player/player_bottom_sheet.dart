@@ -10,10 +10,9 @@ import 'widgets/queue_dialog.dart';
 import 'player_controller.dart';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:spotify_sdk/models/player_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:spotify_sdk/models/library_state.dart';
+import 'package:spotify_sdk/spotify_sdk.dart' hide Artist;
 
 class PlayerBottomSheet extends StatefulWidget {
   const PlayerBottomSheet({super.key});
