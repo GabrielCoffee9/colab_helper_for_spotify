@@ -43,7 +43,7 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet> {
     }
   }
 
-  getLibraryState(String? spotifyUri) async {
+  Future<void> getLibraryState(String? spotifyUri) async {
     playerController.getLibraryState(spotifyUri ?? '').then((value) {
       setState(() {
         libraryState = value;

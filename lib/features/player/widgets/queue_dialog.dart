@@ -25,7 +25,7 @@ class _QueueDialogState extends State<QueueDialog> {
 
   bool loading = true;
 
-  getQueueDialog() {
+  void getQueueDialog() {
     playerController.getUserQueue().then((data) {
       if (mounted) {
         setState(() {

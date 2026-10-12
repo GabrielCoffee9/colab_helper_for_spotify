@@ -32,7 +32,7 @@ class SearchTracksContainer {
     total = json['total'];
   }
 
-  fromInstance(Map<String, dynamic> json) {
+  void fromInstance(Map<String, dynamic> json) {
     href = json['href'] ?? href;
     if (json['items'] != null) {
       json['items'].forEach((v) {

@@ -40,7 +40,7 @@ class _ResultsPageState extends State<ResultsPage> {
   int trackItemsCount = 0;
   int allItemsCount = 0;
 
-  searchWithFilter(int offset, String types, {SearchItems? dataToMerge}) {
+  void searchWithFilter(int offset, String types, {SearchItems? dataToMerge}) {
     searchSpotifyController
         .searchSpotifyContent(
       widget.query,

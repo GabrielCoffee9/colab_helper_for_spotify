@@ -66,7 +66,7 @@ class AuthController {
     }
   }
 
-  getNewAccessToken() async {
+  Future<String> getNewAccessToken() async {
     try {
       return await AuthService().getAccessToken();
     } catch (e) {

@@ -65,7 +65,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return;
   }
 
-  updateAllPlaylist() async {
+  Future<void> updateAllPlaylist() async {
     await getPlaylistHeaders().then((_) async {
       await getTracks();
     });

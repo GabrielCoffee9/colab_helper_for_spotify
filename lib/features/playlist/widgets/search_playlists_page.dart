@@ -22,7 +22,7 @@ class SearchPlaylistsPage extends SearchDelegate {
 
   String localizedSearchFieldLabel;
 
-  searchPlaylists() {
+  void searchPlaylists() {
     if (!dataIsLoading && (searchData.total! > searchData.playlists.length)) {
       dataIsLoading = true;
       PlaylistController()

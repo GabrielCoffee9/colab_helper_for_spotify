@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
     return;
   }
 
-  getPlayerPausedState() {
+  void getPlayerPausedState() {
     PlayerController.instance
         .getPlayerState()
         .then((data) => playerIsPaused = data?.isPaused ?? true);

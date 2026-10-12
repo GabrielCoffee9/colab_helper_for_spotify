@@ -37,7 +37,7 @@ class PlayerController {
     });
   }
 
-  restartListeners() {
+  void restartListeners() {
     playerStateListener = null;
 
     playerStateListener = SpotifySdk.subscribePlayerState().asBroadcastStream();
@@ -86,20 +86,20 @@ class PlayerController {
     );
   }
 
-  play(String? contextUri) async {
+  Future<void> play(String? contextUri) async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.play(spotifyUri: contextUri ?? ''),
     );
   }
 
-  skipToIndex(int? trackIndex, String? contextUri) async {
+  Future<dynamic> skipToIndex(int? trackIndex, String? contextUri) async {
     return await appRemoteHandler<dynamic>(
       () => SpotifySdk.skipToIndex(
           spotifyUri: contextUri ?? '', trackIndex: trackIndex ?? 0),
     );
   }
 
-  queue(String? contextUri) async {
+  Future<dynamic> queue(String? contextUri) async {
     return await appRemoteHandler<dynamic>(
       () => SpotifySdk.queue(
         spotifyUri: contextUri ?? '',
@@ -107,42 +107,42 @@ class PlayerController {
     );
   }
 
-  resume() async {
+  Future<void> resume() async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.resume(),
     );
   }
 
-  pause() async {
+  Future<void> pause() async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.pause(),
     );
   }
 
-  skipNext() async {
+  Future<void> skipNext() async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.skipNext(),
     );
   }
 
-  skipPrevious() async {
+  Future<void> skipPrevious() async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.skipPrevious(),
     );
   }
 
-  seekTo(int seek) async {
+  Future<void> seekTo(int seek) async {
     await appRemoteHandler<dynamic>(
         () => SpotifySdk.seekTo(positionedMilliseconds: seek));
   }
 
-  seekToRelativePosition(int seek) async {
+  Future<void> seekToRelativePosition(int seek) async {
     await appRemoteHandler<dynamic>(
       () => SpotifySdk.seekToRelativePosition(relativeMilliseconds: seek),
     );
   }
 
-  setPlaybackSpeed(double playbackSpeed) async {
+  Future<void> setPlaybackSpeed(double playbackSpeed) async {
     late PodcastPlaybackSpeed newPlaybackSpeed;
 
     switch (playbackSpeed) {
@@ -244,7 +244,7 @@ class PlayerController {
     }
   }
 
-  addToLibrary(String? spotifyUri) async {
+  Future<void> addToLibrary(String? spotifyUri) async {
     try {
       if (spotifyUri != null && spotifyUri.isEmpty) {
         throw Exception('The given spotifyUri is null or empty');
@@ -258,7 +258,7 @@ class PlayerController {
     }
   }
 
-  removeFromLibrary(String? spotifyUri) async {
+  Future<void> removeFromLibrary(String? spotifyUri) async {
     try {
       if (spotifyUri != null && spotifyUri.isEmpty) {
         throw Exception('The given spotifyUri is null or empty');

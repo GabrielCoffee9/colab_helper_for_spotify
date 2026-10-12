@@ -77,7 +77,7 @@ class _ArtistPageState extends State<ArtistPage> {
     return '';
   }
 
-  getFollowStatus() {
+  void getFollowStatus() {
     ArtistController().chechIfUserFollowsArtist(artist.id).then(
       (value) {
         setState(() {
@@ -87,7 +87,7 @@ class _ArtistPageState extends State<ArtistPage> {
     );
   }
 
-  followArtist() {
+  void followArtist() {
     ArtistController().followArtist(artist.id).then(
       (value) {
         if (value) {
@@ -99,7 +99,7 @@ class _ArtistPageState extends State<ArtistPage> {
     );
   }
 
-  unfollowArtist() {
+  void unfollowArtist() {
     ArtistController().unfollowArtist(artist.id).then(
       (value) {
         if (value) {

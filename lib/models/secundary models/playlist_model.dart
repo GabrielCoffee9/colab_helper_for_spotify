@@ -97,7 +97,7 @@ class Playlist {
     uri = json['uri'] ?? uri;
   }
 
-  fromInstance(Map<String, dynamic> json) {
+  void fromInstance(Map<String, dynamic> json) {
     var previousInvalidTracks = 0;
 
     if (tracks.isNotEmpty) {

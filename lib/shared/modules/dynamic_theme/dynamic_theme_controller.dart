@@ -21,7 +21,7 @@ class DynamicThemeController {
     return ThemeMode.system;
   }
 
-  setThemeModeFromString(String? stringThemeMode) {
+  void setThemeModeFromString(String? stringThemeMode) {
     if (stringThemeMode == 'light') currentThemeMode.value = ThemeMode.light;
     if (stringThemeMode == 'dark') currentThemeMode.value = ThemeMode.dark;
     if (stringThemeMode == 'system' || stringThemeMode == null) {

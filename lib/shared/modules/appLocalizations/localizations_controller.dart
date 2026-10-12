@@ -21,7 +21,7 @@ class LocalizationsController {
     return const Locale('en');
   }
 
-  setLocaleFromString(String? stringLocale) {
+  void setLocaleFromString(String? stringLocale) {
     if (stringLocale == 'en') currentLocale.value = const Locale('en');
     if (stringLocale == 'pt_BR') currentLocale.value = const Locale('pt', 'BR');
     if (stringLocale == null) {

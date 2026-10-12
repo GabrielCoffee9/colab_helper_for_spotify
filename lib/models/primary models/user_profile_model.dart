@@ -39,7 +39,7 @@ class UserProfile extends ChangeNotifier {
       this.type,
       this.uri});
 
-  fromJson(Map<String, dynamic> json) {
+  void fromJson(Map<String, dynamic> json) {
     country = json['country'];
     displayName = json['display_name'];
     email = json['email'];

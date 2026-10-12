@@ -34,7 +34,7 @@ class SearchItems {
     }
   }
 
-  fromInstance(Map<String, dynamic> json) {
+  void fromInstance(Map<String, dynamic> json) {
     if (json['tracks'] != null && tracksContainer != null) {
       tracksContainer!.fromInstance(json['tracks']);
     }
