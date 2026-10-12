@@ -65,7 +65,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return;
   }
 
-  updateAllPlaylist() async {
+  Future<void> updateAllPlaylist() async {
     await getPlaylistHeaders().then((_) async {
       await getTracks();
     });
@@ -486,11 +486,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         ),
                       ),
                     SliverReorderableList(
-                      onReorder: (oldIndex, newIndex) async {
+                      onReorderItem: (oldIndex, newIndex) async {
                         setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
                           final Track item = playlist.tracks.removeAt(oldIndex);
                           playlist.tracks.insert(newIndex, item);
                         });

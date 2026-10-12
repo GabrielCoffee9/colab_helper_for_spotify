@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 
 class LocalizationsController {
   static final LocalizationsController _instance = LocalizationsController._();
@@ -21,7 +21,7 @@ class LocalizationsController {
     return const Locale('en');
   }
 
-  setLocaleFromString(String? stringLocale) {
+  void setLocaleFromString(String? stringLocale) {
     if (stringLocale == 'en') currentLocale.value = const Locale('en');
     if (stringLocale == 'pt_BR') currentLocale.value = const Locale('pt', 'BR');
     if (stringLocale == null) {

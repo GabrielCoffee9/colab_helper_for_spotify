@@ -66,7 +66,7 @@ class Artist {
     }
   }
 
-  fromInstance(Map<String, dynamic> json) {
+  void fromInstance(Map<String, dynamic> json) {
     externalUrls = json['external_urls'] != null
         ? ExternalUrls.fromJson(json['external_urls'])
         : null;

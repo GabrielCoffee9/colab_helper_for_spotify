@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
+  sdk: ^3.13.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,19 +35,19 @@ dependencies:
   flutter_localizations:
     sdk: flutter
  
-  google_fonts: ^6.2.1
-  flutter_secure_storage: ^9.2.2
-  spotify_sdk: ^3.0.2
+  google_fonts: ^9.0.0
+  flutter_secure_storage: ^11.2.0
+  spotify_sdk: ^4.3.3
   appcheck: ^1.0.5
   dio: ^5.7.0
   retry: ^3.1.0
-  animations: ^2.0.4
-  badges: ^3.1.2
+  animations: ^3.0.0
+  badges: ^4.0.1
   html_unescape: ^2.0.0
   audio_video_progress_bar: ^2.0.3
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.4
   url_launcher: ^6.3.1
-  intl: ^0.19.0
+  intl: ^0.20.3
   shared_preferences: ^2.3.3
   image_picker: ^1.1.2
   
@@ -62,7 +62,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_native_splash: ^2.2.9
 
 # For information on the generic Dart part of this file, see the

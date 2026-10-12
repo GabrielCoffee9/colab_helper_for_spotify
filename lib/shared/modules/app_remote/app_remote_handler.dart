@@ -9,8 +9,10 @@ Future<T?> appRemoteHandler<T>(Future<T> Function() sdkFunction) async {
   try {
     return await sdkFunction();
   } on PlatformException catch (e) {
-    if (e.details ==
-        'com.spotify.android.appremote.api.error.SpotifyDisconnectedException') {
+    final details = e.details?.toString() ?? '';
+    final disconnected = e.code == 'SpotifyDisconnectedException' ||
+        details.contains('SpotifyDisconnectedException');
+    if (disconnected) {
       final confirmation = await handleSpotifyDisconnectedException();
 
       if (confirmation) {

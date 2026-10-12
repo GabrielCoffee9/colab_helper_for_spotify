@@ -90,28 +90,31 @@ class _SettingsPageState extends State<SettingsPage> {
               style: const TextStyle(fontSize: 25),
             ),
           ),
-          RadioListTile(
-            title: Text(LocalizationsController.of(context)!.english),
-            value: 'en',
+          RadioGroup<String>(
             groupValue: languageGroupValue,
             onChanged: (String? value) {
+              if (value == null) {
+                return;
+              }
               setState(() {
-                languageGroupValue = value!;
+                languageGroupValue = value;
                 setLocale(value);
               });
             },
-          ),
-          RadioListTile(
-            title:
-                Text(LocalizationsController.of(context)!.portugueseBrazilian),
-            value: 'pt_BR',
-            groupValue: languageGroupValue,
-            onChanged: (String? value) {
-              setState(() {
-                languageGroupValue = value!;
-                setLocale(value);
-              });
-            },
+            child: Column(
+              children: [
+                RadioListTile(
+                  title: Text(LocalizationsController.of(context)!.english),
+                  value: 'en',
+                ),
+                RadioListTile(
+                  title: Text(
+                    LocalizationsController.of(context)!.portugueseBrazilian,
+                  ),
+                  value: 'pt_BR',
+                ),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 12.0),
@@ -120,40 +123,33 @@ class _SettingsPageState extends State<SettingsPage> {
               style: const TextStyle(fontSize: 25),
             ),
           ),
-          RadioListTile(
-            title: Text(LocalizationsController.of(context)!.system),
-            value: 'system',
+          RadioGroup<String>(
             groupValue: themeGroupValue,
             onChanged: (String? value) {
+              if (value == null) {
+                return;
+              }
               setState(() {
-                themeGroupValue = value!;
+                themeGroupValue = value;
                 setTheme(value);
               });
             },
-          ),
-          RadioListTile(
-            title: Text(LocalizationsController.of(context)!.lightMode),
-            value: 'light',
-            groupValue: themeGroupValue,
-            onChanged: (String? value) {
-              setState(() {
-                themeGroupValue = value!;
-                setTheme(value);
-                // ColabApp.of(context).changeTheme(ThemeMode.light);
-              });
-            },
-          ),
-          RadioListTile(
-            title: Text(LocalizationsController.of(context)!.darkMode),
-            value: 'dark',
-            groupValue: themeGroupValue,
-            onChanged: (String? value) {
-              setState(() {
-                themeGroupValue = value!;
-                setTheme(value);
-                // ColabApp.of(context).changeTheme(ThemeMode.dark);
-              });
-            },
+            child: Column(
+              children: [
+                RadioListTile(
+                  title: Text(LocalizationsController.of(context)!.system),
+                  value: 'system',
+                ),
+                RadioListTile(
+                  title: Text(LocalizationsController.of(context)!.lightMode),
+                  value: 'light',
+                ),
+                RadioListTile(
+                  title: Text(LocalizationsController.of(context)!.darkMode),
+                  value: 'dark',
+                ),
+              ],
+            ),
           ),
         ],
       ),

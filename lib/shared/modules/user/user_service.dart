@@ -22,7 +22,7 @@ class UserService {
     }
   }
 
-  Future<Response<dynamic>> getUserUrlProfileImage(userId) async {
+  Future<Response<dynamic>> getUserUrlProfileImage(String userId) async {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(

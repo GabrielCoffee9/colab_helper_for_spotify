@@ -40,7 +40,7 @@ class PlaylistService {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.get(
-        '/playlists/$playlistId/tracks',
+        '/playlists/$playlistId/items',
         queryParameters: {
           'limit': 50,
           'market': market,
@@ -122,7 +122,7 @@ class PlaylistService {
     try {
       var accessToken = await storage.read(key: 'accessToken');
       final response = await dio.put(
-        '/playlists/$playlistId/tracks',
+        '/playlists/$playlistId/items',
         data: {
           "range_start": rangeStart,
           "insert_before": insertBefore,

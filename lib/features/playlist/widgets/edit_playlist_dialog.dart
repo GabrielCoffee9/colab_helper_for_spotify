@@ -36,7 +36,7 @@ class _EditPlaylistDialogState extends State<EditPlaylistDialog> {
   String initialPlaylistName = '';
   String initialDescription = '';
 
-  saveChanges() async {
+  Future<void> saveChanges() async {
     if (savingChanges) {
       return;
     }

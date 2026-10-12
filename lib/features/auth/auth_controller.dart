@@ -1,6 +1,5 @@
 import 'auth_service.dart';
 
-import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 import 'package:flutter/material.dart';
@@ -67,7 +66,7 @@ class AuthController {
     }
   }
 
-  getNewAccessToken() async {
+  Future<String> getNewAccessToken() async {
     try {
       return await AuthService().getAccessToken();
     } catch (e) {

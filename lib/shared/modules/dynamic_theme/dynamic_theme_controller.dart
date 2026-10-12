@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 
 class DynamicThemeController {
   static final DynamicThemeController _instance = DynamicThemeController._();
@@ -21,7 +21,7 @@ class DynamicThemeController {
     return ThemeMode.system;
   }
 
-  setThemeModeFromString(String? stringThemeMode) {
+  void setThemeModeFromString(String? stringThemeMode) {
     if (stringThemeMode == 'light') currentThemeMode.value = ThemeMode.light;
     if (stringThemeMode == 'dark') currentThemeMode.value = ThemeMode.dark;
     if (stringThemeMode == 'system' || stringThemeMode == null) {

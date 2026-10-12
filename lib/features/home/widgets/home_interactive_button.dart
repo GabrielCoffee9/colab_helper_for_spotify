@@ -24,10 +24,10 @@ class HomeInteractiveButton extends StatelessWidget {
           style: IconButton.styleFrom(
             foregroundColor: Colors.transparent,
             backgroundColor: Colors.transparent,
-            disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
-            hoverColor: colors.onSecondaryContainer.withOpacity(0.08),
-            focusColor: colors.onSecondaryContainer.withOpacity(0.12),
-            highlightColor: colors.onSecondaryContainer.withOpacity(0.12),
+            disabledBackgroundColor: colors.onSurface.withValues(alpha: 0.12),
+            hoverColor: colors.onSecondaryContainer.withValues(alpha: 0.08),
+            focusColor: colors.onSecondaryContainer.withValues(alpha: 0.12),
+            highlightColor: colors.onSecondaryContainer.withValues(alpha: 0.12),
           ),
           icon: Icon(
             iconButton,
