@@ -92,6 +92,8 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 14,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 0.72,
                     ),
                     itemCount: userPlaylists.playlists.length,
                     itemBuilder: (context, index) {
@@ -129,10 +131,9 @@ class _AllPlaylistsPageState extends State<AllPlaylistsPage> {
                           );
                         },
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(
-                              height: 162,
-                              width: 170,
+                            Expanded(
                               child: CachedNetworkImage(
                                 memCacheWidth: 446,
                                 memCacheHeight: 393,

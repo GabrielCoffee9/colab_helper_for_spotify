@@ -302,8 +302,7 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet> {
                             alignment: Alignment.centerLeft,
                             child: Row(
                               children: [
-                                SizedBox(
-                                  width: 315,
+                                Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,

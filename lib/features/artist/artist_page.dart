@@ -298,6 +298,7 @@ class _ArtistPageState extends State<ArtistPage> {
                           ),
                         ),
                         ListView.builder(
+                          primary: false,
                           padding: const EdgeInsets.only(
                             bottom: 12.0,
                             left: 12.0,
@@ -354,6 +355,7 @@ class _ArtistPageState extends State<ArtistPage> {
                           ),
                         ),
                         ListView.builder(
+                          primary: false,
                           padding: const EdgeInsets.only(bottom: 60),
                           shrinkWrap: true,
                           physics: const ClampingScrollPhysics(),

@@ -7,7 +7,7 @@ import 'auth_controller.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:appcheck/appcheck.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 import '../../l10n/app_localizations.dart';
 
 enum ButtonState { idle, loading, done }
@@ -27,8 +27,8 @@ class _AuthPageState extends State<AuthPage> {
 
   late StreamSubscription _connectionStatusListener;
 
-  Future<bool> checkSpotifyApp() async {
-    return AppCheck().isAppInstalled('com.spotify.music');
+  Future<bool> checkSpotifyApp() {
+    return SpotifySdk.isSpotifyInstalled();
   }
 
   void syncSpotify() {

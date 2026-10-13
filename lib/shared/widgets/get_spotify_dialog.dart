@@ -1,5 +1,6 @@
 import '../modules/appLocalizations/localizations_controller.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,8 +34,10 @@ class _GetSpotifyDialogState extends State<GetSpotifyDialog> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: OutlinedButton(
                   onPressed: () {
-                    final url =
-                        Uri.parse("market://details?id=com.spotify.music");
+                    final url = defaultTargetPlatform == TargetPlatform.iOS
+                        ? Uri.parse(
+                            'https://apps.apple.com/app/spotify/id324684580')
+                        : Uri.parse('market://details?id=com.spotify.music');
                     launchUrl(
                       url,
                       mode: LaunchMode.externalApplication,

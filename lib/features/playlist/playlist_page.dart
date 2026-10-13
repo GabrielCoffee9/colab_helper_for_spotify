@@ -221,6 +221,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 ),
               )
             : Scrollbar(
+                controller: _scrollController,
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),

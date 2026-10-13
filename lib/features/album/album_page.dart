@@ -148,6 +148,7 @@ class _AlbumPageState extends State<AlbumPage> {
               ),
             )
           : Scrollbar(
+              controller: _scrollController,
               child: ListView(
                 controller: _scrollController,
                 physics: const BouncingScrollPhysics(),
@@ -324,6 +325,7 @@ class _AlbumPageState extends State<AlbumPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0),
                     child: ListView.builder(
+                      primary: false,
                       physics: const ClampingScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: album.tracks.length,

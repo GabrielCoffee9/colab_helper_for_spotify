@@ -157,6 +157,7 @@ class _ResultsPageState extends State<ResultsPage> {
               )
             : Expanded(
                 child: Scrollbar(
+                  controller: _scrollController,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 70.0),
                     child: ListenableBuilder(
